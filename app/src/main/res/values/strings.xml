@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Calma</string>
+    <string name="english_language" translatable="false">English</string>
+    <string name="arabic_language" translatable="false">العربية</string>
+    <string name="french_language" translatable="false">Français</string>
+    <string name="e_start" translatable="false">Let\'s start</string>
+    <string name="a_start" translatable="false">أبدأ الآن</string>
+    <string name="f_start" translatable="false">commençons</string>
 </resources>
