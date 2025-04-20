@@ -1,4 +1,4 @@
-package com.metafortech.calma.ui.theme
+package com.metafortech.calma.theme
 
 import androidx.compose.ui.graphics.Color
 

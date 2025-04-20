@@ -1,8 +1,7 @@
-package com.metafortech.calma
+package com.metafortech.calma.welcom
 
 import android.app.LocaleManager
 import android.content.Context
-import android.content.Context.MODE_PRIVATE
 import android.os.Build
 import android.os.LocaleList
 import androidx.appcompat.app.AppCompatDelegate
@@ -28,12 +27,12 @@ class LocaleManager(private val context: Context) {
     }
 
     fun getSavedLocale(): String {
-        return context.getSharedPreferences("app_settings", MODE_PRIVATE)
+        return context.getSharedPreferences("app_settings", Context.MODE_PRIVATE)
             .getString("selected_language", "en") ?: "en"
     }
 
     fun saveLocale(languageTag: String) {
-        context.getSharedPreferences("app_settings", MODE_PRIVATE)
+        context.getSharedPreferences("app_settings", Context.MODE_PRIVATE)
             .edit { putString("selected_language", languageTag) }
     }
 

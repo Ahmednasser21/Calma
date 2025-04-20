@@ -1,4 +1,4 @@
-package com.metafortech.calma.ui.welcom
+package com.metafortech.calma.welcom
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -24,8 +24,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.metafortech.calma.R
-import com.metafortech.calma.ui.theme.Black
-import com.metafortech.calma.ui.theme.Gray
+import com.metafortech.calma.theme.Gray
 
 @Composable
 fun LanguageScreen(
@@ -57,7 +56,7 @@ fun LanguageScreen(
             LanguageItem(
                 language = stringResource(R.string.english_language),
                 buttonText = stringResource(R.string.e_start),
-                buttonColor = Black,
+                buttonColor = MaterialTheme.colorScheme.primary,
                 onClick = { onLanguageClick("en") }
             )
 
@@ -116,7 +115,7 @@ fun LanguageItem(
             Text(
                 text = buttonText,
                 style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.onPrimary
             )
         }
     }

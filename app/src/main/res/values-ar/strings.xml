@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Calma</string>
-    <string name="test">إختبار</string>
+    <string name="login">تسجيل الدخول</string>
+    <string name="welcome_back">أهلا بك مجددا في</string>
+    <string name="calma">كالما</string>
+    <string name="login_with_email">سجل الدخول باستخدام بريدك الإلكتروني</string>
+    <string name="email_label">البريد الإلكتروني</string>
+    <string name="password_label">كلمة المرور</string>
+    <string name="forgot_password">نسيت كلمة المرور؟</string>
+    <string name="dont_have_acc">ليس لديك حساب؟</string>
+    <string name="create_acc">إنشاء حساب</string>
+    <string name="continue_using">أو الإستمرار باستخدام</string>
 </resources>
