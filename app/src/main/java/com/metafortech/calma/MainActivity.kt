@@ -11,16 +11,22 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.metafortech.calma.login.presentation.LoginScreen
+import com.metafortech.calma.login.presentation.LoginViewModule
+import com.metafortech.calma.register.RegisterScreen
 import com.metafortech.calma.theme.CalmaTheme
 import com.metafortech.calma.welcom.LanguageScreen
 import com.metafortech.calma.welcom.LocaleManager
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.serialization.Serializable
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private lateinit var localeManager: LocaleManager
@@ -72,7 +78,24 @@ fun Nav(innerPadding: PaddingValues, onUserSelectedLanguage: (String) -> Unit) {
             }
         }
         composable<LoginScreen> {
-            LoginScreen(modifier = Modifier.padding(innerPadding))
+            val loginViewModel: LoginViewModule = hiltViewModel()
+            val state = loginViewModel.uiState.collectAsState().value
+            LoginScreen(modifier = Modifier.padding(innerPadding),
+                uiState = state,
+                onEmailValueChange = {email->
+                    loginViewModel.onEmailChange(email)
+                },
+                onPasswordValueChange = {password->
+                  loginViewModel.onPasswordChange(password)
+                },
+                onLoginClick = {loginViewModel.onLoginClick()},
+                onLoginSuccess = {
+//                    navController.navigate(RegisterScreen)
+                }
+            )
+        }
+        composable<RegisterScreen> {
+            RegisterScreen(modifier = Modifier.padding(innerPadding))
         }
     }
 }
@@ -82,6 +105,9 @@ object WelcomeScreen
 
 @Serializable
 object LoginScreen
+
+@Serializable
+object RegisterScreen
 
 
 

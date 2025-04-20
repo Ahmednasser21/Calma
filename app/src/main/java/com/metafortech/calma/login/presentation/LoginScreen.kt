@@ -12,11 +12,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -51,44 +53,46 @@ import com.metafortech.calma.R
 fun LoginScreen(
     modifier: Modifier = Modifier,
     onDismiss: () -> Unit = {},
-    email: String = "",
-    isEmailError: Boolean = false,
-    password: String = "",
-    isPasswordError: Boolean = false,
+    uiState: LoginScreenUIState,
     onEmailValueChange: (String) -> Unit = {},
     onPasswordValueChange: (String) -> Unit = {},
     onForgotPasswordClick: () -> Unit = {},
     onLoginClick: () -> Unit = {},
+    onLoginSuccess: () -> Unit = {},
     onRegisterClick: () -> Unit = {},
     onLoginWithGoogleClick: () -> Unit = {},
     onLoginWithFacebookClick: () -> Unit = {}
 ) {
+
     Dialog(
-        onDismissRequest = onDismiss, properties = DialogProperties(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(
             dismissOnBackPress = false,
             dismissOnClickOutside = true,
             usePlatformDefaultWidth = false
         )
     ) {
+        if (uiState.loginSuccess) onLoginSuccess()
+
         Column(
-            modifier = modifier.fillMaxSize(), verticalArrangement = Arrangement.Bottom
+            modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Bottom
         ) {
             Box(
-                modifier = Modifier
+                modifier = modifier
                     .fillMaxWidth()
                     .fillMaxHeight(0.9f)
                     .background(
                         color = MaterialTheme.colorScheme.background,
                         shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
                     )
-                    .padding(16.dp)
+                    .padding(horizontal = 16.dp)
             ) {
                 LoginScreenContents(
-                    modifier = modifier,
-                    email = email,
-                    isEmailError = isEmailError,
-                    password = password,
-                    isPasswordError = isPasswordError,
+                    modifier = Modifier,
+                    email = uiState.email,
+                    password = uiState.password,
+                    errorMessages = uiState.errorMessages,
+                    isLoading = uiState.isLoading,
                     onEmailValueChange = { email ->
                         onEmailValueChange(
                             email
@@ -101,9 +105,8 @@ fun LoginScreen(
                     onLoginClick = { onLoginClick() },
                     onRegisterClick = { onRegisterClick() },
                     onLoginWithGoogleClick = { onLoginWithGoogleClick() },
-                    onLoginWithFacebookClick = { onLoginWithFacebookClick() },
-
-                    )
+                    onLoginWithFacebookClick = { onLoginWithFacebookClick() }
+                )
             }
         }
     }
@@ -113,9 +116,9 @@ fun LoginScreen(
 fun LoginScreenContents(
     modifier: Modifier = Modifier,
     email: String,
-    isEmailError: Boolean,
     password: String,
-    isPasswordError: Boolean,
+    errorMessages: String?,
+    isLoading: Boolean,
     onEmailValueChange: (String) -> Unit,
     onPasswordValueChange: (String) -> Unit,
     onForgotPasswordClick: () -> Unit,
@@ -127,15 +130,14 @@ fun LoginScreenContents(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(horizontal = 16.dp),
+            .background(MaterialTheme.colorScheme.background),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = stringResource(R.string.login),
             style = MaterialTheme.typography.titleLarge,
-            color = Black
+            color = MaterialTheme.colorScheme.primary
         )
         Spacer(modifier = Modifier.height(16.dp))
         Row(
@@ -161,14 +163,30 @@ fun LoginScreenContents(
             color = MaterialTheme.colorScheme.primary
         )
         EmailTextField(
-            email = email, isEmailError = isEmailError
+            email = email,
         ) { email ->
             onEmailValueChange(email)
         }
         PasswordTextField(
-            password = password, isPasswordError = isPasswordError
+            password = password
         ) { password ->
             onPasswordValueChange(password)
+        }
+        errorMessages?.let { errorMessage ->
+            Text(
+                text = errorMessage,
+                modifier = Modifier.padding(vertical = 4.dp),
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Red
+            )
+        }
+        if (isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(24.dp)
+                    .padding(4.dp),
+                color = MaterialTheme.colorScheme.secondary,
+                strokeWidth = 2.dp
+            )
         }
         TextButton(
             modifier = Modifier
@@ -186,8 +204,6 @@ fun LoginScreenContents(
             onLoginWithFacebookClick = { onLoginWithFacebookClick }
 
         )
-
-
     }
 }
 
@@ -195,13 +211,12 @@ fun LoginScreenContents(
 fun EmailTextField(
     modifier: Modifier = Modifier,
     email: String,
-    isEmailError: Boolean,
     onValueChange: (String) -> Unit
 ) {
     OutlinedTextField(
         modifier = modifier
             .fillMaxWidth()
-            .padding(top = 32.dp, bottom = 16.dp),
+            .padding(top = 16.dp, bottom = 16.dp),
         value = email,
         onValueChange = { value ->
             onValueChange(value)
@@ -225,10 +240,9 @@ fun EmailTextField(
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Email, imeAction = ImeAction.Next
         ),
-        isError = isEmailError,
         colors = OutlinedTextFieldDefaults.colors(
             unfocusedBorderColor = Color.LightGray,
-            focusedBorderColor = MaterialTheme.colorScheme.secondary,
+            focusedBorderColor = MaterialTheme.colorScheme.primary,
             errorBorderColor = Color.Red,
             cursorColor = MaterialTheme.colorScheme.secondary,
         )
@@ -239,7 +253,6 @@ fun EmailTextField(
 fun PasswordTextField(
     modifier: Modifier = Modifier,
     password: String,
-    isPasswordError: Boolean,
     onValueChange: (String) -> Unit
 ) {
     var isPasswordVisible by remember { mutableStateOf(false) }
@@ -264,7 +277,6 @@ fun PasswordTextField(
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Password, imeAction = ImeAction.Done
         ),
-        isError = isPasswordError,
         visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
         trailingIcon = {
             IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
