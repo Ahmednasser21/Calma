@@ -1,6 +1,6 @@
-package com.metafortech.calma.login.data.di
+package com.metafortech.calma.authentication.data.di
 
-import com.metafortech.calma.login.data.remote.RegisterService
+import com.metafortech.calma.authentication.data.remote.RegisterService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

@@ -1,10 +1,11 @@
-package com.metafortech.calma.login.domain
+package com.metafortech.calma.authentication.login.domain
 
-import com.metafortech.calma.login.data.Repository
-import com.metafortech.calma.login.data.remote.LoginBody
+import com.metafortech.calma.authentication.data.Repository
+import com.metafortech.calma.authentication.data.remote.LoginBody
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
+import com.metafortech.calma.R
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -13,12 +14,12 @@ class LoginUseCase @Inject constructor(val repository: Repository) {
     operator fun invoke(loginBody: LoginBody): Flow<DomainLoginState> = flow {
         try {
             repository.postLoginRequest(loginBody).catch {
-                emit(DomainLoginState.OnFailed("Invalid email or password"))
+                emit(DomainLoginState.OnFailed(R.string.invalid_email_or_password))
             }.collect { loginResponse ->
                 emit(DomainLoginState.OnSuccess(loginResponse))
             }
         } catch (e: Exception) {
-            emit(DomainLoginState.OnFailed(e.message.toString()))
+            emit(DomainLoginState.OnFailed(R.string.something_went_wrong))
 
         }
 

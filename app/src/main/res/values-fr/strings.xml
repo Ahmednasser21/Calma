@@ -11,4 +11,9 @@
     <string name="dont_have_acc">Vous n\'avez pas de compte ?</string>
     <string name="create_acc">S\'inscrire</string>
     <string name="continue_using">Ou continuez à utiliser</string>
+    <string name="email_required">Un e-mail ou un téléphone est requis</string>
+    <string name="invalid_email_format">Invalid email or phone format</string>
+    <string name="password_required">Le mot de passe est requis</string>
+    <string name="invalid_email_or_password">E-mail ou mot de passe invalide</string>
+    <string name="something_went_wrong">Une erreur s\'est produite, veuillez réessayer.</string>
 </resources>

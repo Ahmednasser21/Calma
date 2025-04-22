@@ -1,9 +1,10 @@
-package com.metafortech.calma.register
+package com.metafortech.calma.authentication.register.presentation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
 fun RegisterScreen(modifier: Modifier = Modifier){
+
 
 }

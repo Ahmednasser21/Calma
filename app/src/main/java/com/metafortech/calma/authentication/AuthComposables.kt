@@ -1,24 +1,17 @@
-package com.metafortech.calma.login.presentation
+package com.metafortech.calma.authentication
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -42,175 +35,15 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import com.metafortech.calma.theme.Black
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import com.metafortech.calma.R
-
-
-@Composable
-fun LoginScreen(
-    modifier: Modifier = Modifier,
-    onDismiss: () -> Unit = {},
-    uiState: LoginScreenUIState,
-    onEmailValueChange: (String) -> Unit = {},
-    onPasswordValueChange: (String) -> Unit = {},
-    onForgotPasswordClick: () -> Unit = {},
-    onLoginClick: () -> Unit = {},
-    onLoginSuccess: () -> Unit = {},
-    onRegisterClick: () -> Unit = {},
-    onLoginWithGoogleClick: () -> Unit = {},
-    onLoginWithFacebookClick: () -> Unit = {}
-) {
-
-    Dialog(
-        onDismissRequest = onDismiss,
-        properties = DialogProperties(
-            dismissOnBackPress = false,
-            dismissOnClickOutside = true,
-            usePlatformDefaultWidth = false
-        )
-    ) {
-        if (uiState.loginSuccess) onLoginSuccess()
-
-        Column(
-            modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Bottom
-        ) {
-            Box(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(0.9f)
-                    .background(
-                        color = MaterialTheme.colorScheme.background,
-                        shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
-                    )
-                    .padding(horizontal = 16.dp)
-            ) {
-                LoginScreenContents(
-                    modifier = Modifier,
-                    email = uiState.email,
-                    password = uiState.password,
-                    errorMessages = uiState.errorMessages,
-                    isLoading = uiState.isLoading,
-                    onEmailValueChange = { email ->
-                        onEmailValueChange(
-                            email
-                        )
-                    },
-                    onPasswordValueChange = { password ->
-                        onPasswordValueChange(password)
-                    },
-                    onForgotPasswordClick = { onForgotPasswordClick() },
-                    onLoginClick = { onLoginClick() },
-                    onRegisterClick = { onRegisterClick() },
-                    onLoginWithGoogleClick = { onLoginWithGoogleClick() },
-                    onLoginWithFacebookClick = { onLoginWithFacebookClick() }
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun LoginScreenContents(
-    modifier: Modifier = Modifier,
-    email: String,
-    password: String,
-    errorMessages: String?,
-    isLoading: Boolean,
-    onEmailValueChange: (String) -> Unit,
-    onPasswordValueChange: (String) -> Unit,
-    onForgotPasswordClick: () -> Unit,
-    onLoginClick: () -> Unit,
-    onRegisterClick: () -> Unit,
-    onLoginWithGoogleClick: () -> Unit,
-    onLoginWithFacebookClick: () -> Unit
-) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = stringResource(R.string.login),
-            style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.primary
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Row(
-            modifier = modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = stringResource(R.string.welcome_back),
-                style = MaterialTheme.typography.bodyMedium,
-                color = Black
-            )
-            Text(
-                modifier = Modifier.padding(start = 4.dp),
-                text = stringResource(R.string.calma),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.secondary
-            )
-        }
-        Text(
-            text = stringResource(R.string.login_with_email),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.primary
-        )
-        EmailTextField(
-            email = email,
-        ) { email ->
-            onEmailValueChange(email)
-        }
-        PasswordTextField(
-            password = password
-        ) { password ->
-            onPasswordValueChange(password)
-        }
-        errorMessages?.let { errorMessage ->
-            Text(
-                text = errorMessage,
-                modifier = Modifier.padding(vertical = 4.dp),
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.Red
-            )
-        }
-        if (isLoading) {
-            CircularProgressIndicator(
-                modifier = Modifier.size(24.dp)
-                    .padding(4.dp),
-                color = MaterialTheme.colorScheme.secondary,
-                strokeWidth = 2.dp
-            )
-        }
-        TextButton(
-            modifier = Modifier
-                .align(Alignment.Start)
-                .padding(bottom = 16.dp),
-            stringResource(R.string.forgot_password)
-        ) {
-            onForgotPasswordClick()
-        }
-        BottomPartOfLoginAndRegisterScreen(
-            modifier = modifier,
-            onLoginClick = { onLoginClick() },
-            onRegisterClick = { onRegisterClick() },
-            onLoginWithGoogleClick = { onLoginWithGoogleClick() },
-            onLoginWithFacebookClick = { onLoginWithFacebookClick }
-
-        )
-    }
-}
 
 @Composable
 fun EmailTextField(
     modifier: Modifier = Modifier,
     email: String,
+    placeHolder: String,
+    imeAction: ImeAction,
     onValueChange: (String) -> Unit
 ) {
     OutlinedTextField(
@@ -223,8 +56,7 @@ fun EmailTextField(
         },
         placeholder = {
             Text(
-                text = stringResource(R.string.email_placeholder),
-                style = MaterialTheme.typography.bodyMedium
+                text = placeHolder, style = MaterialTheme.typography.bodyMedium
             )
         },
         label = {
@@ -238,7 +70,7 @@ fun EmailTextField(
         shape = RoundedCornerShape(50.dp),
         textStyle = MaterialTheme.typography.bodyMedium,
         keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Email, imeAction = ImeAction.Next
+            keyboardType = KeyboardType.Email, imeAction = imeAction
         ),
         colors = OutlinedTextFieldDefaults.colors(
             unfocusedBorderColor = Color.LightGray,
@@ -251,9 +83,7 @@ fun EmailTextField(
 
 @Composable
 fun PasswordTextField(
-    modifier: Modifier = Modifier,
-    password: String,
-    onValueChange: (String) -> Unit
+    modifier: Modifier = Modifier, password: String, onValueChange: (String) -> Unit
 ) {
     var isPasswordVisible by remember { mutableStateOf(false) }
     OutlinedTextField(

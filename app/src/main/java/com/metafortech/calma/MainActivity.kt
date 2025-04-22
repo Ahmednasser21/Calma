@@ -6,25 +6,16 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.metafortech.calma.login.presentation.LoginScreen
-import com.metafortech.calma.login.presentation.LoginViewModule
-import com.metafortech.calma.register.RegisterScreen
+import com.metafortech.calma.authentication.AuthNav
+import com.metafortech.calma.authentication.authNav
 import com.metafortech.calma.theme.CalmaTheme
-import com.metafortech.calma.welcom.LanguageScreen
 import com.metafortech.calma.welcom.LocaleManager
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.serialization.Serializable
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -40,11 +31,15 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
+            val navController = rememberNavController()
             CalmaTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Nav(innerPadding){languageTag ->
-                        onUserSelectedLanguage(languageTag)
+                    NavHost(navController = navController, startDestination = AuthNav) {
+                        authNav(innerPadding, navController) { languageTag ->
+                            onUserSelectedLanguage(languageTag)
+                        }
                     }
+
                 }
             }
         }
@@ -63,51 +58,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
-@Composable
-fun Nav(innerPadding: PaddingValues, onUserSelectedLanguage: (String) -> Unit) {
-
-    val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = WelcomeScreen) {
-        composable<WelcomeScreen> {
-            LanguageScreen(
-                modifier = Modifier.padding(innerPadding)
-            ) { languageTag ->
-                onUserSelectedLanguage(languageTag)
-                navController.navigate(LoginScreen)
-            }
-        }
-        composable<LoginScreen> {
-            val loginViewModel: LoginViewModule = hiltViewModel()
-            val state = loginViewModel.uiState.collectAsState().value
-            LoginScreen(modifier = Modifier.padding(innerPadding),
-                uiState = state,
-                onEmailValueChange = {email->
-                    loginViewModel.onEmailChange(email)
-                },
-                onPasswordValueChange = {password->
-                  loginViewModel.onPasswordChange(password)
-                },
-                onLoginClick = {loginViewModel.onLoginClick()},
-                onLoginSuccess = {
-//                    navController.navigate(RegisterScreen)
-                }
-            )
-        }
-        composable<RegisterScreen> {
-            RegisterScreen(modifier = Modifier.padding(innerPadding))
-        }
-    }
-}
-
-@Serializable
-object WelcomeScreen
-
-@Serializable
-object LoginScreen
-
-@Serializable
-object RegisterScreen
-
-
-

@@ -1,8 +1,8 @@
-package com.metafortech.calma.login.data
+package com.metafortech.calma.authentication.data
 
-import com.metafortech.calma.login.data.remote.LoginBody
-import com.metafortech.calma.login.data.remote.LoginResponse
-import com.metafortech.calma.login.data.remote.RegisterService
+import com.metafortech.calma.authentication.data.remote.LoginBody
+import com.metafortech.calma.authentication.data.remote.LoginResponse
+import com.metafortech.calma.authentication.data.remote.RegisterService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject

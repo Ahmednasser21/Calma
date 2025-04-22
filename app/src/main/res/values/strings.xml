@@ -19,4 +19,9 @@
     <string name="continue_using">Or continue using</string>
     <string name="google" translatable="false">Google</string>
     <string name="facebook" translatable="false">Facebook</string>
+    <string name="email_required">Email or phone is required</string>
+    <string name="invalid_email_format">Invalid email or phone format</string>
+    <string name="password_required">Password is required</string>
+    <string name="invalid_email_or_password">Invalid email or password</string>
+    <string name="something_went_wrong">Something went wrong please retry</string>
 </resources>
