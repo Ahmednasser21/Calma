@@ -34,7 +34,7 @@ fun LanguageScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(20.dp),
+            .padding(32.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -73,7 +73,6 @@ fun LanguageScreen(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(200.dp)
                 .padding(top = 16.dp),
             contentAlignment = Alignment.BottomStart
         ) {
@@ -81,7 +80,7 @@ fun LanguageScreen(
                 painter = painterResource(id = R.drawable.sports_illustration),
                 contentDescription = null,
                 contentScale = ContentScale.Fit,
-                modifier = Modifier
+                modifier = Modifier.width(230.dp).height(300.dp)
             )
         }
     }

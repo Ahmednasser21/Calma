@@ -1,17 +1,21 @@
 package com.metafortech.calma.authentication
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -21,6 +25,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -36,21 +42,25 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImagePainter
+import coil3.compose.rememberAsyncImagePainter
 import com.metafortech.calma.R
 
 @Composable
-fun EmailTextField(
+fun GeneralTextField(
     modifier: Modifier = Modifier,
-    email: String,
+    textValue: String,
     placeHolder: String,
+    label: String,
     imeAction: ImeAction,
+    keyboardType: KeyboardType,
     onValueChange: (String) -> Unit
 ) {
     OutlinedTextField(
         modifier = modifier
             .fillMaxWidth()
-            .padding(top = 16.dp, bottom = 16.dp),
-        value = email,
+            .padding(bottom = 16.dp),
+        value = textValue,
         onValueChange = { value ->
             onValueChange(value)
         },
@@ -61,16 +71,14 @@ fun EmailTextField(
         },
         label = {
             Text(
-                text = stringResource(
-                    R.string.email_label
-                ), style = MaterialTheme.typography.bodyMedium
+                text = label, style = MaterialTheme.typography.bodyMedium
             )
         },
         singleLine = true,
         shape = RoundedCornerShape(50.dp),
         textStyle = MaterialTheme.typography.bodyMedium,
         keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Email, imeAction = imeAction
+            keyboardType = keyboardType, imeAction = imeAction
         ),
         colors = OutlinedTextFieldDefaults.colors(
             unfocusedBorderColor = Color.LightGray,
@@ -121,7 +129,7 @@ fun PasswordTextField(
         },
         colors = OutlinedTextFieldDefaults.colors(
             unfocusedBorderColor = Color.LightGray,
-            focusedBorderColor = MaterialTheme.colorScheme.secondary,
+            focusedBorderColor = MaterialTheme.colorScheme.primary,
             errorBorderColor = Color.Red,
             cursorColor = MaterialTheme.colorScheme.secondary,
         )
@@ -134,7 +142,7 @@ fun LoginButton(content: String, onLoginClick: () -> Unit) {
         onClick = onLoginClick,
         shape = RoundedCornerShape(20.dp),
         modifier = Modifier
-            .width(180.dp)
+            .width(200.dp)
             .height(55.dp)
             .padding(bottom = 8.dp),
         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
@@ -186,7 +194,7 @@ fun BottomPartOfLoginAndRegisterScreen(
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.primary
         )
-        TextButton(text = stringResource(R.string.create_acc)) {
+        TextButton(text = stringResource(R.string.create_acc_l)) {
             onRegisterClick()
         }
     }
@@ -217,7 +225,7 @@ fun BottomPartOfLoginAndRegisterScreen(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(32.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
@@ -273,5 +281,36 @@ fun GoogleOrFacebookButton(
         Text(
             text = btnText, style = MaterialTheme.typography.bodyMedium, color = btnTextColor
         )
+    }
+}
+@Composable
+fun ImageLoading(
+    imageURL: String,
+    contentDescription: String?,
+    modifier: Modifier
+) {
+    val painter = rememberAsyncImagePainter(imageURL)
+    val state by painter.state.collectAsState()
+
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.Center
+    ) {
+        if (state is AsyncImagePainter.State.Loading) {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .size(24.dp)
+                    .align(Alignment.Center),
+                color = Color.Red
+            )
+        } else if (state is AsyncImagePainter.State.Success) {
+            Image(
+                painter = painter,
+                modifier = modifier,
+                contentDescription = contentDescription,
+                contentScale = ContentScale.Fit,
+                alignment = Alignment.Center
+            )
+        }
     }
 }

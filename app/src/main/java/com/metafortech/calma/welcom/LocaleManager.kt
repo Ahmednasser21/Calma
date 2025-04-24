@@ -1,6 +1,5 @@
 package com.metafortech.calma.welcom
 
-import android.app.LocaleManager
 import android.content.Context
 import android.os.Build
 import android.os.LocaleList
@@ -12,17 +11,21 @@ import java.util.Locale
 class LocaleManager(private val context: Context) {
 
     fun setAppLocale(languageTag: String) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            context.getSystemService(LocaleManager::class.java).applicationLocales =
-                LocaleList(Locale.forLanguageTag(languageTag))
-        } else {
-            val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags(languageTag)
-            AppCompatDelegate.setApplicationLocales(appLocale)
+        when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
+                context.getSystemService(android.app.LocaleManager::class.java)?.applicationLocales =
+                    LocaleList(Locale.forLanguageTag(languageTag))
+            }
+            else -> {
+                val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags(languageTag)
+                AppCompatDelegate.setApplicationLocales(appLocale)
 
-            val locale = Locale(languageTag)
-            Locale.setDefault(locale)
-            val config = context.resources.configuration
-            config.setLocale(locale)
+                val locale = Locale(languageTag)
+                Locale.setDefault(locale)
+                val config = context.resources.configuration
+                config.setLocale(locale)
+                context.resources.updateConfiguration(config, context.resources.displayMetrics)
+            }
         }
     }
 

@@ -9,11 +9,19 @@
     <string name="password_label">mot de passe</string>
     <string name="forgot_password">Mot de passe oublié?</string>
     <string name="dont_have_acc">Vous n\'avez pas de compte ?</string>
-    <string name="create_acc">S\'inscrire</string>
+    <string name="create_acc_l">S\'inscrire</string>
     <string name="continue_using">Ou continuez à utiliser</string>
     <string name="email_required">Un e-mail ou un téléphone est requis</string>
     <string name="invalid_email_format">Invalid email or phone format</string>
     <string name="password_required">Le mot de passe est requis</string>
     <string name="invalid_email_or_password">E-mail ou mot de passe invalide</string>
     <string name="something_went_wrong">Une erreur s\'est produite, veuillez réessayer.</string>
+    <string name="create_acc_r">Créer un compte</string>
+    <string name="enter_your_data">Veuillez saisir vos informations pour créer un compte sur</string>
+    <string name="full_name">Entrez votre nom complet</string>
+    <string name="user_name">nom d\'utilisateur</string>
+    <string name="phone_num">numéro de téléphone</string>
+    <string name="select_country">Sélectionnez votre pays</string>
+    <string name="search">Recherche</string>
+    <string name="next">suivant</string>
 </resources>

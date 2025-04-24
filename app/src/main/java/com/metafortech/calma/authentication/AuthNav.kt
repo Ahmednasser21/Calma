@@ -9,6 +9,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.metafortech.calma.WelcomeScreen
 import com.metafortech.calma.authentication.login.presentation.LoginScreen
 import com.metafortech.calma.authentication.login.presentation.LoginViewModule
 import com.metafortech.calma.authentication.register.presentation.RegisterScreen
@@ -21,15 +22,8 @@ fun NavGraphBuilder.authNav(
     navController: NavHostController,
     onUserSelectedLanguage: (String) -> Unit
 ) {
-    navigation<AuthNav>(startDestination = WelcomeScreen) {
-        composable<WelcomeScreen> {
-            LanguageScreen(
-                modifier = Modifier.padding(innerPadding)
-            ) { languageTag ->
-                onUserSelectedLanguage(languageTag)
-                navController.navigate(LoginScreen)
-            }
-        }
+    navigation<AuthNav>(startDestination = LoginScreen) {
+
         composable<LoginScreen> {
             val loginViewModel: LoginViewModule = hiltViewModel()
             val state = loginViewModel.uiState.collectAsState().value
@@ -44,7 +38,8 @@ fun NavGraphBuilder.authNav(
                 },
                 onLoginClick = { loginViewModel.onLoginClick() },
                 onLoginSuccess = {},
-                onRegisterClick = { navController.navigate(RegisterScreen) }
+                onRegisterClick = { navController.navigate(RegisterScreen) },
+                onDismiss = { navController.navigate(WelcomeScreen) }
             )
         }
         composable<RegisterScreen> {
@@ -55,9 +50,6 @@ fun NavGraphBuilder.authNav(
 
 @Serializable
 object AuthNav
-
-@Serializable
-object WelcomeScreen
 
 @Serializable
 object LoginScreen

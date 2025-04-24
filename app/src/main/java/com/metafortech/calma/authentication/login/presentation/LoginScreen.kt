@@ -21,14 +21,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.ImeAction
-import com.metafortech.calma.theme.Black
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.metafortech.calma.R
 import com.metafortech.calma.authentication.BottomPartOfLoginAndRegisterScreen
-import com.metafortech.calma.authentication.EmailTextField
+import com.metafortech.calma.authentication.GeneralTextField
 import com.metafortech.calma.authentication.PasswordTextField
 import com.metafortech.calma.authentication.TextButton
 
@@ -49,21 +53,25 @@ fun LoginScreen(
 ) {
 
     Dialog(
-        onDismissRequest = onDismiss, properties = DialogProperties(
-            dismissOnBackPress = false,
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(
+            dismissOnBackPress = true,
             dismissOnClickOutside = true,
             usePlatformDefaultWidth = false
         )
     ) {
-        if (uiState.loginSuccess) onLoginSuccess()
-
-        Column(
-            modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Bottom
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Transparent),
+            contentAlignment = Alignment.BottomCenter
         ) {
+            if (uiState.loginSuccess) onLoginSuccess()
+
             Box(
                 modifier = modifier
                     .fillMaxWidth()
-                    .fillMaxHeight(0.9f)
+                    .fillMaxHeight(0.8f)
                     .background(
                         color = MaterialTheme.colorScheme.background,
                         shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
@@ -86,7 +94,9 @@ fun LoginScreen(
                     },
                     onForgotPasswordClick = { onForgotPasswordClick() },
                     onLoginClick = { onLoginClick() },
-                    onRegisterClick = { onRegisterClick() },
+                    onRegisterClick = {
+                        onRegisterClick()
+                    },
                     onLoginWithGoogleClick = { onLoginWithGoogleClick() },
                     onLoginWithFacebookClick = { onLoginWithFacebookClick() })
             }
@@ -112,7 +122,8 @@ fun LoginScreenContents(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
+            .background(MaterialTheme.colorScheme.background)
+            .padding(top = 16.dp),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -122,33 +133,35 @@ fun LoginScreenContents(
             color = MaterialTheme.colorScheme.primary
         )
         Spacer(modifier = Modifier.height(16.dp))
-        Row(
+        Text(
+            text = buildAnnotatedString {
+                append(stringResource(R.string.welcome_back))
+                withStyle(
+                    style = SpanStyle(
+                        color = MaterialTheme.colorScheme.secondary
+                    )
+                ) {
+                    append(" ${stringResource(R.string.calma)}")
+                }
+            },
             modifier = modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = stringResource(R.string.welcome_back),
-                style = MaterialTheme.typography.bodyMedium,
-                color = Black
-            )
-            Text(
-                modifier = Modifier.padding(start = 4.dp),
-                text = stringResource(R.string.calma),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.secondary
-            )
-        }
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.primary,
+            textAlign = TextAlign.Center
+        )
         Text(
             text = stringResource(R.string.login_with_email),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.primary
         )
-        EmailTextField(
+        Spacer(modifier = Modifier.height(32.dp))
+        GeneralTextField(
             modifier = Modifier,
-            email = email,
+            textValue = email,
+            label = stringResource(R.string.email_label),
             placeHolder = stringResource(R.string.email_placeholder),
-            imeAction = ImeAction.Next
+            imeAction = ImeAction.Next,
+            keyboardType = KeyboardType.Email
         ) { email ->
             onEmailValueChange(email)
         }
