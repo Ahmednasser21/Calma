@@ -20,7 +20,6 @@ import kotlinx.serialization.Serializable
 fun NavGraphBuilder.authNav(
     innerPadding: PaddingValues,
     navController: NavHostController,
-    onUserSelectedLanguage: (String) -> Unit
 ) {
     navigation<AuthNav>(startDestination = LoginScreen) {
 
@@ -39,7 +38,7 @@ fun NavGraphBuilder.authNav(
                 onLoginClick = { loginViewModel.onLoginClick() },
                 onLoginSuccess = {},
                 onRegisterClick = { navController.navigate(RegisterScreen) },
-                onDismiss = { navController.navigate(WelcomeScreen) }
+                onDismiss = { navController.navigate(WelcomeScreen) },
             )
         }
         composable<RegisterScreen> {

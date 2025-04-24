@@ -71,7 +71,6 @@ class LoginViewModule @Inject constructor(
                     .collect { domainLoginState ->
                         when (domainLoginState) {
                             is DomainLoginState.OnSuccess -> {
-
                                 _uiState.update {
                                     it.copy(isLoading = false, loginSuccess = true)
                                 }

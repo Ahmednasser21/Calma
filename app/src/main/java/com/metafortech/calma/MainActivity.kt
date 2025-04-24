@@ -44,9 +44,7 @@ class MainActivity : ComponentActivity() {
                                 navController.navigate(AuthNav)
                             }
                         }
-                        authNav(innerPadding, navController) { languageTag ->
-                            onUserSelectedLanguage(languageTag)
-                        }
+                        authNav(innerPadding, navController)
                     }
                 }
             }

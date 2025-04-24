@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,6 +16,10 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,8 +43,8 @@ import com.metafortech.calma.authentication.TextButton
 @Composable
 fun LoginScreen(
     modifier: Modifier = Modifier,
-    onDismiss: () -> Unit = {},
     uiState: LoginScreenUIState,
+    onDismiss: () -> Unit = {},
     onEmailValueChange: (String) -> Unit = {},
     onPasswordValueChange: (String) -> Unit = {},
     onForgotPasswordClick: () -> Unit = {},
@@ -52,53 +55,66 @@ fun LoginScreen(
     onLoginWithFacebookClick: () -> Unit = {}
 ) {
 
-    Dialog(
-        onDismissRequest = onDismiss,
-        properties = DialogProperties(
-            dismissOnBackPress = true,
-            dismissOnClickOutside = true,
-            usePlatformDefaultWidth = false
-        )
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Transparent),
-            contentAlignment = Alignment.BottomCenter
+    var showDialog by remember { mutableStateOf(true) }
+    if (uiState.loginSuccess) {
+        showDialog = false
+        onLoginSuccess()
+    }
+    if (showDialog) {
+        Dialog(
+            onDismissRequest = {
+                showDialog = false
+                onDismiss()
+            },
+            properties = DialogProperties(
+                dismissOnBackPress = true,
+                dismissOnClickOutside = true,
+                usePlatformDefaultWidth = false
+            )
         ) {
-            if (uiState.loginSuccess) onLoginSuccess()
-
             Box(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(0.8f)
-                    .background(
-                        color = MaterialTheme.colorScheme.background,
-                        shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
-                    )
-                    .padding(horizontal = 16.dp)
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Transparent),
+                contentAlignment = Alignment.BottomCenter
             ) {
-                LoginScreenContents(
-                    modifier = Modifier,
-                    email = uiState.email,
-                    password = uiState.password,
-                    errorMessages = uiState.errorMessageResId,
-                    isLoading = uiState.isLoading,
-                    onEmailValueChange = { email ->
-                        onEmailValueChange(
-                            email
+
+                Box(
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(0.8f)
+                        .background(
+                            color = MaterialTheme.colorScheme.background,
+                            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
                         )
-                    },
-                    onPasswordValueChange = { password ->
-                        onPasswordValueChange(password)
-                    },
-                    onForgotPasswordClick = { onForgotPasswordClick() },
-                    onLoginClick = { onLoginClick() },
-                    onRegisterClick = {
-                        onRegisterClick()
-                    },
-                    onLoginWithGoogleClick = { onLoginWithGoogleClick() },
-                    onLoginWithFacebookClick = { onLoginWithFacebookClick() })
+                        .padding(horizontal = 16.dp)
+                ) {
+                    LoginScreenContents(
+                        modifier = Modifier,
+                        email = uiState.email,
+                        password = uiState.password,
+                        errorMessages = uiState.errorMessageResId,
+                        isLoading = uiState.isLoading,
+                        onEmailValueChange = { email ->
+                            onEmailValueChange(
+                                email
+                            )
+                        },
+                        onPasswordValueChange = { password ->
+                            onPasswordValueChange(password)
+                        },
+                        onForgotPasswordClick = {
+                            showDialog = false
+                            onForgotPasswordClick()
+                        },
+                        onLoginClick = { onLoginClick() },
+                        onRegisterClick = {
+                            showDialog = false
+                            onRegisterClick()
+                        },
+                        onLoginWithGoogleClick = { onLoginWithGoogleClick() },
+                        onLoginWithFacebookClick = { onLoginWithFacebookClick() })
+                }
             }
         }
     }
