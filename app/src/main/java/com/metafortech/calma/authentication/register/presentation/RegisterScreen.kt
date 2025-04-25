@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
@@ -66,21 +67,21 @@ import java.util.Locale
 @Composable
 fun RegisterScreen(
     modifier: Modifier = Modifier,
-    state: RegisterUiState = RegisterUiState(),
-    onNameValueChange: (String) -> Unit = {},
-    onEmailValueChange: (String) -> Unit = {},
-    onPhoneNumberChange: (String) -> Unit = {},
-    onCountryClick: (Country) -> Unit = {},
-    onSheetOpenChange: (Boolean) -> Unit = {},
-    onSearchQueryChange: (String) -> Unit = {},
-    onPasswordValueChange: (String) -> Unit = {},
-    onShowDatePickerChange: (Boolean) -> Unit = {},
-    onBirthdayValueChange: (String) -> Unit = {},
-    onGenderClick: (String) -> Unit = {},
-    onRegisterClick: () -> Unit = {},
+    state: RegisterUiState,
+    onNameValueChange: (String) -> Unit ,
+    onEmailValueChange: (String) -> Unit,
+    onPhoneNumberChange: (String) -> Unit,
+    onCountryClick: (Country) -> Unit,
+    onSheetOpenChange: (Boolean) -> Unit,
+    onSearchQueryChange: (String) -> Unit,
+    onPasswordValueChange: (String) -> Unit,
+    onShowDatePickerChange: (Boolean) -> Unit,
+    onBirthdayValueChange: (String) -> Unit,
+    onGenderClick: (String) -> Unit,
+    onRegisterClick: () -> Unit,
     onLoginClick: () -> Unit = {},
-    onLoginWithGoogleClick: () -> Unit = {},
-    onLoginWithFacebookClick: () -> Unit = {}
+    onLoginWithGoogleClick: () -> Unit,
+    onLoginWithFacebookClick: () -> Unit
 ) {
     Column(
         modifier = modifier
@@ -181,6 +182,23 @@ fun RegisterScreen(
             GenderSelection(state.gender) { selectedGender ->
                 onGenderClick(selectedGender)
             }
+        }
+        state.errorMessageResId?.let { errorMessage ->
+            Text(
+                text = stringResource(errorMessage),
+                modifier = Modifier.padding(bottom = 16.dp),
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.Red
+            )
+        }
+        if (state.isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .size(24.dp)
+                    .padding(bottom = 16.dp),
+                color = MaterialTheme.colorScheme.secondary,
+                strokeWidth = 2.dp
+            )
         }
         BottomPartOfLoginAndRegisterScreen(
             onButtonClick = {
@@ -430,7 +448,7 @@ fun PhoneNumberWithCountryPicker(
                                                     searchQuery,
                                                     ignoreCase = true
                                                 )
-                                    },
+                                    }.drop(1),
                                     key = { it.code }
                                 ) { country ->
                                     CountryItem(

@@ -33,4 +33,11 @@
     <string name="already_have_account">Vous avez déjà un compte?</string>
     <string name="ok">d\'accord</string>
     <string name="cancel">Annuler</string>
+    <string name="name_required">Le nom d\'utilisateur est requis</string>
+    <string name="phone_number_required">Le numéro de téléphone est requis</string>
+    <string name="country_required">Sélectionnez votre pays</string>
+    <string name="phone_formate_error">Erreur de format du téléphone</string>
+    <string name="birthday_required">Veuillez ajouter votre date de naissance</string>
+    <string name="gender_required">Le genre est obligatoire</string>
+    <string name="email_is_required">L\'e-mail est obligatoire</string>
 </resources>

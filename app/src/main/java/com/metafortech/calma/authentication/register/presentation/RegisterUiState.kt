@@ -6,7 +6,7 @@ data class RegisterUiState(
     val email: String = "",
     val name: String = "",
     val phoneNumber: String = "",
-    val country: Country = CountryData.countries[41],
+    val country: Country = CountryData.countries[0],
     val searchQuery: String = "",
     val isSheetOpen: Boolean = false,
     val showDatePicker: Boolean = false,

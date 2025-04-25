@@ -33,4 +33,11 @@
     <string name="already_have_account">لدي حساب بالفعل؟</string>
     <string name="ok">تم</string>
     <string name="cancel">إلغاء</string>
+    <string name="name_required">برجاء إدخال أسم المستخدم</string>
+    <string name="phone_number_required">برجاء إدخال رقم الهاتف الخاص بكم</string>
+    <string name="country_required">أختر بلدك</string>
+    <string name="phone_formate_error">خطأ في تنسيق الهاتف</string>
+    <string name="birthday_required">الرجاء إضافة تاريخ ميلادك</string>
+    <string name="gender_required">برجاء تحديد الجنس</string>
+    <string name="email_is_required">برجاء إدخال بريدك الإلكتروني</string>
 </resources>

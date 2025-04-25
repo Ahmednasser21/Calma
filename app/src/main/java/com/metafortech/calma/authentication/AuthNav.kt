@@ -13,7 +13,7 @@ import com.metafortech.calma.WelcomeScreen
 import com.metafortech.calma.authentication.login.presentation.LoginScreen
 import com.metafortech.calma.authentication.login.presentation.LoginViewModule
 import com.metafortech.calma.authentication.register.presentation.RegisterScreen
-import com.metafortech.calma.welcom.LanguageScreen
+import com.metafortech.calma.authentication.register.presentation.RegisterViewModule
 import kotlinx.serialization.Serializable
 
 
@@ -42,7 +42,47 @@ fun NavGraphBuilder.authNav(
             )
         }
         composable<RegisterScreen> {
-            RegisterScreen(modifier = Modifier.padding(innerPadding))
+            val registerViewModel: RegisterViewModule = hiltViewModel()
+            val registerState = registerViewModel.uiState.collectAsState().value
+            RegisterScreen(
+                modifier = Modifier.padding(innerPadding),
+                state = registerState,
+                onNameValueChange = { name ->
+                    registerViewModel.onNameValueChange(name)
+                },
+                onEmailValueChange = { email ->
+                    registerViewModel.onEmailValueChange(email)
+                },
+                onPhoneNumberChange = { phoneNumber ->
+                    registerViewModel.onPhoneNumberChange(phoneNumber)
+                },
+                onCountryClick = { country ->
+                    registerViewModel.onCountryClick(country)
+                },
+                onSheetOpenChange = { isSheetOpen ->
+                    registerViewModel.onSheetOpenChange(isSheetOpen)
+                },
+                onSearchQueryChange = { searchQuery ->
+                    registerViewModel.onSearchQueryChange(searchQuery)
+                },
+                onPasswordValueChange = { password ->
+                    registerViewModel.onPasswordValueChange(password)
+                },
+                onShowDatePickerChange = { showDatePicker ->
+                    registerViewModel.onShowDatePickerChange(showDatePicker)
+                },
+                onBirthdayValueChange = { birthday ->
+                    registerViewModel.onBirthdayValueChange(birthday)
+                },
+                onGenderClick = { gender ->
+                    registerViewModel.onGenderClick(gender)
+                },
+                onRegisterClick = { registerViewModel.onRegisterClick() },
+                onLoginClick = { navController.navigate(LoginScreen) },
+                onLoginWithGoogleClick = { registerViewModel.onLoginWithGoogleClick() },
+                onLoginWithFacebookClick = { registerViewModel.onLoginWithFacebookClick() }
+
+            )
         }
     }
 }

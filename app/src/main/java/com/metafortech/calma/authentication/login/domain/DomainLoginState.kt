@@ -1,7 +1,7 @@
 package com.metafortech.calma.authentication.login.domain
 
 import androidx.annotation.StringRes
-import com.metafortech.calma.authentication.data.remote.LoginResponse
+import com.metafortech.calma.authentication.data.remote.login.LoginResponse
 
 sealed class DomainLoginState {
     data class OnSuccess(val loginResponse: LoginResponse) : DomainLoginState()

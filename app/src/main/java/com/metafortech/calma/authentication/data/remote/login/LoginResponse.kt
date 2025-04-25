@@ -1,4 +1,4 @@
-package com.metafortech.calma.authentication.data.remote
+package com.metafortech.calma.authentication.data.remote.login
 
 data class LoginResponse(
     val status: Boolean,

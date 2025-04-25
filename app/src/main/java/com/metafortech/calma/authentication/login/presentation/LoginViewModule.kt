@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.metafortech.calma.R
 import com.metafortech.calma.authentication.data.di.IODispatcher
-import com.metafortech.calma.authentication.data.remote.LoginBody
+import com.metafortech.calma.authentication.data.remote.login.LoginBody
 import com.metafortech.calma.authentication.login.domain.DomainLoginState
 import com.metafortech.calma.authentication.login.domain.LoginUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel

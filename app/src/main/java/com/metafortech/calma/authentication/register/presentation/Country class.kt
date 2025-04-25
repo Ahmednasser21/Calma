@@ -11,6 +11,12 @@ data class Country(
 object CountryData {
     val countries = listOf<Country>(
         Country(
+            "",
+            "",
+            "",
+            "",
+            "https://hatscripts.github.io/circle-flags/flags/xx.svg"),
+        Country(
             "AE",
             "+971",
             "الإمارات العربية المتحدة",
