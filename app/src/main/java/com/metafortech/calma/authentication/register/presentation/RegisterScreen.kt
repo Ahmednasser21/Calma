@@ -22,6 +22,9 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDefaults
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -29,14 +32,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -55,8 +56,12 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.svg.SvgDecoder
 import com.metafortech.calma.R
+import com.metafortech.calma.authentication.BottomPartOfLoginAndRegisterScreen
 import com.metafortech.calma.authentication.GeneralTextField
+import com.metafortech.calma.authentication.PasswordTextField
 import com.metafortech.calma.authentication.register.presentation.CountryData.countries
+import java.util.Calendar
+import java.util.Locale
 
 @Composable
 fun RegisterScreen(
@@ -65,7 +70,17 @@ fun RegisterScreen(
     onNameValueChange: (String) -> Unit = {},
     onEmailValueChange: (String) -> Unit = {},
     onPhoneNumberChange: (String) -> Unit = {},
-    onCountryClick: (String) -> Unit = {}
+    onCountryClick: (Country) -> Unit = {},
+    onSheetOpenChange: (Boolean) -> Unit = {},
+    onSearchQueryChange: (String) -> Unit = {},
+    onPasswordValueChange: (String) -> Unit = {},
+    onShowDatePickerChange: (Boolean) -> Unit = {},
+    onBirthdayValueChange: (String) -> Unit = {},
+    onGenderClick: (String) -> Unit = {},
+    onRegisterClick: () -> Unit = {},
+    onLoginClick: () -> Unit = {},
+    onLoginWithGoogleClick: () -> Unit = {},
+    onLoginWithFacebookClick: () -> Unit = {}
 ) {
     Column(
         modifier = modifier
@@ -121,10 +136,68 @@ fun RegisterScreen(
             onPhoneNumberChange = { phoneNumber ->
                 onPhoneNumberChange(phoneNumber)
             },
-            onCountryClick = { dialCode ->
-                onCountryClick(dialCode)
+            selectedCountry = state.country,
+            searchQuery = state.searchQuery,
+            onSearchQueryChange = { searchQuery ->
+                onSearchQueryChange(searchQuery)
+            },
+            isSheetOpen = state.isSheetOpen,
+            onSheetOpenChange = { isSheetOpen ->
+                onSheetOpenChange(isSheetOpen)
+            },
+            onCountryClick = { country ->
+                onCountryClick(country)
             }
 
+        )
+        PasswordTextField(
+            password = state.password
+        ) { password ->
+            onPasswordValueChange(password)
+        }
+        BirthdayField(
+            birthday = state.birthday,
+            showDatePicker = state.showDatePicker,
+            onShowDatePickerChange = { showDatePicker ->
+                onShowDatePickerChange(showDatePicker)
+            },
+            onBirthdayValueChange = { birthday ->
+                onBirthdayValueChange(birthday)
+            }
+        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 32.dp, top = 8.dp),
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(R.string.gender),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.padding(horizontal = 8.dp))
+            GenderSelection(state.gender) { selectedGender ->
+                onGenderClick(selectedGender)
+            }
+        }
+        BottomPartOfLoginAndRegisterScreen(
+            onButtonClick = {
+                onRegisterClick()
+            },
+            buttonText = stringResource(R.string.create_acc),
+            text = stringResource(R.string.already_have_account),
+            textButtonText = stringResource(R.string.login),
+            onTextButtonClick = {
+                onLoginClick()
+            },
+            onLoginWithGoogleClick = {
+                onLoginWithGoogleClick()
+            },
+            onLoginWithFacebookClick = {
+                onLoginWithFacebookClick()
+            }
         )
     }
 
@@ -223,9 +296,11 @@ fun CountryItem(
                 contentScale = ContentScale.FillBounds
             )
             Spacer(modifier = Modifier.width(12.dp))
-            Column(modifier = Modifier
-                .weight(1f)
-                .padding(end = 32.dp)) {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = 32.dp)
+            ) {
                 Text(
                     text = country.name,
                     style = MaterialTheme.typography.bodyMedium,
@@ -252,12 +327,14 @@ fun CountryItem(
 fun PhoneNumberWithCountryPicker(
     modifier: Modifier = Modifier,
     phoneNumber: String,
+    selectedCountry: Country,
+    searchQuery: String,
+    isSheetOpen: Boolean,
+    onSheetOpenChange: (Boolean) -> Unit,
+    onSearchQueryChange: (String) -> Unit,
     onPhoneNumberChange: (String) -> Unit,
-    onCountryClick: (String) -> Unit
+    onCountryClick: (Country) -> Unit
 ) {
-    var selectedCountry by remember { mutableStateOf(countries[41]) }
-    var isSheetOpen by remember { mutableStateOf(false) }
-    var searchQuery by remember { mutableStateOf("") }
 
     Box(modifier = modifier.fillMaxWidth()) {
         PhoneNumberField(
@@ -266,12 +343,12 @@ fun PhoneNumberWithCountryPicker(
             onPhoneNumberChange = { phoneNumber ->
                 onPhoneNumberChange(phoneNumber)
             },
-            onCountryClick = { isSheetOpen = true }
+            onCountryClick = { onSheetOpenChange(isSheetOpen) }
         )
 
         if (isSheetOpen) {
             ModalBottomSheet(
-                onDismissRequest = { isSheetOpen = false },
+                onDismissRequest = { onSheetOpenChange(isSheetOpen) },
                 sheetState = rememberModalBottomSheetState(
                     skipPartiallyExpanded = true,
                     confirmValueChange = { true }
@@ -303,7 +380,9 @@ fun PhoneNumberWithCountryPicker(
                         OutlinedTextField(
                             value = searchQuery,
                             textStyle = MaterialTheme.typography.bodyMedium,
-                            onValueChange = { searchQuery = it },
+                            onValueChange = { searchQuery ->
+                                onSearchQueryChange(searchQuery)
+                            },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(64.dp)
@@ -357,9 +436,7 @@ fun PhoneNumberWithCountryPicker(
                                     CountryItem(
                                         country = country,
                                         onClick = {
-                                            selectedCountry = country
-//                                            isSheetOpen = false
-                                            onCountryClick(country.dialCode)
+                                            onCountryClick(country)
                                         }
                                     )
                                     HorizontalDivider(
@@ -378,8 +455,9 @@ fun PhoneNumberWithCountryPicker(
                             contentAlignment = Alignment.Center
                         ) {
                             Button(
-                                onClick = { isSheetOpen = false },
-                                modifier = Modifier.width(240.dp)
+                                onClick = { onSheetOpenChange(isSheetOpen) },
+                                modifier = Modifier
+                                    .width(240.dp)
                                     .height(56.dp),
                                 shape = RoundedCornerShape(25.dp),
                                 colors = ButtonDefaults.buttonColors(
@@ -396,5 +474,177 @@ fun PhoneNumberWithCountryPicker(
                 }
             }
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun BirthdayField(
+    modifier: Modifier = Modifier,
+    birthday: String,
+    showDatePicker: Boolean,
+    onShowDatePickerChange: (Boolean) -> Unit = {},
+    onBirthdayValueChange: (String) -> Unit
+) {
+
+    val maxDate = Calendar.getInstance()
+    maxDate.add(Calendar.YEAR, -10)
+
+    val minDate = Calendar.getInstance()
+    minDate.add(Calendar.YEAR, -100)
+
+    val initialDateMillis = maxDate.timeInMillis
+
+    val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = initialDateMillis,
+        selectableDates = object : SelectableDates {
+            override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                return utcTimeMillis in minDate.timeInMillis..maxDate.timeInMillis
+            }
+        }
+    )
+
+    if (showDatePicker) {
+        DatePickerDialog(
+            onDismissRequest = {
+                onShowDatePickerChange(showDatePicker)
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        datePickerState.selectedDateMillis?.let { dateMillis ->
+                            val cal = Calendar.getInstance()
+                            cal.timeInMillis = dateMillis
+                            val year = cal.get(Calendar.YEAR)
+                            val month = cal.get(Calendar.MONTH) + 1
+                            val day = cal.get(Calendar.DAY_OF_MONTH)
+                            val selectedDate =
+                                String.format(Locale.ROOT, "%d-%02d-%02d", year, month, day)
+                            onBirthdayValueChange(selectedDate)
+                        }
+                        onShowDatePickerChange(showDatePicker)
+                    },
+                    modifier = modifier.padding(vertical = 16.dp, horizontal = 8.dp),
+                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary)
+                ) {
+                    Text(
+                        text = stringResource(R.string.ok),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.White
+                    )
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = {
+                        onShowDatePickerChange(showDatePicker)
+                    },
+                    modifier = modifier.padding(vertical = 16.dp),
+                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary)
+                ) {
+                    Text(
+                        text = stringResource(R.string.cancel),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.White
+                    )
+                }
+            },
+            colors = DatePickerDefaults.colors(
+                containerColor = MaterialTheme.colorScheme.background,
+                titleContentColor = MaterialTheme.colorScheme.secondary,
+                headlineContentColor = MaterialTheme.colorScheme.secondary,
+                selectedDayContainerColor = MaterialTheme.colorScheme.secondary,
+                todayDateBorderColor = MaterialTheme.colorScheme.secondary,
+                todayContentColor = MaterialTheme.colorScheme.secondary,
+                currentYearContentColor = MaterialTheme.colorScheme.secondary,
+                weekdayContentColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.6f),
+                dayContentColor = MaterialTheme.colorScheme.onSurface,
+                yearContentColor = MaterialTheme.colorScheme.onSurface
+            )
+        ) {
+            DatePicker(
+                state = datePickerState,
+                colors = DatePickerDefaults.colors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    titleContentColor = MaterialTheme.colorScheme.secondary,
+                    headlineContentColor = MaterialTheme.colorScheme.secondary,
+                    selectedDayContainerColor = MaterialTheme.colorScheme.secondary,
+                    todayDateBorderColor = MaterialTheme.colorScheme.secondary,
+                    todayContentColor = MaterialTheme.colorScheme.secondary,
+                    currentYearContentColor = MaterialTheme.colorScheme.secondary,
+                    weekdayContentColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.6f),
+                    dayContentColor = MaterialTheme.colorScheme.onSurface,
+                    yearContentColor = MaterialTheme.colorScheme.onSurface
+                )
+            )
+        }
+    }
+
+    GeneralTextField(
+        modifier = modifier
+            .padding(top = 12.dp)
+            .clickable {
+                onShowDatePickerChange(showDatePicker)
+            },
+        textValue = birthday,
+        label = stringResource(R.string.birth_day),
+        placeHolder = stringResource(R.string.date_placeholder),
+        imeAction = ImeAction.Done,
+        keyboardType = KeyboardType.Unspecified,
+        enabled = false
+    ) { newBirthday ->
+        onBirthdayValueChange(newBirthday)
+    }
+}
+
+
+@Composable
+fun GenderRadioButton(
+    modifier: Modifier = Modifier,
+    text: String,
+    onClick: (String) -> Unit,
+    selected: Boolean = false
+) {
+    val backgroundColor = if (selected) Color(0xFF3B3F3C) else Color(0xFFE1DCDC)
+    val textColor = if (selected) Color.White else Color.Black
+
+    Button(
+        onClick = {
+            onClick(text)
+        },
+        modifier = modifier
+            .width(100.dp)
+            .height(40.dp),
+        shape = RoundedCornerShape(25.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = backgroundColor
+        )
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodyMedium,
+            color = textColor
+        )
+    }
+}
+
+@Composable
+fun GenderSelection(selectedGender: String, onGenderClick: (String) -> Unit) {
+
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        GenderRadioButton(
+            text = stringResource(R.string.male),
+            onClick = { _ ->
+                onGenderClick("1")
+            },
+            selected = selectedGender == "1"
+        )
+        GenderRadioButton(
+            text = stringResource(R.string.female),
+            onClick = { _ ->
+                onGenderClick("2")
+            },
+            selected = selectedGender == "2"
+        )
     }
 }

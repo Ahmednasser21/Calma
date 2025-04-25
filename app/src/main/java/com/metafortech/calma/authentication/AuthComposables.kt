@@ -50,6 +50,7 @@ import com.metafortech.calma.R
 fun GeneralTextField(
     modifier: Modifier = Modifier,
     textValue: String,
+    enabled: Boolean = true,
     placeHolder: String,
     label: String,
     imeAction: ImeAction,
@@ -64,6 +65,7 @@ fun GeneralTextField(
         onValueChange = { value ->
             onValueChange(value)
         },
+        enabled = enabled,
         placeholder = {
             Text(
                 text = placeHolder, style = MaterialTheme.typography.bodyMedium
@@ -85,6 +87,7 @@ fun GeneralTextField(
             focusedBorderColor = MaterialTheme.colorScheme.primary,
             errorBorderColor = Color.Red,
             cursorColor = MaterialTheme.colorScheme.secondary,
+            disabledLabelColor = MaterialTheme.colorScheme.primary
         )
     )
 }
@@ -142,7 +145,7 @@ fun LoginButton(content: String, onLoginClick: () -> Unit) {
         onClick = onLoginClick,
         shape = RoundedCornerShape(20.dp),
         modifier = Modifier
-            .width(200.dp)
+            .width(220.dp)
             .height(55.dp)
             .padding(bottom = 8.dp),
         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
@@ -174,13 +177,16 @@ fun TextButton(modifier: Modifier = Modifier, text: String, onClick: () -> Unit)
 @Composable
 fun BottomPartOfLoginAndRegisterScreen(
     modifier: Modifier = Modifier,
-    onLoginClick: () -> Unit,
-    onRegisterClick: () -> Unit,
+    onButtonClick: () -> Unit,
+    buttonText:String,
+    text:String,
+    textButtonText:String,
+    onTextButtonClick: () -> Unit,
     onLoginWithGoogleClick: () -> Unit,
     onLoginWithFacebookClick: () -> Unit
 ) {
-    LoginButton(stringResource(R.string.login)) {
-        onLoginClick()
+    LoginButton(buttonText) {
+        onButtonClick()
     }
     Row(
         modifier = modifier
@@ -190,12 +196,12 @@ fun BottomPartOfLoginAndRegisterScreen(
         horizontalArrangement = Arrangement.Center
     ) {
         Text(
-            text = stringResource(R.string.dont_have_acc),
+            text = text,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.primary
         )
-        TextButton(text = stringResource(R.string.create_acc_l)) {
-            onRegisterClick()
+        TextButton(text = textButtonText) {
+            onTextButtonClick()
         }
     }
     Row(

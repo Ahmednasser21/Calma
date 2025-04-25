@@ -606,13 +606,6 @@ object CountryData {
             "https://hatscripts.github.io/circle-flags/flags/qa.svg"
         ),
         Country(
-            "QA",
-            "+974",
-            "قطر",
-            "Qatar",
-            "https://hatscripts.github.io/circle-flags/flags/qa.svg"
-        ),
-        Country(
             "RO",
             "+40",
             "România",

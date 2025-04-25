@@ -24,4 +24,13 @@
     <string name="select_country">إختر بلدك</string>
     <string name="search">بحث</string>
     <string name="next">التالي</string>
+    <string name="birth_day">تاريخ الميلاد</string>
+    <string name="date_placeholder">اليوم\\ الشهر\\ السنة</string>
+    <string name="gender">الجنس:</string>
+    <string name="female">أنثى</string>
+    <string name="male">ذكر</string>
+    <string name="create_acc">إنشاء حساب</string>
+    <string name="already_have_account">لدي حساب بالفعل؟</string>
+    <string name="ok">تم</string>
+    <string name="cancel">إلغاء</string>
 </resources>

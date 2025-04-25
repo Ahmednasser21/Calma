@@ -85,7 +85,7 @@ fun LoginScreen(
                         .fillMaxHeight(0.8f)
                         .background(
                             color = MaterialTheme.colorScheme.background,
-                            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+                            shape = RoundedCornerShape(topStart = 48.dp, topEnd = 48.dp)
                         )
                         .padding(horizontal = 16.dp)
                 ) {
@@ -138,7 +138,7 @@ fun LoginScreenContents(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(Color.Transparent)
             .padding(top = 16.dp),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -215,8 +215,11 @@ fun LoginScreenContents(
         }
         BottomPartOfLoginAndRegisterScreen(
             modifier = modifier,
-            onLoginClick = { onLoginClick() },
-            onRegisterClick = { onRegisterClick() },
+            buttonText = stringResource(R.string.login),
+            text = stringResource(R.string.dont_have_acc),
+            textButtonText =stringResource(R.string.create_acc_l),
+            onButtonClick = { onLoginClick() },
+            onTextButtonClick = { onRegisterClick() },
             onLoginWithGoogleClick = { onLoginWithGoogleClick() },
             onLoginWithFacebookClick = { onLoginWithFacebookClick }
 

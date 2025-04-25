@@ -24,4 +24,13 @@
     <string name="select_country">Sélectionnez votre pays</string>
     <string name="search">Recherche</string>
     <string name="next">suivant</string>
+    <string name="birth_day">date de naissance</string>
+    <string name="date_placeholder">Jour\\Mois\\Année</string>
+    <string name="gender">Genre:</string>
+    <string name="female">femelle</string>
+    <string name="male">mâle</string>
+    <string name="create_acc">Créer un compte</string>
+    <string name="already_have_account">Vous avez déjà un compte?</string>
+    <string name="ok">d\'accord</string>
+    <string name="cancel">Annuler</string>
 </resources>

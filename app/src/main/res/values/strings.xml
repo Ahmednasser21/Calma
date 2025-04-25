@@ -32,4 +32,13 @@
     <string name="select_country">Select your country</string>
     <string name="search">Search</string>
     <string name="next">Next</string>
+    <string name="birth_day">Date of birth</string>
+    <string name="date_placeholder">Day\\Month\\Year</string>
+    <string name="gender">Gender:</string>
+    <string name="female">Female</string>
+    <string name="male">Male</string>
+    <string name="create_acc">Create account</string>
+    <string name="already_have_account">Already have an account?</string>
+    <string name="ok">Ok</string>
+    <string name="cancel">Cancel</string>
 </resources>
