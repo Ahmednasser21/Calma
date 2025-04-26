@@ -1,5 +1,6 @@
 package com.metafortech.calma.authentication.login.presentation
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,6 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -45,16 +47,16 @@ fun LoginScreen(
     modifier: Modifier = Modifier,
     uiState: LoginScreenUIState,
     onDismiss: () -> Unit = {},
-    onEmailValueChange: (String) -> Unit = {},
-    onPasswordValueChange: (String) -> Unit = {},
+    onEmailValueChange: (String) -> Unit,
+    onPasswordValueChange: (String) -> Unit,
     onForgotPasswordClick: () -> Unit = {},
-    onLoginClick: () -> Unit = {},
-    onLoginSuccess: () -> Unit = {},
-    onRegisterClick: () -> Unit = {},
-    onLoginWithGoogleClick: () -> Unit = {},
-    onLoginWithFacebookClick: () -> Unit = {}
+    onLoginClick: () -> Unit,
+    onLoginSuccess: () -> Unit,
+    onRegisterClick: () -> Unit,
+    onLoginWithGoogleClick: (Context) -> Unit,
+    onLoginWithFacebookClick: () -> Unit
 ) {
-
+    val context = LocalContext.current
     var showDialog by remember { mutableStateOf(true) }
     if (uiState.loginSuccess) {
         showDialog = false
@@ -112,8 +114,11 @@ fun LoginScreen(
                             showDialog = false
                             onRegisterClick()
                         },
-                        onLoginWithGoogleClick = { onLoginWithGoogleClick() },
-                        onLoginWithFacebookClick = { onLoginWithFacebookClick() })
+                        onLoginWithGoogleClick = {
+                            onLoginWithGoogleClick(context)
+                        },
+                        onLoginWithFacebookClick = { onLoginWithFacebookClick() }
+                    )
                 }
             }
         }
@@ -217,7 +222,7 @@ fun LoginScreenContents(
             modifier = modifier,
             buttonText = stringResource(R.string.login),
             text = stringResource(R.string.dont_have_acc),
-            textButtonText =stringResource(R.string.create_acc_l),
+            textButtonText = stringResource(R.string.create_acc_l),
             onButtonClick = { onLoginClick() },
             onTextButtonClick = { onRegisterClick() },
             onLoginWithGoogleClick = { onLoginWithGoogleClick() },

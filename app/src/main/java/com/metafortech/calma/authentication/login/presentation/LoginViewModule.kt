@@ -1,9 +1,13 @@
 package com.metafortech.calma.authentication.login.presentation
 
+import android.app.Activity
+import android.content.Context
+import android.util.Log
 import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.metafortech.calma.R
+import com.metafortech.calma.authentication.GoogleSignInHandler
 import com.metafortech.calma.authentication.data.di.IODispatcher
 import com.metafortech.calma.authentication.data.remote.login.LoginBody
 import com.metafortech.calma.authentication.login.domain.DomainLoginState
@@ -15,6 +19,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+private const val TAG = "LoginViewModule"
 
 @HiltViewModel
 class LoginViewModule @Inject constructor(
@@ -67,26 +73,53 @@ class LoginViewModule @Inject constructor(
                 it.copy(errorMessageResId = null)
             }
             viewModelScope.launch(dispatcher) {
-                loginUseCase.invoke(LoginBody(uiState.value.email, uiState.value.password, "0"))
-                    .collect { domainLoginState ->
-                        when (domainLoginState) {
-                            is DomainLoginState.OnSuccess -> {
-                                _uiState.update {
-                                    it.copy(isLoading = false, loginSuccess = true)
-                                }
-                            }
-
-                            is DomainLoginState.OnFailed -> {
-                                _uiState.update {
-                                    it.copy(
-                                        isLoading = false,
-                                        errorMessageResId = domainLoginState.error
-                                    )
-                                }
-                            }
-                        }
-                    }
+                login(LoginBody(uiState.value.email, uiState.value.password, "0"))
             }
         }
+    }
+
+    suspend fun login(loginBody: LoginBody) {
+        loginUseCase.invoke(loginBody)
+            .collect { domainLoginState ->
+                when (domainLoginState) {
+                    is DomainLoginState.OnSuccess -> {
+                        _uiState.update {
+                            it.copy(isLoading = false, loginSuccess = true)
+                        }
+                    }
+
+                    is DomainLoginState.OnFailed -> {
+                        _uiState.update {
+                            it.copy(
+                                isLoading = false,
+                                errorMessageResId = domainLoginState.error
+                            )
+                        }
+                    }
+                }
+            }
+    }
+
+    fun onLoginWithGoogleClick(context: Context) {
+        val activity = context as? Activity ?: return
+        val googleSignInHandler by lazy { GoogleSignInHandler() }
+        viewModelScope.launch(dispatcher) {
+            try {
+                val result = googleSignInHandler.signInWithGoogle(activity)
+                val data = googleSignInHandler.handleSignIn(result).split("|")
+                _uiState.update {
+                    it.copy(email = data[1])
+                }
+                login(LoginBody(data[1], "", "1"))
+
+            } catch (e: Exception) {
+                Log.e(TAG, "Unexpected error: ${e.message}", e)
+            }
+        }
+    }
+
+    fun onLoginWithFacebookClick() {
+
+
     }
 }

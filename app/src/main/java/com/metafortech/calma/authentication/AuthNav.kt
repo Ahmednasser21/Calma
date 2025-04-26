@@ -39,6 +39,8 @@ fun NavGraphBuilder.authNav(
                 onLoginSuccess = {},
                 onRegisterClick = { navController.navigate(RegisterScreen) },
                 onDismiss = { navController.navigate(WelcomeScreen) },
+                onLoginWithGoogleClick = { loginViewModel.onLoginWithGoogleClick(it) },
+                onLoginWithFacebookClick = { loginViewModel.onLoginWithFacebookClick() }
             )
         }
         composable<RegisterScreen> {
@@ -79,7 +81,7 @@ fun NavGraphBuilder.authNav(
                 },
                 onRegisterClick = { registerViewModel.onRegisterClick() },
                 onLoginClick = { navController.navigate(LoginScreen) },
-                onLoginWithGoogleClick = { registerViewModel.onLoginWithGoogleClick() },
+                onLoginWithGoogleClick = { registerViewModel.onLoginWithGoogleClick(it) },
                 onLoginWithFacebookClick = { registerViewModel.onLoginWithFacebookClick() }
 
             )

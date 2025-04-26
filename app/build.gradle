@@ -5,6 +5,7 @@ plugins {
     id 'com.google.dagger.hilt.android'
     id 'kotlin-kapt'
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.secrets.gradle.plugin)
 
 }
 
@@ -36,11 +37,15 @@ android {
         jvmTarget = '11'
     }
     buildFeatures {
+        buildConfig true
         compose true
     }
 
     androidResources {
         generateLocaleConfig true
+    }
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
     }
 }
 
@@ -55,6 +60,7 @@ dependencies {
     implementation libs.okhttp
     implementation libs.logging.interceptor
     implementation libs.converter.gson
+    implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
 
     implementation(libs.coil.compose)
     implementation(libs.coil.svg)
@@ -69,6 +75,12 @@ dependencies {
     implementation libs.androidx.navigation.compose
     implementation libs.kotlinx.serialization.json
     implementation libs.androidx.hilt.navigation.compose
+
+    implementation libs.googleid
+    implementation libs.credentials.play.services.auth
+    implementation libs.google.api.client
+    implementation libs.androidx.credentials
+
 
     implementation platform(libs.androidx.compose.bom)
     implementation libs.androidx.ui

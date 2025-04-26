@@ -1,5 +1,6 @@
 package com.metafortech.calma.authentication.register.presentation
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -68,7 +69,7 @@ import java.util.Locale
 fun RegisterScreen(
     modifier: Modifier = Modifier,
     state: RegisterUiState,
-    onNameValueChange: (String) -> Unit ,
+    onNameValueChange: (String) -> Unit,
     onEmailValueChange: (String) -> Unit,
     onPhoneNumberChange: (String) -> Unit,
     onCountryClick: (Country) -> Unit,
@@ -80,9 +81,10 @@ fun RegisterScreen(
     onGenderClick: (String) -> Unit,
     onRegisterClick: () -> Unit,
     onLoginClick: () -> Unit = {},
-    onLoginWithGoogleClick: () -> Unit,
+    onLoginWithGoogleClick: (Context) -> Unit,
     onLoginWithFacebookClick: () -> Unit
 ) {
+    val context = LocalContext.current
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -211,7 +213,7 @@ fun RegisterScreen(
                 onLoginClick()
             },
             onLoginWithGoogleClick = {
-                onLoginWithGoogleClick()
+                onLoginWithGoogleClick(context)
             },
             onLoginWithFacebookClick = {
                 onLoginWithFacebookClick()
@@ -442,13 +444,13 @@ fun PhoneNumberWithCountryPicker(
                                 modifier = Modifier.fillMaxSize()
                             ) {
                                 items(
-                                    items = countries.filter { country ->
+                                    items = countries.drop(1).filter { country ->
                                         country.name.startsWith(searchQuery, ignoreCase = true) ||
                                                 country.nameEn.startsWith(
                                                     searchQuery,
                                                     ignoreCase = true
                                                 )
-                                    }.drop(1),
+                                    },
                                     key = { it.code }
                                 ) { country ->
                                     CountryItem(
