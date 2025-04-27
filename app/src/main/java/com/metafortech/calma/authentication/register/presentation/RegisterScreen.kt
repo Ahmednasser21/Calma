@@ -193,6 +193,14 @@ fun RegisterScreen(
                 color = Color.Red
             )
         }
+        state.loginError?.let { errorMessage ->
+            Text(
+                text = errorMessage,
+                modifier = Modifier.padding(bottom = 16.dp),
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.Red
+            )
+        }
         if (state.isLoading) {
             CircularProgressIndicator(
                 modifier = Modifier

@@ -5,6 +5,6 @@ import com.metafortech.calma.authentication.data.remote.register.RegisterRespons
 
 sealed class DomainRegisterState {
     class OnSuccess(val registerResponse: RegisterResponse) : DomainRegisterState()
-    class OnFailed(@StringRes val error: Int? = null) : DomainRegisterState()
+    class OnFailed( val error: String ) : DomainRegisterState()
 
 }

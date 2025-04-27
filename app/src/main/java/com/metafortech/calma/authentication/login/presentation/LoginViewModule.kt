@@ -92,7 +92,8 @@ class LoginViewModule @Inject constructor(
                         _uiState.update {
                             it.copy(
                                 isLoading = false,
-                                errorMessageResId = domainLoginState.error
+                                errorMessageResId = null,
+                                loginError = domainLoginState.error
                             )
                         }
                     }
@@ -101,6 +102,9 @@ class LoginViewModule @Inject constructor(
     }
 
     fun onLoginWithGoogleClick(context: Context) {
+        _uiState.update {
+            it.copy(isLoading = true)
+        }
         val activity = context as? Activity ?: return
         val googleSignInHandler by lazy { GoogleSignInHandler() }
         viewModelScope.launch(dispatcher) {
@@ -108,7 +112,7 @@ class LoginViewModule @Inject constructor(
                 val result = googleSignInHandler.signInWithGoogle(activity)
                 val data = googleSignInHandler.handleSignIn(result).split("|")
                 _uiState.update {
-                    it.copy(email = data[1])
+                    it.copy(email = data[1], isLoading = false)
                 }
                 login(LoginBody(data[1], "", "1"))
 

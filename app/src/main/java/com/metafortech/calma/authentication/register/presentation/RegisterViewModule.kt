@@ -4,16 +4,8 @@ import android.app.Activity
 import android.content.Context
 import android.util.Log
 import android.util.Patterns
-import androidx.credentials.CredentialManager
-import androidx.credentials.CustomCredential
-import androidx.credentials.GetCredentialRequest
-import androidx.credentials.GetCredentialResponse
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.android.libraries.identity.googleid.GetGoogleIdOption
-import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
-import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
-import com.metafortech.calma.BuildConfig
 import com.metafortech.calma.R
 import com.metafortech.calma.authentication.GoogleSignInHandler
 import com.metafortech.calma.authentication.data.di.IODispatcher
@@ -89,6 +81,7 @@ class RegisterViewModule @Inject constructor(
     }
 
     fun onRegisterClick() {
+        _uiState.value = _uiState.value.copy(errorMessageResId = null, loginError = null)
         if (_uiState.value.name.isEmpty()) {
             _uiState.update {
                 it.copy(errorMessageResId = R.string.name_required)
@@ -161,7 +154,8 @@ class RegisterViewModule @Inject constructor(
                             _uiState.update {
                                 it.copy(
                                     isLoading = false,
-                                    errorMessageResId = null
+                                    errorMessageResId = null,
+                                    loginError = domainRegisterState.error
                                 )
                             }
                         }
@@ -172,6 +166,9 @@ class RegisterViewModule @Inject constructor(
     }
 
     fun onLoginWithGoogleClick(context: Context) {
+        _uiState.update {
+            it.copy(isLoading = true)
+        }
         val activity = context as? Activity ?: return
         val googleSignInHandler by lazy { GoogleSignInHandler() }
         viewModelScope.launch(dispatcher) {
@@ -179,7 +176,7 @@ class RegisterViewModule @Inject constructor(
                 val result = googleSignInHandler.signInWithGoogle(activity)
                 val data = googleSignInHandler.handleSignIn(result).split("|")
                 _uiState.update {
-                    it.copy(name = data[0], email = data[1])
+                    it.copy(isLoading = false,name = data[0], email = data[1],)
                 }
 
             } catch (e: Exception) {

@@ -96,6 +96,7 @@ fun LoginScreen(
                         email = uiState.email,
                         password = uiState.password,
                         errorMessages = uiState.errorMessageResId,
+                        loginError = uiState.loginError,
                         isLoading = uiState.isLoading,
                         onEmailValueChange = { email ->
                             onEmailValueChange(
@@ -131,6 +132,7 @@ fun LoginScreenContents(
     email: String,
     password: String = "",
     errorMessages: Int?,
+    loginError: String?,
     isLoading: Boolean,
     onEmailValueChange: (String) -> Unit,
     onPasswordValueChange: (String) -> Unit,
@@ -196,6 +198,14 @@ fun LoginScreenContents(
         errorMessages?.let { errorMessage ->
             Text(
                 text = stringResource(errorMessage),
+                modifier = Modifier.padding(top = 4.dp),
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.Red
+            )
+        }
+        loginError?.let { errorMessage ->
+            Text(
+                text = errorMessage,
                 modifier = Modifier.padding(top = 4.dp),
                 style = MaterialTheme.typography.bodySmall,
                 color = Color.Red

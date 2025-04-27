@@ -15,5 +15,6 @@ data class RegisterUiState(
     val gender: String = "",
     val isLoading: Boolean = false,
     val loginSuccess: Boolean = false,
-    @StringRes val errorMessageResId: Int? = null,
+    val loginError: String? = null,
+    @StringRes val errorMessageResId: Int? = null
 )

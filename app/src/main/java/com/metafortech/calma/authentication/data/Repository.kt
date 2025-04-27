@@ -7,6 +7,7 @@ import com.metafortech.calma.authentication.data.remote.register.RegisterBody
 import com.metafortech.calma.authentication.data.remote.register.RegisterResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import retrofit2.Response
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -14,12 +15,11 @@ import javax.inject.Singleton
 class Repository @Inject constructor(
     private val registerService: RegisterService
 ) {
-    fun postLoginRequest(loginBody: LoginBody): Flow<LoginResponse> = flow {
+    fun postLoginRequest(loginBody: LoginBody): Flow <Response<LoginResponse>> = flow {
         emit(registerService.login(loginBody))
     }
 
-    fun postRegisterRequest(registerBody: RegisterBody): Flow<RegisterResponse> = flow {
+    fun postRegisterRequest(registerBody: RegisterBody): Flow<Response<RegisterResponse>> = flow {
         emit(registerService.register(registerBody))
-
     }
 }
