@@ -88,13 +88,13 @@ fun RegisterScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp),
+            .padding(top = 16.dp, bottom = 32.dp, start = 16.dp, end = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
             text = stringResource(R.string.create_acc_r),
-            modifier = Modifier.padding(bottom = 16.dp, start = 16.dp, end = 16.dp),
+            modifier = Modifier.padding(bottom = 16.dp),
             style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.primary
         )

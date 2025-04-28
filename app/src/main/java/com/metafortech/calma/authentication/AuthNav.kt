@@ -11,6 +11,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.metafortech.calma.WelcomeScreen
+import com.metafortech.calma.authentication.InterestSelectionScreen
+import com.metafortech.calma.authentication.interest.InterestSelectionScreen
+import com.metafortech.calma.authentication.interest.InterestSelectionViewModel
 import com.metafortech.calma.authentication.login.presentation.LoginScreen
 import com.metafortech.calma.authentication.login.presentation.LoginViewModule
 import com.metafortech.calma.authentication.register.presentation.RegisterScreen
@@ -96,7 +99,7 @@ fun NavGraphBuilder.authNav(
         composable<VerificationScreen> {
             val phoneVerificationViewModel: PhoneVerificationViewModel = hiltViewModel()
             val state = phoneVerificationViewModel.uiState.collectAsStateWithLifecycle().value
-            Log.e(TAG, "authNav: ${it.arguments?.getString("phoneNumber") ?: "10"}", )
+            Log.e(TAG, "authNav: ${it.arguments?.getString("phoneNumber") ?: ""}")
             PhoneVerificationScreen(
                 modifier = Modifier.padding(innerPadding),
                 state = state,
@@ -104,9 +107,23 @@ fun NavGraphBuilder.authNav(
                 onResendCodeClick = phoneVerificationViewModel::onResendCode,
                 onNextClick = {
                     phoneVerificationViewModel.onNextClick()
-//                    onNavigateNext()
+                    navController.navigate(InterestSelectionScreen)
                 },
-                phoneNumber = it.arguments?.getString("phoneNumber") ?: "10",
+                phoneNumber = it.arguments?.getString("phoneNumber") ?: "",
+            )
+
+        }
+        composable<InterestSelectionScreen> {
+            val interestSelectionViewModel: InterestSelectionViewModel = hiltViewModel()
+            val selectedInterest = interestSelectionViewModel.selectedInterest.value
+            InterestSelectionScreen(
+                modifier = Modifier.padding(innerPadding),
+                onBackClick = { navController.popBackStack() },
+                onInterestSelected = interestSelectionViewModel::onInterestSelected,
+                onNextClick = {
+
+                },
+                selectedInterest = selectedInterest
             )
 
         }
@@ -124,3 +141,6 @@ object RegisterScreen
 
 @Serializable
 data class VerificationScreen(val phoneNumber: String)
+
+@Serializable
+object InterestSelectionScreen

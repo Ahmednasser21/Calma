@@ -45,4 +45,13 @@
     <string name="didnt_receive_code">لم تصلني رسالة؟</string>
     <string name="resend_code">إعادة إرسال</string>
     <string name="verification_code_sent_2">من فضلك ادخل الرمز في المربعات</string>
+    <string name="select_interest">اختر واحدة من اهتماماتك</string>
+    <string name="trainer">مدرب</string>
+    <string name="referre">حكم</string>
+    <string name="therapist">معالج</string>
+    <string name="commentator">معلق رياضي</string>
+    <string name="nutritionist">أخصائي تغذية</string>
+    <string name="analyst">محلل رياضي</string>
+    <string name="player">لاعب</string>
+    <string name="commenter">معلق</string>
 </resources>

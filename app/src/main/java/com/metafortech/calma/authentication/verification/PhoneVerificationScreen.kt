@@ -48,7 +48,6 @@ fun PhoneVerificationScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Spacer(modifier = modifier.weight(1f))
         Text(
             text = stringResource(R.string.verify_phone),
             modifier = Modifier.padding(16.dp),
@@ -91,7 +90,7 @@ fun PhoneVerificationScreen(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+                .padding(16.dp),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -119,16 +118,12 @@ fun PhoneVerificationScreen(
             Spacer(modifier = Modifier.weight(1f))
 
             CountdownTimer(
-                modifier = Modifier.padding(vertical = 16.dp),
                 remainingTime = state.remainingTime
             )
         }
 
-        Spacer(modifier = Modifier.weight(1f))
+        NextButton(modifier = Modifier.padding(top= 16.dp), onNextClick = onNextClick)
 
-        NextButton(onNextClick = onNextClick)
-
-        Spacer(modifier = modifier.weight(1f))
     }
 }
 
