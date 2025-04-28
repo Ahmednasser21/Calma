@@ -90,11 +90,11 @@ fun RegisterScreen(
             .fillMaxSize()
             .padding(horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top
+        verticalArrangement = Arrangement.Center
     ) {
         Text(
             text = stringResource(R.string.create_acc_r),
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(bottom = 16.dp, start = 16.dp, end = 16.dp),
             style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.primary
         )
@@ -134,7 +134,7 @@ fun RegisterScreen(
             onEmailValueChange(email)
         }
         PhoneNumberWithCountryPicker(
-            modifier = Modifier.padding(bottom = 16.dp),
+            modifier = Modifier,
             phoneNumber = state.phoneNumber,
             onPhoneNumberChange = { phoneNumber ->
                 onPhoneNumberChange(phoneNumber)
@@ -171,7 +171,7 @@ fun RegisterScreen(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 32.dp, top = 8.dp),
+                .padding(bottom = 16.dp, top = 8.dp),
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -205,7 +205,7 @@ fun RegisterScreen(
             CircularProgressIndicator(
                 modifier = Modifier
                     .size(24.dp)
-                    .padding(bottom = 16.dp),
+                    .padding(vertical = 16.dp),
                 color = MaterialTheme.colorScheme.secondary,
                 strokeWidth = 2.dp
             )
@@ -610,7 +610,6 @@ fun BirthdayField(
 
     GeneralTextField(
         modifier = modifier
-            .padding(top = 12.dp)
             .clickable {
                 onShowDatePickerChange(showDatePicker)
             },

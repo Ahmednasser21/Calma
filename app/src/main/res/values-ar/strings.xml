@@ -40,4 +40,9 @@
     <string name="birthday_required">الرجاء إضافة تاريخ ميلادك</string>
     <string name="gender_required">برجاء تحديد الجنس</string>
     <string name="email_is_required">برجاء إدخال بريدك الإلكتروني</string>
+    <string name="verify_phone">تأكيد رقم الهاتف</string>
+    <string name="verification_code_sent">"تم ارسال رمز مكون من 4 خانات الى الرقم "</string>
+    <string name="didnt_receive_code">لم تصلني رسالة؟</string>
+    <string name="resend_code">إعادة إرسال</string>
+    <string name="verification_code_sent_2">من فضلك ادخل الرمز في المربعات</string>
 </resources>

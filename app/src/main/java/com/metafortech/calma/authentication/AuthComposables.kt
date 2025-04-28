@@ -3,6 +3,7 @@ package com.metafortech.calma.authentication
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -59,8 +60,7 @@ fun GeneralTextField(
 ) {
     OutlinedTextField(
         modifier = modifier
-            .fillMaxWidth()
-            .padding(bottom = 16.dp),
+            .fillMaxWidth(),
         value = textValue,
         onValueChange = { value ->
             onValueChange(value)
@@ -99,8 +99,7 @@ fun PasswordTextField(
     var isPasswordVisible by remember { mutableStateOf(false) }
     OutlinedTextField(
         modifier = modifier
-            .fillMaxWidth()
-            .padding(bottom = 4.dp),
+            .fillMaxWidth(),
         value = password,
         onValueChange = { value ->
             onValueChange(value)
@@ -185,76 +184,83 @@ fun BottomPartOfLoginAndRegisterScreen(
     onLoginWithGoogleClick: () -> Unit,
     onLoginWithFacebookClick: () -> Unit
 ) {
-    LoginButton(buttonText) {
-        onButtonClick()
-    }
-    Row(
+    Column(
         modifier = modifier
-            .padding(bottom = 8.dp)
             .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = text,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.primary
-        )
-        TextButton(text = textButtonText) {
-            onTextButtonClick()
+        LoginButton(buttonText) {
+            onButtonClick()
         }
-    }
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        HorizontalDivider(
-            modifier = Modifier
-                .height(1.dp)
-                .weight(1f), color = Color.LightGray
-
-        )
-        Text(
-            text = stringResource(R.string.continue_using),
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(horizontal = 4.dp),
-            color = Color.DarkGray
-        )
-
-        HorizontalDivider(
-            modifier = Modifier
-                .height(1.dp)
-                .weight(1f), color = Color.LightGray
-
-        )
-    }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(32.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        GoogleOrFacebookButton(
-            modifier = Modifier.weight(1f),
-            painter = painterResource(id = R.drawable.google_logo),
-            btnText = stringResource(R.string.google),
-            btnTextColor = MaterialTheme.colorScheme.primary,
-            btnColor = Color(0xFFECECEC)
+        Row(
+            modifier = modifier
+                .padding(bottom = 8.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
         ) {
-            onLoginWithGoogleClick()
+            Text(
+                text = text,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
+            TextButton(text = textButtonText) {
+                onTextButtonClick()
+            }
         }
-
-        GoogleOrFacebookButton(
-            modifier = Modifier.weight(1f),
-            painter = painterResource(id = R.drawable.facebook_logo),
-            btnText = stringResource(R.string.facebook),
-            btnTextColor = MaterialTheme.colorScheme.onPrimary,
-            btnColor = Color(0xFF1877F2)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            onLoginWithFacebookClick()
-        }
+            HorizontalDivider(
+                modifier = Modifier
+                    .height(1.dp)
+                    .weight(1f), color = Color.LightGray
 
+            )
+            Text(
+                text = stringResource(R.string.continue_using),
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(horizontal = 4.dp),
+                color = Color.DarkGray
+            )
+
+            HorizontalDivider(
+                modifier = Modifier
+                    .height(1.dp)
+                    .weight(1f), color = Color.LightGray
+
+            )
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 8.dp, end = 8.dp, top = 32.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            GoogleOrFacebookButton(
+                modifier = Modifier.weight(1f),
+                painter = painterResource(id = R.drawable.google_logo),
+                btnText = stringResource(R.string.google),
+                btnTextColor = MaterialTheme.colorScheme.primary,
+                btnColor = Color(0xFFECECEC)
+            ) {
+                onLoginWithGoogleClick()
+            }
+
+            GoogleOrFacebookButton(
+                modifier = Modifier.weight(1f),
+                painter = painterResource(id = R.drawable.facebook_logo),
+                btnText = stringResource(R.string.facebook),
+                btnTextColor = MaterialTheme.colorScheme.onPrimary,
+                btnColor = Color(0xFF1877F2)
+            ) {
+                onLoginWithFacebookClick()
+            }
+
+        }
     }
 }
 
@@ -286,6 +292,27 @@ fun GoogleOrFacebookButton(
         Spacer(modifier = Modifier.width(if (btnText == stringResource(R.string.google)) 24.dp else 8.dp))
         Text(
             text = btnText, style = MaterialTheme.typography.bodyMedium, color = btnTextColor
+        )
+    }
+}
+
+@Composable
+fun NextButton(modifier: Modifier = Modifier, onNextClick: () -> Unit){
+    Button(
+        onClick = onNextClick,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal= 32.dp),
+        shape = RoundedCornerShape(25.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.secondary
+        )
+    ) {
+        Text(
+            text = stringResource(R.string.next),
+            style = MaterialTheme.typography.bodyLarge,
+            color = Color.White,
+            modifier = Modifier.padding(vertical = 8.dp)
         )
     }
 }

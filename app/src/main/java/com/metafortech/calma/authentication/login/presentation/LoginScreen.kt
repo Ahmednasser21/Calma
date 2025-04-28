@@ -84,7 +84,7 @@ fun LoginScreen(
                 Box(
                     modifier = modifier
                         .fillMaxWidth()
-                        .fillMaxHeight(0.8f)
+                        .fillMaxHeight(0.75f)
                         .background(
                             color = MaterialTheme.colorScheme.background,
                             shape = RoundedCornerShape(topStart = 48.dp, topEnd = 48.dp)
@@ -145,9 +145,8 @@ fun LoginScreenContents(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Color.Transparent)
-            .padding(top = 16.dp),
-        verticalArrangement = Arrangement.Top,
+            .background(Color.Transparent),
+        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
@@ -177,7 +176,6 @@ fun LoginScreenContents(
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.primary
         )
-        Spacer(modifier = Modifier.height(32.dp))
         GeneralTextField(
             modifier = Modifier,
             textValue = email,
@@ -188,7 +186,6 @@ fun LoginScreenContents(
         ) { email ->
             onEmailValueChange(email)
         }
-        Spacer(modifier = Modifier.height(16.dp))
 
         PasswordTextField(
             password = password
@@ -222,8 +219,7 @@ fun LoginScreenContents(
         }
         TextButton(
             modifier = Modifier
-                .align(Alignment.Start)
-                .padding(bottom = 4.dp),
+                .align(Alignment.Start),
             stringResource(R.string.forgot_password)
         ) {
             onForgotPasswordClick()

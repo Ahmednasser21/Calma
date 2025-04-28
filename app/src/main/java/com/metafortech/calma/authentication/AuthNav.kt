@@ -1,10 +1,11 @@
 package com.metafortech.calma.authentication
 
+import android.util.Log
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
@@ -14,9 +15,11 @@ import com.metafortech.calma.authentication.login.presentation.LoginScreen
 import com.metafortech.calma.authentication.login.presentation.LoginViewModule
 import com.metafortech.calma.authentication.register.presentation.RegisterScreen
 import com.metafortech.calma.authentication.register.presentation.RegisterViewModule
+import com.metafortech.calma.authentication.verification.PhoneVerificationScreen
+import com.metafortech.calma.authentication.verification.PhoneVerificationViewModel
 import kotlinx.serialization.Serializable
 
-
+private const val TAG = "AuthNav"
 fun NavGraphBuilder.authNav(
     innerPadding: PaddingValues,
     navController: NavHostController,
@@ -25,7 +28,7 @@ fun NavGraphBuilder.authNav(
 
         composable<LoginScreen> {
             val loginViewModel: LoginViewModule = hiltViewModel()
-            val state = loginViewModel.uiState.collectAsState().value
+            val state = loginViewModel.uiState.collectAsStateWithLifecycle().value
             LoginScreen(
                 modifier = Modifier.padding(innerPadding),
                 uiState = state,
@@ -45,7 +48,7 @@ fun NavGraphBuilder.authNav(
         }
         composable<RegisterScreen> {
             val registerViewModel: RegisterViewModule = hiltViewModel()
-            val registerState = registerViewModel.uiState.collectAsState().value
+            val registerState = registerViewModel.uiState.collectAsStateWithLifecycle().value
             RegisterScreen(
                 modifier = Modifier.padding(innerPadding),
                 state = registerState,
@@ -82,9 +85,30 @@ fun NavGraphBuilder.authNav(
                 onRegisterClick = { registerViewModel.onRegisterClick() },
                 onLoginClick = { navController.navigate(LoginScreen) },
                 onLoginWithGoogleClick = { registerViewModel.onLoginWithGoogleClick(it) },
-                onLoginWithFacebookClick = { registerViewModel.onLoginWithFacebookClick() }
+                onLoginWithFacebookClick = {
+//                    registerViewModel.onLoginWithFacebookClick()
+                    navController.navigate(VerificationScreen(phoneNumber = (registerState.country.dialCode + registerState.phoneNumber)))
+
+                }
 
             )
+        }
+        composable<VerificationScreen> {
+            val phoneVerificationViewModel: PhoneVerificationViewModel = hiltViewModel()
+            val state = phoneVerificationViewModel.uiState.collectAsStateWithLifecycle().value
+            Log.e(TAG, "authNav: ${it.arguments?.getString("phoneNumber") ?: "10"}", )
+            PhoneVerificationScreen(
+                modifier = Modifier.padding(innerPadding),
+                state = state,
+                onCodeValueChange = phoneVerificationViewModel::onCodeValueChange,
+                onResendCodeClick = phoneVerificationViewModel::onResendCode,
+                onNextClick = {
+                    phoneVerificationViewModel.onNextClick()
+//                    onNavigateNext()
+                },
+                phoneNumber = it.arguments?.getString("phoneNumber") ?: "10",
+            )
+
         }
     }
 }
@@ -97,3 +121,6 @@ object LoginScreen
 
 @Serializable
 object RegisterScreen
+
+@Serializable
+data class VerificationScreen(val phoneNumber: String)

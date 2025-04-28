@@ -33,14 +33,13 @@ fun LanguageScreen(
 ) {
     Column(
         modifier = modifier
-            .fillMaxSize()
-            .padding(32.dp),
+            .fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
+        Spacer(modifier = Modifier.weight(1f))
         Column(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier,
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -69,12 +68,12 @@ fun LanguageScreen(
                 onClick = { onLanguageClick("fr") }
             )
         }
+        Spacer(modifier = Modifier.weight(1f))
 
         Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp),
-            contentAlignment = Alignment.BottomStart
+            modifier = modifier
+                .fillMaxWidth(),
+            contentAlignment = Alignment.BottomEnd
         ) {
             Image(
                 painter = painterResource(id = R.drawable.sports_illustration),
