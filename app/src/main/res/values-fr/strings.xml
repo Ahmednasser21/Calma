@@ -45,7 +45,7 @@
     <string name="didnt_receive_code">Je n\'ai pas reçu de message ?</string>
     <string name="resend_code">Renvoyer</string>
     <string name="verification_code_sent_2">Veuillez saisir le code dans les cases.</string>
-    <string name="select_interest">Choisissez l\'un de vos intérêts</string>
+    <string name="select_interest">Sélectionnez l\'un de vos intérêts</string>
     <string name="trainer">Entraîneur</string>
     <string name="referre">Arbitre</string>
     <string name="therapist">Thérapeute</string>
@@ -54,4 +54,11 @@
     <string name="analyst">Analyste sportif</string>
     <string name="player">Joueur</string>
     <string name="commenter">"Commentateur "</string>
+    <string name="select_sport_type_you_prefer">Sélectionnez your preferred sport</string>
+    <string name="football">Football</string>
+    <string name="basketball">Basketball</string>
+    <string name="volleyball">Volleyball</string>
+    <string name="ice_hockey">Ice Hockey</string>
+    <string name="baseball">Baseball</string>
+    <string name="table_tennis">Table Tennis</string>
 </resources>

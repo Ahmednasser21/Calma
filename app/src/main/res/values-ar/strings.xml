@@ -54,4 +54,11 @@
     <string name="analyst">محلل رياضي</string>
     <string name="player">لاعب</string>
     <string name="commenter">معلق</string>
+    <string name="select_sport_type_you_prefer">اختر نوع الرياضة التي تفضلها</string>
+    <string name="football">كرة قدم</string>
+    <string name="basketball">كرة سلة</string>
+    <string name="volleyball">كرة الطائرة</string>
+    <string name="ice_hockey">هوكي الجليد</string>
+    <string name="baseball">بيسبول</string>
+    <string name="table_tennis">تنيس طاولة</string>
 </resources>

@@ -60,7 +60,8 @@ fun InterestSelectionScreen(
             ) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Back"
+                    contentDescription = "Back",
+                    modifier = Modifier.rotate(180f)
                 )
             }
         }

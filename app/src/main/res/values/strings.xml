@@ -53,7 +53,7 @@
     <string name="didnt_receive_code">didn\'t receive a message?</string>
     <string name="resend_code">Resend</string>
     <string name="verification_code_sent_2">Please enter the code in the boxes</string>
-    <string name="select_interest">Choose one of your interests</string>
+    <string name="select_interest">Select one of your interests</string>
     <string name="trainer">Trainer</string>
     <string name="referre">Referee</string>
     <string name="therapist">Therapist</string>
@@ -62,4 +62,11 @@
     <string name="analyst">Sports analyst</string>
     <string name="player">Player</string>
     <string name="commenter">Commentator</string>
+    <string name="select_sport_type_you_prefer">Select your preferred sport</string>
+    <string name="football">Football</string>
+    <string name="basketball">Basketball</string>
+    <string name="volleyball">Volleyball</string>
+    <string name="ice_hockey">Ice Hockey</string>
+    <string name="baseball">Baseball</string>
+    <string name="table_tennis">Table Tennis</string>
 </resources>

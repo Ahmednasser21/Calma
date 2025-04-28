@@ -12,12 +12,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.metafortech.calma.WelcomeScreen
 import com.metafortech.calma.authentication.InterestSelectionScreen
+import com.metafortech.calma.authentication.SportSelectionScreen
 import com.metafortech.calma.authentication.interest.InterestSelectionScreen
 import com.metafortech.calma.authentication.interest.InterestSelectionViewModel
 import com.metafortech.calma.authentication.login.presentation.LoginScreen
 import com.metafortech.calma.authentication.login.presentation.LoginViewModule
 import com.metafortech.calma.authentication.register.presentation.RegisterScreen
 import com.metafortech.calma.authentication.register.presentation.RegisterViewModule
+import com.metafortech.calma.authentication.sport.SportSelectionScreen
+import com.metafortech.calma.authentication.sport.SportSelectionViewModel
 import com.metafortech.calma.authentication.verification.PhoneVerificationScreen
 import com.metafortech.calma.authentication.verification.PhoneVerificationViewModel
 import kotlinx.serialization.Serializable
@@ -121,11 +124,23 @@ fun NavGraphBuilder.authNav(
                 onBackClick = { navController.popBackStack() },
                 onInterestSelected = interestSelectionViewModel::onInterestSelected,
                 onNextClick = {
-
+                    navController.navigate(SportSelectionScreen)
                 },
                 selectedInterest = selectedInterest
             )
 
+        }
+        composable<SportSelectionScreen> {
+            val sportSelectionViewModel: SportSelectionViewModel = hiltViewModel()
+            SportSelectionScreen(
+                state = sportSelectionViewModel.uiState.collectAsStateWithLifecycle().value,
+                modifier = Modifier.padding(innerPadding),
+                onBackClick = { navController.popBackStack() },
+                selectSport = sportSelectionViewModel::selectSport,
+                onNextClick = {
+                    navController.navigate(WelcomeScreen)
+                }
+            )
         }
     }
 }
@@ -144,3 +159,6 @@ data class VerificationScreen(val phoneNumber: String)
 
 @Serializable
 object InterestSelectionScreen
+
+@Serializable
+object SportSelectionScreen
