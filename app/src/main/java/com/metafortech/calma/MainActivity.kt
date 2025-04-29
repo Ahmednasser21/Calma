@@ -13,11 +13,11 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.metafortech.calma.authentication.AuthNav
-import com.metafortech.calma.authentication.authNav
+import com.metafortech.calma.presentation.authentication.AuthNav
+import com.metafortech.calma.presentation.authentication.authNav
 import com.metafortech.calma.theme.CalmaTheme
-import com.metafortech.calma.welcom.LanguageScreen
-import com.metafortech.calma.welcom.LocaleManager
+import com.metafortech.calma.presentation.welcom.LanguageScreen
+import com.metafortech.calma.presentation.welcom.LocaleManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.serialization.Serializable
 
