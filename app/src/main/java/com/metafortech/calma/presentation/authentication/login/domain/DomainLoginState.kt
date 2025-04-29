@@ -1,6 +1,6 @@
 package com.metafortech.calma.presentation.authentication.login.domain
 
-import com.metafortech.calma.data.remote.login.LoginResponse
+import com.metafortech.calma.data.remote.presentation.login.LoginResponse
 
 sealed class DomainLoginState {
     data class OnSuccess(val loginResponse: LoginResponse) : DomainLoginState()

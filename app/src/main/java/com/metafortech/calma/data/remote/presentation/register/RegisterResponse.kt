@@ -1,4 +1,4 @@
-package com.metafortech.calma.data.remote.register
+package com.metafortech.calma.data.remote.presentation.register
 
 data class RegisterResponse(
     val status: Boolean,

@@ -8,7 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.metafortech.calma.R
 import com.metafortech.calma.data.di.IODispatcher
-import com.metafortech.calma.data.remote.register.RegisterBody
+import com.metafortech.calma.data.remote.presentation.register.RegisterBody
 import com.metafortech.calma.presentation.authentication.GoogleSignInHandler
 import com.metafortech.calma.presentation.authentication.register.domain.DomainRegisterState
 import com.metafortech.calma.presentation.authentication.register.domain.RegisterUseCase

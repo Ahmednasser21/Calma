@@ -2,7 +2,6 @@ package com.metafortech.calma.presentation.authentication.verification
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.metafortech.calma.data.Repository
 import com.metafortech.calma.data.di.IODispatcher
 import com.metafortech.calma.data.di.MainDispatcher
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,7 +19,6 @@ import javax.inject.Inject
 class PhoneVerificationViewModel @Inject constructor(
     @MainDispatcher val dispatcher: CoroutineDispatcher,
     @IODispatcher val ioDispatcher: CoroutineDispatcher,
-    private val repository: Repository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(PhoneVerificationUiState())

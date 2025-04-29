@@ -1,6 +1,6 @@
 package com.metafortech.calma.data.di
 
-import com.metafortech.calma.data.remote.RegisterService
+import com.metafortech.calma.data.remote.APIService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -13,7 +13,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object RegisterDataModule {
+object DataModule {
 
     @Provides
     @Singleton
@@ -39,7 +39,7 @@ object RegisterDataModule {
     @Singleton
     fun provideRegisterService(
         retrofit: Retrofit
-    ): RegisterService {
-        return retrofit.create(RegisterService::class.java)
+    ): APIService {
+        return retrofit.create(APIService::class.java)
     }
 }

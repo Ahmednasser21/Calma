@@ -1,7 +1,7 @@
 package com.metafortech.calma.presentation.authentication.login.domain
 
-import com.metafortech.calma.data.Repository
-import com.metafortech.calma.data.remote.login.LoginBody
+import com.metafortech.calma.data.remote.presentation.login.LoginBody
+import com.metafortech.calma.data.repository.AuthRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
@@ -10,10 +10,10 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class LoginUseCase @Inject constructor(val repository: Repository) {
+class LoginUseCase @Inject constructor(val authRepository: AuthRepository) {
     operator fun invoke(loginBody: LoginBody): Flow<DomainLoginState> = flow {
         try {
-            repository.postLoginRequest(loginBody).catch {throwable->
+            authRepository.postLoginRequest(loginBody).catch { throwable->
                 emit(DomainLoginState.OnFailed(throwable.localizedMessage))
             }.collect { loginResponse ->
                 if(loginResponse.isSuccessful){
