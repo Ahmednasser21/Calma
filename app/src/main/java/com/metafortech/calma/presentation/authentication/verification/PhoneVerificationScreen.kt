@@ -16,6 +16,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,7 +30,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.metafortech.calma.R
+import com.metafortech.calma.presentation.authentication.CircularProgressOnLoadingState
 import com.metafortech.calma.presentation.authentication.NextButton
+import com.metafortech.calma.presentation.authentication.StringError
 
 @Composable
 fun PhoneVerificationScreen(
@@ -122,7 +125,16 @@ fun PhoneVerificationScreen(
             )
         }
 
-        NextButton(modifier = Modifier.padding(top= 16.dp), onNextClick = onNextClick)
+        StringError(state.errorMessage)
+
+        CircularProgressOnLoadingState(state.isLoading)
+
+        NextButton(
+            modifier = Modifier.padding(top = 16.dp),
+            enabled = state.isCodeComplete
+        ) {
+            onNextClick()
+        }
 
     }
 }

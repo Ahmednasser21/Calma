@@ -23,7 +23,7 @@ import javax.inject.Inject
 private const val TAG = "LoginViewModule"
 
 @HiltViewModel
-class LoginViewModule @Inject constructor(
+class LoginViewModel @Inject constructor(
     val loginUseCase: LoginUseCase,
     @IODispatcher private val dispatcher: CoroutineDispatcher
 ) : ViewModel() {

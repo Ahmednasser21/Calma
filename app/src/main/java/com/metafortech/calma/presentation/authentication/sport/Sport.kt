@@ -1,6 +1,5 @@
 package com.metafortech.calma.presentation.authentication.sport
 
-import androidx.annotation.StringRes
 
 data class Sport(
     val id: String,

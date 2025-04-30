@@ -297,7 +297,7 @@ fun GoogleOrFacebookButton(
 }
 
 @Composable
-fun NextButton(modifier: Modifier = Modifier, onNextClick: () -> Unit){
+fun NextButton(modifier: Modifier = Modifier, enabled: Boolean = true, onNextClick: () -> Unit){
     Button(
         onClick = onNextClick,
         modifier = modifier
@@ -306,7 +306,8 @@ fun NextButton(modifier: Modifier = Modifier, onNextClick: () -> Unit){
         shape = RoundedCornerShape(25.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.secondary
-        )
+        ),
+        enabled = enabled
     ) {
         Text(
             text = stringResource(R.string.next),
@@ -316,6 +317,43 @@ fun NextButton(modifier: Modifier = Modifier, onNextClick: () -> Unit){
         )
     }
 }
+
+@Composable
+fun StringResourceError(errorMessages: Int?,modifier: Modifier = Modifier) {
+    errorMessages?.let { errorMessage ->
+        Text(
+            text = stringResource(errorMessage),
+            modifier = modifier.padding(top = 8.dp),
+            style = MaterialTheme.typography.bodySmall,
+            color = Color.Red
+        )
+    }
+}
+@Composable
+fun StringError(errorMessage: String?, modifier: Modifier = Modifier) {
+    errorMessage?.let { errorMessage ->
+        Text(
+            text = errorMessage,
+            modifier = modifier.padding(top = 8.dp),
+            style = MaterialTheme.typography.bodySmall,
+            color = Color.Red
+        )
+    }
+}
+
+@Composable
+fun CircularProgressOnLoadingState(isLoading: Boolean,modifier: Modifier = Modifier) {
+    if (isLoading) {
+        CircularProgressIndicator(
+            modifier = modifier
+                .size(48.dp)
+                .padding(8.dp),
+            color = MaterialTheme.colorScheme.secondary,
+            strokeWidth = 2.dp
+        )
+    }
+}
+
 @Composable
 fun ImageLoading(
     imageURL: String,

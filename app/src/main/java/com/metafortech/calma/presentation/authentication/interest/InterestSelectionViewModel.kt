@@ -2,7 +2,9 @@ package com.metafortech.calma.presentation.authentication.interest
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
+import com.metafortech.calma.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 

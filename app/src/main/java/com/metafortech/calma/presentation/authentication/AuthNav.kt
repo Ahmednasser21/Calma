@@ -1,6 +1,5 @@
 package com.metafortech.calma.presentation.authentication
 
-import android.util.Log
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Modifier
@@ -14,16 +13,15 @@ import com.metafortech.calma.WelcomeScreen
 import com.metafortech.calma.presentation.authentication.interest.InterestSelectionScreen
 import com.metafortech.calma.presentation.authentication.interest.InterestSelectionViewModel
 import com.metafortech.calma.presentation.authentication.login.presentation.LoginScreen
-import com.metafortech.calma.presentation.authentication.login.presentation.LoginViewModule
+import com.metafortech.calma.presentation.authentication.login.presentation.LoginViewModel
 import com.metafortech.calma.presentation.authentication.register.presentation.RegisterScreen
-import com.metafortech.calma.presentation.authentication.register.presentation.RegisterViewModule
+import com.metafortech.calma.presentation.authentication.register.presentation.RegisterViewModel
 import com.metafortech.calma.presentation.authentication.sport.SportSelectionScreen
 import com.metafortech.calma.presentation.authentication.sport.SportSelectionViewModel
 import com.metafortech.calma.presentation.authentication.verification.PhoneVerificationScreen
 import com.metafortech.calma.presentation.authentication.verification.PhoneVerificationViewModel
 import kotlinx.serialization.Serializable
 
-private const val TAG = "AuthNav"
 fun NavGraphBuilder.authNav(
     innerPadding: PaddingValues,
     navController: NavHostController,
@@ -31,7 +29,7 @@ fun NavGraphBuilder.authNav(
     navigation<AuthNav>(startDestination = LoginScreen) {
 
         composable<LoginScreen> {
-            val loginViewModel: LoginViewModule = hiltViewModel()
+            val loginViewModel: LoginViewModel = hiltViewModel()
             val state = loginViewModel.uiState.collectAsStateWithLifecycle().value
             LoginScreen(
                 modifier = Modifier.padding(innerPadding),
@@ -51,7 +49,7 @@ fun NavGraphBuilder.authNav(
             )
         }
         composable<RegisterScreen> {
-            val registerViewModel: RegisterViewModule = hiltViewModel()
+            val registerViewModel: RegisterViewModel = hiltViewModel()
             val registerState = registerViewModel.uiState.collectAsStateWithLifecycle().value
             RegisterScreen(
                 modifier = Modifier.padding(innerPadding),
@@ -100,15 +98,15 @@ fun NavGraphBuilder.authNav(
         composable<VerificationScreen> {
             val phoneVerificationViewModel: PhoneVerificationViewModel = hiltViewModel()
             val state = phoneVerificationViewModel.uiState.collectAsStateWithLifecycle().value
-            Log.e(TAG, "authNav: ${it.arguments?.getString("phoneNumber") ?: ""}")
             PhoneVerificationScreen(
                 modifier = Modifier.padding(innerPadding),
                 state = state,
                 onCodeValueChange = phoneVerificationViewModel::onCodeValueChange,
                 onResendCodeClick = phoneVerificationViewModel::onResendCode,
                 onNextClick = {
-                    phoneVerificationViewModel.onNextClick()
-                    navController.navigate(InterestSelectionScreen)
+                    phoneVerificationViewModel.onNextClick(
+                        navigate = { navController.navigate(InterestSelectionScreen) }
+                    )
                 },
                 phoneNumber = it.arguments?.getString("phoneNumber") ?: "",
             )
@@ -122,7 +120,7 @@ fun NavGraphBuilder.authNav(
                 onBackClick = { navController.popBackStack() },
                 onInterestSelected = interestSelectionViewModel::onInterestSelected,
                 onNextClick = {
-                    navController.navigate(SportSelectionScreen)
+                    navController.navigate(SportSelectionScreen(selectedInterest.toString()))
                 },
                 selectedInterest = selectedInterest
             )
@@ -136,7 +134,10 @@ fun NavGraphBuilder.authNav(
                 onBackClick = { navController.popBackStack() },
                 selectSport = sportSelectionViewModel::selectSport,
                 onNextClick = {
-                    navController.navigate(WelcomeScreen)
+                    sportSelectionViewModel.onNextClick {
+                        navController.navigate(WelcomeScreen)
+                        navController.popBackStack(AuthNav, true)
+                    }
                 }
             )
         }
@@ -159,4 +160,4 @@ data class VerificationScreen(val phoneNumber: String)
 object InterestSelectionScreen
 
 @Serializable
-object SportSelectionScreen
+data class SportSelectionScreen(val interest: String)

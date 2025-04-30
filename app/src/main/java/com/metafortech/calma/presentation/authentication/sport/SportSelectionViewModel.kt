@@ -1,8 +1,12 @@
 package com.metafortech.calma.presentation.authentication.sport
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.metafortech.calma.R
+import com.metafortech.calma.data.di.IODispatcher
+import com.metafortech.calma.data.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -10,18 +14,20 @@ import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @HiltViewModel
-class SportSelectionViewModel @Inject constructor() : ViewModel() {
-    // UI State as StateFlow
+class SportSelectionViewModel @Inject constructor(
+    val savedStateHandle: SavedStateHandle,
+    val authRepository: AuthRepository,
+    @IODispatcher val dispatcher: CoroutineDispatcher
+) : ViewModel() {
+
     private val _uiState = MutableStateFlow(SportSelectionUiState())
     val uiState: StateFlow<SportSelectionUiState> = _uiState.asStateFlow()
 
     init {
-        // Initialize with sports data
         loadSports()
     }
 
     private fun loadSports() {
-        // Set loading state
         _uiState.update { it.copy(isLoading = true) }
 
         try {
@@ -34,14 +40,12 @@ class SportSelectionViewModel @Inject constructor() : ViewModel() {
                 Sport(id = "table_tennis", imageResId = R.drawable.table_tennis, nameResId = R.string.table_tennis)
             )
 
-            // Update UI state with loaded sports
             _uiState.update { it.copy(
                 sports = sportsList,
                 isLoading = false,
                 error = null
             )}
         } catch (e: Exception) {
-            // Handle any errors
             _uiState.update { it.copy(
                 isLoading = false,
                 error = e.message
@@ -49,26 +53,21 @@ class SportSelectionViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    // Handle sport selection
+    fun updateUserProfileWithInterestAndSport(navigate: () -> Unit){
+        _uiState.update { it.copy(isSuccess = true) }
+        if(_uiState.value.isSuccess){
+            navigate()
+        }
+    }
+
     fun selectSport(sportId: String) {
         _uiState.update { it.copy(selectedSportId = sportId) }
     }
 
-    // Handle next button click
-    fun onNextClick(navigateToNext: () -> Unit) {
-        // Validate selection
+    fun onNextClick(navigate: () -> Unit) {
+        _uiState.update { it.copy(isSuccess = false) }
         if (_uiState.value.selectedSportId != null) {
-            // Save selection if needed
-            saveUserSportPreference(_uiState.value.selectedSportId!!)
-            // Navigate to next screen
-            navigateToNext()
+            updateUserProfileWithInterestAndSport(navigate)
         }
-    }
-
-    // Save user preference (would connect to repository in real app)
-    private fun saveUserSportPreference(sportId: String) {
-        // In a real app, this would save to DataStore or a backend API
-        // Example implementation could be:
-        // userPreferencesRepository.saveUserSportPreference(sportId)
     }
 }

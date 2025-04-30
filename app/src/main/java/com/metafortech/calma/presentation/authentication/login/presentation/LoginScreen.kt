@@ -11,9 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,8 +35,11 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.metafortech.calma.R
 import com.metafortech.calma.presentation.authentication.BottomPartOfLoginAndRegisterScreen
+import com.metafortech.calma.presentation.authentication.CircularProgressOnLoadingState
 import com.metafortech.calma.presentation.authentication.GeneralTextField
 import com.metafortech.calma.presentation.authentication.PasswordTextField
+import com.metafortech.calma.presentation.authentication.StringError
+import com.metafortech.calma.presentation.authentication.StringResourceError
 import com.metafortech.calma.presentation.authentication.TextButton
 
 
@@ -193,31 +194,12 @@ fun LoginScreenContents(
         ) { password ->
             onPasswordValueChange(password)
         }
-        errorMessages?.let { errorMessage ->
-            Text(
-                text = stringResource(errorMessage),
-                modifier = Modifier.padding(top = 4.dp),
-                style = MaterialTheme.typography.bodySmall,
-                color = Color.Red
-            )
-        }
-        loginError?.let { errorMessage ->
-            Text(
-                text = errorMessage,
-                modifier = Modifier.padding(top = 4.dp),
-                style = MaterialTheme.typography.bodySmall,
-                color = Color.Red
-            )
-        }
-        if (isLoading) {
-            CircularProgressIndicator(
-                modifier = Modifier
-                    .size(24.dp)
-                    .padding(4.dp),
-                color = MaterialTheme.colorScheme.secondary,
-                strokeWidth = 2.dp
-            )
-        }
+        StringResourceError(errorMessages)
+
+        StringError(loginError)
+
+        CircularProgressOnLoadingState(isLoading)
+
         TextButton(
             modifier = Modifier
                 .align(Alignment.Start),

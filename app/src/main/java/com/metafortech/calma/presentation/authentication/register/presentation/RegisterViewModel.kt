@@ -23,7 +23,7 @@ import javax.inject.Inject
 private const val TAG = "RegisterViewModule"
 
 @HiltViewModel
-class RegisterViewModule @Inject constructor(
+class RegisterViewModel @Inject constructor(
     val registerUseCase: RegisterUseCase,
     @IODispatcher val dispatcher: CoroutineDispatcher
 ) : ViewModel() {

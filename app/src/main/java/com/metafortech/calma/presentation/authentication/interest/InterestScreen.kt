@@ -11,7 +11,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -59,9 +59,9 @@ fun InterestSelectionScreen(
                     .background(Color.LightGray.copy(alpha = 0.3f))
             ) {
                 Icon(
-                    imageVector = Icons.Default.ArrowBack,
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Back",
-                    modifier = Modifier.rotate(180f)
+                    Modifier.rotate(180f)
                 )
             }
         }
@@ -111,6 +111,7 @@ fun InterestSelectionScreen(
         ) {
             NextButton(
                 modifier = Modifier.padding(bottom = 64.dp),
+                enabled = selectedInterest != null
             ) {
                 onNextClick()
             }
@@ -125,9 +126,9 @@ fun InterestItem(
     onClick: () -> Unit
 ) {
     val backgroundColor = if (isSelected) {
-        Color(0xFFFCE4EC) // Light pink background when selected
+        Color(0xFFFCE4EC)
     } else {
-        Color(0xFFF5F5F5) // Light gray background
+        Color(0xFFF5F5F5)
     }
 
     val borderColor = if (isSelected) {
