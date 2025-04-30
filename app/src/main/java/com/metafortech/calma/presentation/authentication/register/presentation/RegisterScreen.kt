@@ -23,7 +23,6 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
@@ -59,8 +58,11 @@ import coil3.request.ImageRequest
 import coil3.svg.SvgDecoder
 import com.metafortech.calma.R
 import com.metafortech.calma.presentation.authentication.BottomPartOfLoginAndRegisterScreen
+import com.metafortech.calma.presentation.authentication.CircularProgressOnLoadingState
 import com.metafortech.calma.presentation.authentication.GeneralTextField
 import com.metafortech.calma.presentation.authentication.PasswordTextField
+import com.metafortech.calma.presentation.authentication.StringError
+import com.metafortech.calma.presentation.authentication.StringResourceError
 import com.metafortech.calma.presentation.authentication.register.presentation.CountryData.countries
 import java.util.Calendar
 import java.util.Locale
@@ -185,31 +187,12 @@ fun RegisterScreen(
                 onGenderClick(selectedGender)
             }
         }
-        state.errorMessageResId?.let { errorMessage ->
-            Text(
-                text = stringResource(errorMessage),
-                modifier = Modifier.padding(bottom = 16.dp),
-                style = MaterialTheme.typography.bodySmall,
-                color = Color.Red
-            )
-        }
-        state.loginError?.let { errorMessage ->
-            Text(
-                text = errorMessage,
-                modifier = Modifier.padding(bottom = 16.dp),
-                style = MaterialTheme.typography.bodySmall,
-                color = Color.Red
-            )
-        }
-        if (state.isLoading) {
-            CircularProgressIndicator(
-                modifier = Modifier
-                    .size(24.dp)
-                    .padding(vertical = 16.dp),
-                color = MaterialTheme.colorScheme.secondary,
-                strokeWidth = 2.dp
-            )
-        }
+        StringResourceError(state.errorMessageResId)
+
+        StringError(state.registerError)
+
+        CircularProgressOnLoadingState(state.isLoading)
+
         BottomPartOfLoginAndRegisterScreen(
             onButtonClick = {
                 onRegisterClick()

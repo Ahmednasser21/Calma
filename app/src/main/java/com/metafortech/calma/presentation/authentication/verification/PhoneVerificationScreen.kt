@@ -3,7 +3,6 @@ package com.metafortech.calma.presentation.authentication.verification
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -16,7 +15,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -89,11 +87,14 @@ fun PhoneVerificationScreen(
             onValueChange = onCodeValueChange
         )
 
+        CountdownTimer(
+            modifier = Modifier.padding(top = 16.dp),
+            remainingTime = state.remainingTime
+        )
 
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+                .fillMaxWidth(),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -116,13 +117,9 @@ fun PhoneVerificationScreen(
             ) {
                 Text(
                     text = stringResource(R.string.resend_code),
+                    style = MaterialTheme.typography.bodyMedium,
                 )
             }
-            Spacer(modifier = Modifier.weight(1f))
-
-            CountdownTimer(
-                remainingTime = state.remainingTime
-            )
         }
 
         StringError(state.errorMessage)
@@ -205,7 +202,7 @@ fun CountdownTimer(
     Text(
         modifier = modifier,
         text = formattedTime,
-        style = MaterialTheme.typography.titleLarge,
+        style = MaterialTheme.typography.bodyLarge,
         color = MaterialTheme.colorScheme.primary
     )
 }

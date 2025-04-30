@@ -2,14 +2,13 @@ package com.metafortech.calma.presentation.authentication.login.presentation
 
 import android.app.Activity
 import android.content.Context
-import android.util.Log
 import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.metafortech.calma.R
 import com.metafortech.calma.data.di.IODispatcher
 import com.metafortech.calma.data.remote.presentation.login.LoginBody
-import com.metafortech.calma.presentation.authentication.GoogleSignInHandler
+import com.metafortech.calma.presentation.authentication.google.GoogleSignInUseCase
 import com.metafortech.calma.presentation.authentication.login.domain.DomainLoginState
 import com.metafortech.calma.presentation.authentication.login.domain.LoginUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,11 +19,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-private const val TAG = "LoginViewModule"
-
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     val loginUseCase: LoginUseCase,
+    val googleSignInUseCase: GoogleSignInUseCase,
     @IODispatcher private val dispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
@@ -53,17 +51,17 @@ class LoginViewModel @Inject constructor(
 
         if (_uiState.value.email.isEmpty()) {
             _uiState.update {
-                it.copy(errorMessageResId = R.string.email_required)
+                it.copy(errorMessageResId = R.string.email_required, loginError = null)
             }
         } else if (!Patterns.EMAIL_ADDRESS.matcher(_uiState.value.email)
                 .matches() && !Patterns.PHONE.matcher(_uiState.value.email).matches()
         ) {
             _uiState.update {
-                it.copy(errorMessageResId = R.string.invalid_email_format)
+                it.copy(errorMessageResId = R.string.invalid_email_format, loginError = null)
             }
         } else if (_uiState.value.password.isEmpty() && _uiState.value.email.isNotEmpty()) {
             _uiState.update {
-                it.copy(errorMessageResId = R.string.password_required)
+                it.copy(errorMessageResId = R.string.password_required, loginError = null)
             }
         } else {
             _uiState.update {
@@ -79,6 +77,9 @@ class LoginViewModel @Inject constructor(
     }
 
     suspend fun login(loginBody: LoginBody) {
+        _uiState.update {
+            it.copy(isLoading = true, errorMessageResId = null, loginError = null)
+        }
         loginUseCase.invoke(loginBody)
             .collect { domainLoginState ->
                 when (domainLoginState) {
@@ -102,22 +103,26 @@ class LoginViewModel @Inject constructor(
     }
 
     fun onLoginWithGoogleClick(context: Context) {
-        _uiState.update {
-            it.copy(isLoading = true)
-        }
         val activity = context as? Activity ?: return
-        val googleSignInHandler by lazy { GoogleSignInHandler() }
+
+        _uiState.update {
+            it.copy(isLoading = true, errorMessageResId = null, loginError = null)
+        }
+
         viewModelScope.launch(dispatcher) {
             try {
-                val result = googleSignInHandler.signInWithGoogle(activity)
-                val data = googleSignInHandler.handleSignIn(result).split("|")
-                _uiState.update {
-                    it.copy(email = data[1], isLoading = false)
-                }
-                login(LoginBody(data[1], "", "1"))
+                val (_, email) = googleSignInUseCase.signInWithGoogle(activity)
 
-            } catch (e: Exception) {
-                Log.e(TAG, "Unexpected error: ${e.message}", e)
+                _uiState.update {
+                    it.copy(email = email, isLoading = false)
+                }
+
+                login(LoginBody(email, "", "1"))
+
+            } catch (_: Exception) {
+                _uiState.update {
+                    it.copy(isLoading = false, errorMessageResId = R.string.google_login_failed)
+                }
             }
         }
     }

@@ -2,14 +2,13 @@ package com.metafortech.calma.presentation.authentication.register.presentation
 
 import android.app.Activity
 import android.content.Context
-import android.util.Log
 import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.metafortech.calma.R
 import com.metafortech.calma.data.di.IODispatcher
 import com.metafortech.calma.data.remote.presentation.register.RegisterBody
-import com.metafortech.calma.presentation.authentication.GoogleSignInHandler
+import com.metafortech.calma.presentation.authentication.google.GoogleSignInUseCase
 import com.metafortech.calma.presentation.authentication.register.domain.DomainRegisterState
 import com.metafortech.calma.presentation.authentication.register.domain.RegisterUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,11 +19,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-private const val TAG = "RegisterViewModule"
-
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
     val registerUseCase: RegisterUseCase,
+    val googleSignInUseCase: GoogleSignInUseCase,
     @IODispatcher val dispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
@@ -32,25 +30,32 @@ class RegisterViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
 
     fun onNameValueChange(name: String) {
-        _uiState.value = _uiState.value.copy(name = name)
-        _uiState.value = _uiState.value.copy(errorMessageResId = null)
+        _uiState.value =
+            _uiState.value.copy(name = name, errorMessageResId = null)
 
     }
 
     fun onEmailValueChange(email: String) {
-        _uiState.value = _uiState.value.copy(email = email)
-        _uiState.value = _uiState.value.copy(errorMessageResId = null)
+        _uiState.value =
+            _uiState.value.copy(email = email, errorMessageResId = null, registerError = null)
     }
 
     fun onPhoneNumberChange(phoneNumber: String) {
-        _uiState.value = _uiState.value.copy(phoneNumber = phoneNumber)
-        _uiState.value = _uiState.value.copy(errorMessageResId = null)
+        _uiState.value = _uiState.value.copy(
+            phoneNumber = phoneNumber,
+            errorMessageResId = null,
+            registerError = null
+        )
     }
 
     fun onCountryClick(country: Country) {
-        _uiState.value = _uiState.value.copy(country = country)
-        _uiState.value = _uiState.value.copy(isSheetOpen = false)
-        _uiState.value = _uiState.value.copy(errorMessageResId = null)
+        _uiState.value =
+            _uiState.value.copy(
+                country = country,
+                isSheetOpen = false,
+                errorMessageResId = null,
+                registerError = null
+            )
     }
 
     fun onSheetOpenChange(isSheetOpen: Boolean) {
@@ -62,8 +67,8 @@ class RegisterViewModel @Inject constructor(
     }
 
     fun onPasswordValueChange(password: String) {
-        _uiState.value = _uiState.value.copy(password = password)
-        _uiState.value = _uiState.value.copy(errorMessageResId = null)
+        _uiState.value =
+            _uiState.value.copy(password = password, errorMessageResId = null, registerError = null)
     }
 
     fun onShowDatePickerChange(showDatePicker: Boolean) {
@@ -72,8 +77,8 @@ class RegisterViewModel @Inject constructor(
     }
 
     fun onBirthdayValueChange(birthday: String) {
-        _uiState.value = _uiState.value.copy(birthday = birthday)
-        _uiState.value = _uiState.value.copy(errorMessageResId = null)
+        _uiState.value =
+            _uiState.value.copy(birthday = birthday, errorMessageResId = null, registerError = null)
     }
 
     fun onGenderClick(gender: String) {
@@ -81,7 +86,7 @@ class RegisterViewModel @Inject constructor(
     }
 
     fun onRegisterClick() {
-        _uiState.value = _uiState.value.copy(errorMessageResId = null, loginError = null)
+        _uiState.value = _uiState.value.copy(errorMessageResId = null, registerError = null)
         if (_uiState.value.name.isEmpty()) {
             _uiState.update {
                 it.copy(errorMessageResId = R.string.name_required)
@@ -126,10 +131,7 @@ class RegisterViewModel @Inject constructor(
             }
         } else {
             _uiState.update {
-                it.copy(isLoading = true)
-            }
-            _uiState.update {
-                it.copy(errorMessageResId = null)
+                it.copy(isLoading = true, errorMessageResId = null, registerError = null)
             }
             viewModelScope.launch(dispatcher) {
                 registerUseCase.invoke(
@@ -145,7 +147,7 @@ class RegisterViewModel @Inject constructor(
                     when (domainRegisterState) {
                         is DomainRegisterState.OnSuccess -> {
                             _uiState.update {
-                                it.copy(isLoading = false, loginSuccess = true)
+                                it.copy(isLoading = false, registerSuccess = true)
                             }
 
                         }
@@ -155,7 +157,7 @@ class RegisterViewModel @Inject constructor(
                                 it.copy(
                                     isLoading = false,
                                     errorMessageResId = null,
-                                    loginError = domainRegisterState.error
+                                    registerError = domainRegisterState.error
                                 )
                             }
                         }
@@ -165,24 +167,26 @@ class RegisterViewModel @Inject constructor(
         }
     }
 
-    fun onLoginWithGoogleClick(context: Context) {
-        _uiState.update {
-            it.copy(isLoading = true)
-        }
+    fun onRegisterWithGoogleClick(context: Context) {
         val activity = context as? Activity ?: return
-        val googleSignInHandler by lazy { GoogleSignInHandler() }
+
+        _uiState.update {
+            it.copy(isLoading = true, errorMessageResId = null, registerError = null)
+        }
+
         viewModelScope.launch(dispatcher) {
             try {
-                val result = googleSignInHandler.signInWithGoogle(activity)
-                val data = googleSignInHandler.handleSignIn(result).split("|")
+                val (name, email) = googleSignInUseCase.signInWithGoogle(activity)
                 _uiState.update {
-                    it.copy(isLoading = false,name = data[0], email = data[1],)
+                    it.copy(isLoading = false, name = name, email = email)
                 }
-
-            } catch (e: Exception) {
-                Log.e(TAG, "Unexpected error: ${e.message}", e)
+            } catch (_: Exception) {
+                _uiState.update {
+                    it.copy(isLoading = false, errorMessageResId = R.string.google_login_failed)
+                }
             }
         }
+
     }
 
 

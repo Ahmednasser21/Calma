@@ -42,7 +42,7 @@
     <string name="email_is_required">L\'e-mail est obligatoire</string>
     <string name="verify_phone">Confirm phone number</string>
     <string name="verification_code_sent">"Un code à 4 chiffres a été envoyé au numéro "</string>
-    <string name="didnt_receive_code">Je n\'ai pas reçu de message ?</string>
+    <string name="didnt_receive_code">Vous n\'avez pas reçu de message ?</string>
     <string name="resend_code">Renvoyer</string>
     <string name="verification_code_sent_2">Veuillez saisir le code dans les cases.</string>
     <string name="select_interest">Sélectionnez l\'un de vos intérêts</string>
@@ -61,4 +61,5 @@
     <string name="ice_hockey">Ice Hockey</string>
     <string name="baseball">Baseball</string>
     <string name="table_tennis">Table Tennis</string>
+    <string name="google_login_failed">Échec de la connexion avec Google. Veuillez réessayer.</string>
 </resources>

@@ -50,7 +50,7 @@
     <string name="email_is_required">Email is required</string>
     <string name="verify_phone">Confirm phone number</string>
     <string name="verification_code_sent">"A 4-digit code has been sent to the number "</string>
-    <string name="didnt_receive_code">didn\'t receive a message?</string>
+    <string name="didnt_receive_code">Didn\'t receive a message?</string>
     <string name="resend_code">Resend</string>
     <string name="verification_code_sent_2">Please enter the code in the boxes</string>
     <string name="select_interest">Select one of your interests</string>
@@ -69,4 +69,5 @@
     <string name="ice_hockey">Ice Hockey</string>
     <string name="baseball">Baseball</string>
     <string name="table_tennis">Table Tennis</string>
+    <string name="google_login_failed">Failed to login with google. please try again</string>
 </resources>

@@ -86,9 +86,9 @@ fun NavGraphBuilder.authNav(
                 },
                 onRegisterClick = { registerViewModel.onRegisterClick() },
                 onLoginClick = { navController.navigate(LoginScreen) },
-                onLoginWithGoogleClick = { registerViewModel.onLoginWithGoogleClick(it) },
+                onLoginWithGoogleClick = { registerViewModel.onRegisterWithGoogleClick(it) },
                 onLoginWithFacebookClick = {
-//                    registerViewModel.onLoginWithFacebookClick()
+                    registerViewModel.onLoginWithFacebookClick()
                     navController.navigate(VerificationScreen(phoneNumber = (registerState.country.dialCode + registerState.phoneNumber)))
 
                 }

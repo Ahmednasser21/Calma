@@ -1,7 +1,6 @@
-package com.metafortech.calma.presentation.authentication
+package com.metafortech.calma.presentation.authentication.google
 
 import android.app.Activity
-import android.util.Log
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
@@ -10,13 +9,12 @@ import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import com.metafortech.calma.BuildConfig
+import javax.inject.Inject
 
-private const val TAG = "GoogleSignInHandler"
-
-class GoogleSignInHandler {
+class GoogleSignInHandler @Inject constructor() {
 
     suspend fun signInWithGoogle(activity: Activity): GetCredentialResponse {
-        val credentialManager = CredentialManager.create(activity)
+        val credentialManager = CredentialManager.Companion.create(activity)
 
         val googleIdOption = GetGoogleIdOption.Builder()
             .setFilterByAuthorizedAccounts(false)
@@ -39,28 +37,26 @@ class GoogleSignInHandler {
 
         when (credential) {
             is CustomCredential -> {
-                if (credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
+                if (credential.type == GoogleIdTokenCredential.Companion.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
                     try {
                         val googleIdTokenCredential =
-                            GoogleIdTokenCredential.createFrom(credential.data)
+                            GoogleIdTokenCredential.Companion.createFrom(credential.data)
 
                         val displayName = googleIdTokenCredential.displayName
                         val email = googleIdTokenCredential.id
                         return "$displayName|$email"
 
-                    } catch (e: GoogleIdTokenParsingException) {
-                        Log.e(TAG, "Invalid Google ID token response", e)
-                        return ""
+                    } catch (_: GoogleIdTokenParsingException) {
+
+                        return "fail"
                     }
                 } else {
-                    Log.e(TAG, "Unexpected type of credential: ${credential.type}")
-                    return ""
+                    return "fail"
                 }
             }
 
             else -> {
-                Log.e(TAG, "Unexpected credential type: ${credential.javaClass.name}")
-                return ""
+                return "fail"
             }
         }
     }
