@@ -23,7 +23,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.metafortech.calma.R
-import com.metafortech.calma.theme.Gray
+import com.metafortech.calma.presentation.theme.Gray
 
 @Composable
 fun LanguageScreen(

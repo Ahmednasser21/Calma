@@ -46,20 +46,8 @@
     <string name="resend_code">إعادة إرسال</string>
     <string name="verification_code_sent_2">من فضلك ادخل الرمز في المربعات</string>
     <string name="select_interest">اختر واحدة من اهتماماتك</string>
-    <string name="trainer">مدرب</string>
-    <string name="referre">حكم</string>
-    <string name="therapist">معالج</string>
-    <string name="commentator">معلق رياضي</string>
-    <string name="nutritionist">أخصائي تغذية</string>
-    <string name="analyst">محلل رياضي</string>
-    <string name="player">لاعب</string>
-    <string name="commenter">معلق</string>
     <string name="select_sport_type_you_prefer">اختر نوع الرياضة التي تفضلها</string>
-    <string name="football">كرة قدم</string>
-    <string name="basketball">كرة سلة</string>
-    <string name="volleyball">كرة الطائرة</string>
-    <string name="ice_hockey">هوكي الجليد</string>
-    <string name="baseball">بيسبول</string>
-    <string name="table_tennis">تنيس طاولة</string>
     <string name="google_login_failed">فشل تسجيل الدخول بواسطة حساب جوجل. حاول مرة أخرى</string>
+    <string name="loading">برجاء الإنتظار</string>
+    <string name="retry">أعد المحاولة</string>
 </resources>

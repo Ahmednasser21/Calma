@@ -1,42 +1,62 @@
 package com.metafortech.calma
 
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.metafortech.calma.presentation.authentication.AuthNav
 import com.metafortech.calma.presentation.authentication.authNav
-import com.metafortech.calma.theme.CalmaTheme
+import com.metafortech.calma.presentation.home.homeNav
+import com.metafortech.calma.presentation.theme.CalmaTheme
 import com.metafortech.calma.presentation.welcom.LanguageScreen
-import com.metafortech.calma.presentation.welcom.LocaleManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.serialization.Serializable
+import androidx.compose.runtime.getValue
+import com.metafortech.calma.presentation.home.ConditionalScaffold
+import com.metafortech.calma.presentation.welcom.LanguageScreenViewModel
+import com.metafortech.calma.presentation.welcom.LocaleHelper
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private lateinit var localeManager: LocaleManager
+
+    private lateinit var languageScreenViewModel: LanguageScreenViewModel
+
+    override fun attachBaseContext(newBase: Context) {
+        val prefs = newBase.getSharedPreferences("app_settings", MODE_PRIVATE)
+        val lang = prefs.getString("selected_language", "en") ?: "en"
+
+        val contextWithLocale = LocaleHelper.wrapContextWithLocale(newBase, lang)
+        super.attachBaseContext(contextWithLocale)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
-        localeManager = LocaleManager(this)
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-            localeManager.setAppLocale(localeManager.getSavedLocale())
-        }
         super.onCreate(savedInstanceState)
+        languageScreenViewModel = viewModels<LanguageScreenViewModel>().value
+
         enableEdgeToEdge()
+
         setContent {
             val navController = rememberNavController()
             CalmaTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    NavHost(navController = navController, startDestination = WelcomeScreen) {
-                        composable<WelcomeScreen> {
+                val currentBackStackEntry by navController.currentBackStackEntryAsState()
+                val currentDestination = currentBackStackEntry?.destination
+                val isHomeNavigation = currentDestination?.route?.contains("Home", true) == true
+
+                ConditionalScaffold(
+                    isHomeNavigation
+                ) { innerPadding ->
+                    NavHost(navController = navController, startDestination = LanguageScreen) {
+                        composable<LanguageScreen> {
                             LanguageScreen(
                                 modifier = Modifier.padding(innerPadding)
                             ) { languageTag ->
@@ -45,6 +65,7 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                         authNav(innerPadding, navController)
+                        homeNav(innerPadding, navController)
                     }
                 }
             }
@@ -52,9 +73,8 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun onUserSelectedLanguage(languageTag: String) {
-        if (localeManager.isLocaleChanged(languageTag)) {
-            localeManager.saveLocale(languageTag)
-            localeManager.setAppLocale(languageTag)
+        if (languageScreenViewModel.isLocaleChanged(languageTag)) {
+            languageScreenViewModel.setAppLocale(languageTag)
 
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
                 val intent = Intent(this, MainActivity::class.java)
@@ -66,5 +86,6 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+
 @Serializable
-object WelcomeScreen
+object LanguageScreen

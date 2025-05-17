@@ -1,6 +1,5 @@
 package com.metafortech.calma.presentation.authentication.sport
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -24,81 +23,81 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.metafortech.calma.R
-import com.metafortech.calma.presentation.authentication.BackButton
-import com.metafortech.calma.presentation.authentication.CircularProgressOnLoadingState
-import com.metafortech.calma.presentation.authentication.NextButton
-import com.metafortech.calma.presentation.authentication.StringError
+import com.metafortech.calma.presentation.BackButton
+import com.metafortech.calma.presentation.ErrorStateIndicator
+import com.metafortech.calma.presentation.ImageLoading
+import com.metafortech.calma.presentation.LoadingStateIndicator
+import com.metafortech.calma.presentation.NextButton
 
 @Composable
 fun SportSelectionScreen(
     modifier: Modifier = Modifier,
     state: SportSelectionUiState,
-    selectSport: (String) -> Unit,
+    selectedLang: String,
+    selectSport: (Int) -> Unit,
     onBackClick: () -> Unit,
-    onNextClick: () -> Unit
+    onNextClick: () -> Unit,
+    onRegisterSuccess: @Composable () -> Unit
 ) {
+    LoadingStateIndicator(isLoading = state.isLoading) {
 
-    Box(modifier = modifier.fillMaxSize()) {
+        onRegisterSuccess()
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+        Box(modifier = modifier.fillMaxSize()) {
 
-            BackButton { onBackClick() }
-
-            Text(
-                text = stringResource(R.string.select_sport_type_you_prefer),
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 24.dp),
-                style = MaterialTheme.typography.titleLarge,
-                textAlign = TextAlign.Center,
-                fontWeight = FontWeight.Bold
-            )
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
 
-            if (state.sports.isNotEmpty()) {
-                LazyVerticalGrid(
-                    modifier = Modifier.weight(1f),
-                    columns = GridCells.Fixed(2),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                    contentPadding = PaddingValues(bottom = 16.dp)
-                ) {
-                    items(state.sports) { sport ->
-                        val isSelected = sport.id == state.selectedSportId
-                        SportItem(
-                            sport = sport,
-                            isSelected = isSelected,
-                            onClick = {
-                                selectSport(sport.id)
-                            }
-                        )
+                BackButton { onBackClick() }
+
+                Text(
+                    text = stringResource(R.string.select_sport_type_you_prefer),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 24.dp),
+                    style = MaterialTheme.typography.titleLarge,
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Bold
+                )
+                ErrorStateIndicator(
+                    error = state.error,
+                    onRetry = null
+                )
+
+                if (state.sports.isNotEmpty()) {
+                    LazyVerticalGrid(
+                        modifier = Modifier.weight(1f),
+                        columns = GridCells.Fixed(2),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        contentPadding = PaddingValues(bottom = 16.dp)
+                    ) {
+                        items(state.sports) { sport ->
+                            SportItem(
+                                sport = sport,
+                                selectedLang = selectedLang,
+                                isSelected = sport.id == state.selectedSportId,
+                                onClick = {
+                                    selectSport(sport.id)
+                                }
+                            )
+                        }
                     }
                 }
+
+                NextButton(enabled = state.selectedSportId!= null) { onNextClick() }
+
+                Spacer(modifier = Modifier.height(16.dp))
             }
-
-            CircularProgressOnLoadingState(state.isLoading)
-
-            StringError(
-                state.error, modifier = Modifier
-                    .padding(16.dp)
-                    .align(Alignment.CenterHorizontally)
-                    .weight(1f)
-            )
-
-            NextButton(enabled = state.selectedSportId != null) { onNextClick() }
-
-            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
@@ -107,6 +106,7 @@ fun SportSelectionScreen(
 fun SportItem(
     sport: Sport,
     isSelected: Boolean,
+    selectedLang: String,
     onClick: () -> Unit
 ) {
     val borderColor = if (isSelected) {
@@ -134,16 +134,17 @@ fun SportItem(
                 )
                 .clickable(onClick = onClick)
         ) {
-            Image(
-                painter = painterResource(id = sport.imageResId),
-                contentDescription = stringResource(id = sport.nameResId),
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
+            ImageLoading(
+                imageURL = sport.imageUrl,
+                modifier = Modifier.fillMaxSize(),
+                contentDescription = sport.nameAr,
             )
         }
 
         Text(
-            text = stringResource(id = sport.nameResId),
+            text = if (selectedLang == "ar") sport.nameAr
+            else if (selectedLang == "en") sport.nameEn
+            else sport.nameFr,
             modifier = Modifier.padding(top = 8.dp),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.bodyLarge,

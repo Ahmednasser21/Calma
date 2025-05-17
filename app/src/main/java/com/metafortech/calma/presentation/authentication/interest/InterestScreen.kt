@@ -21,75 +21,76 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.metafortech.calma.R
-import com.metafortech.calma.presentation.authentication.BackButton
-import com.metafortech.calma.presentation.authentication.NextButton
+import com.metafortech.calma.presentation.BackButton
+import com.metafortech.calma.presentation.ErrorStateIndicator
+import com.metafortech.calma.presentation.LoadingStateIndicator
+import com.metafortech.calma.presentation.NextButton
 
 @Composable
 fun InterestSelectionScreen(
     modifier: Modifier = Modifier,
+    state: InterestScreenUiState,
     onBackClick: () -> Unit,
-    onInterestSelected: (String) -> Unit,
+    onInterestSelected: (Int) -> Unit,
+    selectedLang: String,
     onNextClick: () -> Unit,
-    selectedInterest: String? = null
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceBetween
-    ) {
-
-        BackButton { onBackClick() }
-
-        Text(
-            text = stringResource(R.string.select_interest),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 40.dp),
-            style = MaterialTheme.typography.titleLarge,
-            textAlign = TextAlign.Center,
-            fontWeight = FontWeight.Bold
-        )
-
-        val interests = listOf(
-            stringResource(R.string.trainer),
-            stringResource(R.string.referre),
-            stringResource(R.string.therapist),
-            stringResource(R.string.commentator),
-            stringResource(R.string.nutritionist),
-            stringResource(R.string.analyst),
-            stringResource(R.string.player),
-            stringResource(R.string.commenter)
-        )
-
-        LazyVerticalGrid(
-            modifier = Modifier.weight(1f),
-            columns = GridCells.Fixed(2),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalArrangement = Arrangement.SpaceEvenly
-        ) {
-            items(interests) { interest ->
-                val isSelected = interest == selectedInterest
-                InterestItem(
-                    interest = interest,
-                    isSelected = isSelected,
-                    onClick = { onInterestSelected(interest) }
-                )
-            }
-        }
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
+    LoadingStateIndicator(state.isLoading) {
+        Column(
+            modifier = modifier
+                .fillMaxSize()
                 .padding(horizontal = 16.dp),
-            contentAlignment = Alignment.BottomCenter
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            NextButton(
-                modifier = Modifier.padding(bottom = 64.dp),
-                enabled = selectedInterest != null
+
+            BackButton { onBackClick() }
+
+            Text(
+                text = stringResource(R.string.select_interest),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 40.dp),
+                style = MaterialTheme.typography.titleLarge,
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold
+            )
+            ErrorStateIndicator(error = state.error, onRetry = null)
+
+            LazyVerticalGrid(
+                modifier = Modifier.weight(1f),
+                columns = GridCells.Fixed(2),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                verticalArrangement = Arrangement.SpaceEvenly
             ) {
-                onNextClick()
+                items(state.interests) { interest ->
+                    val isSelected = interest.id == state.selectedInterestId
+                    InterestItem(
+                        interest = if (selectedLang == "ar") {
+                            interest.interestNameAr
+                        } else if (selectedLang == "en") {
+                            interest.interestNameEn
+                        } else {
+                            interest.interestNameFr
+                        },
+                        isSelected = isSelected,
+                        onClick = { onInterestSelected(interest.id) }
+                    )
+                }
+            }
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                contentAlignment = Alignment.BottomCenter
+            ) {
+                NextButton(
+                    modifier = Modifier.padding(bottom = 64.dp),
+                    enabled = state.selectedInterestId!=null
+                ) {
+                    onNextClick()
+                }
             }
         }
     }
@@ -120,7 +121,7 @@ fun InterestItem(
             .clip(RoundedCornerShape(12.dp))
             .border(width = 1.dp, color = borderColor, shape = RoundedCornerShape(12.dp))
             .background(backgroundColor)
-            .clickable(onClick = onClick),
+            .clickable(onClick = { onClick() }),
         contentAlignment = Alignment.Center
     ) {
         Text(
@@ -131,4 +132,3 @@ fun InterestItem(
         )
     }
 }
-

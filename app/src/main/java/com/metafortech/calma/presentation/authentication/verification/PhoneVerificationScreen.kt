@@ -28,9 +28,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.metafortech.calma.R
-import com.metafortech.calma.presentation.authentication.CircularProgressOnLoadingState
-import com.metafortech.calma.presentation.authentication.NextButton
-import com.metafortech.calma.presentation.authentication.StringError
+import com.metafortech.calma.presentation.ErrorStateIndicator
+import com.metafortech.calma.presentation.LoadingStateIndicator
+import com.metafortech.calma.presentation.NextButton
 
 @Composable
 fun PhoneVerificationScreen(
@@ -42,97 +42,101 @@ fun PhoneVerificationScreen(
     phoneNumber: String
 ) {
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = stringResource(R.string.verify_phone),
-            modifier = Modifier.padding(16.dp),
-            style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.primary
-        )
+    LoadingStateIndicator(state.isLoading) {
 
-        Text(
-            text = buildAnnotatedString {
-                append(stringResource(R.string.verification_code_sent))
-                withStyle(
-                    style = SpanStyle(
-                        fontWeight = FontWeight.Bold
-                    )
-                ) {
-                    append(" $phoneNumber ")
-                }
-            },
-            modifier = Modifier.padding(bottom = 24.dp),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.primary,
-            textAlign = TextAlign.Center
-        )
-
-        Text(
-            text = stringResource(R.string.verification_code_sent_2),
-            modifier = Modifier.padding(bottom = 24.dp),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.primary,
-            textAlign = TextAlign.Center
-        )
-
-        OtpCodeFields(
-            otpCount = 4,
-            otpValues = state.codeValues,
-            onValueChange = onCodeValueChange
-        )
-
-        CountdownTimer(
-            modifier = Modifier.padding(top = 16.dp),
-            remainingTime = state.remainingTime
-        )
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = stringResource(R.string.didnt_receive_code),
-                style = MaterialTheme.typography.bodyMedium,
+                text = stringResource(R.string.verify_phone),
+                modifier = Modifier.padding(16.dp),
+                style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.primary
             )
 
-            TextButton(
-                onClick = onResendCodeClick,
-                enabled = state.remainingTime == 0,
-                shape = RoundedCornerShape(25.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Transparent,
-                    contentColor = MaterialTheme.colorScheme.secondary,
-                    disabledContainerColor = Color.Transparent,
-                    disabledContentColor = Color.Gray
-                )
+            Text(
+                text = buildAnnotatedString {
+                    append(stringResource(R.string.verification_code_sent))
+                    withStyle(
+                        style = SpanStyle(
+                            fontWeight = FontWeight.Bold
+                        )
+                    ) {
+                        append(" $phoneNumber ")
+                    }
+                },
+                modifier = Modifier.padding(bottom = 24.dp),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.primary,
+                textAlign = TextAlign.Center
+            )
+
+            Text(
+                text = stringResource(R.string.verification_code_sent_2),
+                modifier = Modifier.padding(bottom = 24.dp),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.primary,
+                textAlign = TextAlign.Center
+            )
+
+            OtpCodeFields(
+                otpCount = 4,
+                otpValues = state.codeValues,
+                onValueChange = onCodeValueChange
+            )
+
+            CountdownTimer(
+                modifier = Modifier.padding(top = 16.dp),
+                remainingTime = state.remainingTime
+            )
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = stringResource(R.string.resend_code),
+                    text = stringResource(R.string.didnt_receive_code),
                     style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.primary
                 )
+
+                TextButton(
+                    onClick = onResendCodeClick,
+                    enabled = state.remainingTime == 0,
+                    shape = RoundedCornerShape(25.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Transparent,
+                        contentColor = MaterialTheme.colorScheme.secondary,
+                        disabledContainerColor = Color.Transparent,
+                        disabledContentColor = Color.Gray
+                    )
+                ) {
+                    Text(
+                        text = stringResource(R.string.resend_code),
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
             }
+
+            ErrorStateIndicator(
+                error = state.errorMessage,
+                onRetry = null
+            )
+
+            NextButton(
+                modifier = Modifier.padding(top = 16.dp),
+                enabled = state.isCodeComplete
+            ) {
+                onNextClick()
+            }
+
         }
-
-        StringError(state.errorMessage)
-
-        CircularProgressOnLoadingState(state.isLoading)
-
-        NextButton(
-            modifier = Modifier.padding(top = 16.dp),
-            enabled = state.isCodeComplete
-        ) {
-            onNextClick()
-        }
-
     }
 }
 

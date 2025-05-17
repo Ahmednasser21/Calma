@@ -3,8 +3,8 @@ package com.metafortech.calma.presentation.authentication.verification
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.metafortech.calma.data.di.IODispatcher
-import com.metafortech.calma.data.di.MainDispatcher
+import com.metafortech.calma.di.IODispatcher
+import com.metafortech.calma.di.MainDispatcher
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job

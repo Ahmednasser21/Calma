@@ -1,12 +1,15 @@
 package com.metafortech.calma.data.remote
 
-import com.metafortech.calma.data.remote.presentation.login.LoginBody
-import com.metafortech.calma.data.remote.presentation.login.LoginResponse
-import com.metafortech.calma.data.remote.presentation.register.RegisterBody
-import com.metafortech.calma.data.remote.presentation.register.RegisterResponse
+import com.metafortech.calma.data.remote.interest.InterestsResponse
+import com.metafortech.calma.data.remote.login.LoginBody
+import com.metafortech.calma.data.remote.login.LoginResponse
+import com.metafortech.calma.data.remote.register.RegisterBody
+import com.metafortech.calma.data.remote.register.RegisterResponse
+import com.metafortech.calma.data.remote.sports.SportsResponse
 import retrofit2.Response
 
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.POST
 
 interface APIService {
@@ -14,6 +17,12 @@ interface APIService {
     suspend fun login(
         @Body loginBody: LoginBody
     ): Response<LoginResponse>
+
+    @GET("sports/list")
+    suspend fun getSports(): Response<SportsResponse>
+
+    @GET("interset/list")
+    suspend fun getInterest(): Response<InterestsResponse>
 
     @POST("register")
     suspend fun register(
