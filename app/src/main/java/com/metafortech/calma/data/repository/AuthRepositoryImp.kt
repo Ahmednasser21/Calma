@@ -2,6 +2,7 @@ package com.metafortech.calma.data.repository
 
 import com.metafortech.calma.data.remote.APIService
 import com.metafortech.calma.data.remote.interest.InterestsResponse
+import com.metafortech.calma.data.remote.interest.InterestsUpdateRequest
 import com.metafortech.calma.data.remote.login.LoginBody
 import com.metafortech.calma.data.remote.login.LoginResponse
 import com.metafortech.calma.data.remote.register.RegisterBody
@@ -30,6 +31,13 @@ class AuthRepositoryImp @Inject constructor(
     override fun getSports():
             Flow<Response<SportsResponse>> = flow {
         emit(aPIService.getSports())
+    }
+
+    override fun postUpdateInterests(
+        request: InterestsUpdateRequest,
+        token: String
+    ): Flow<Response<SportsResponse>> = flow {
+        emit(aPIService.updateInterestsAndSports(request, token))
     }
 
 

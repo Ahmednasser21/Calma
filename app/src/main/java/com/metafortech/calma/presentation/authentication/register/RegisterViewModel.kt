@@ -135,7 +135,12 @@ class RegisterViewModel @Inject constructor(
                             errorMessageResId = null
                         )
                     }
-                    _navigationEvents.emit(NavigationEvent.VerificationScreen(_uiState.value.country.dialCode + _uiState.value.phoneNumber))
+                    _navigationEvents.emit(
+                        NavigationEvent.VerificationScreen(
+                            _uiState.value.country.dialCode + _uiState.value.phoneNumber,
+                            result.registerResponse.data.token
+                        )
+                    )
                 }
 
                 is DomainRegisterState.OnFailed -> {

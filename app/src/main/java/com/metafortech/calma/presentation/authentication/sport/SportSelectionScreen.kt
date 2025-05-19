@@ -42,11 +42,11 @@ fun SportSelectionScreen(
     selectSport: (Int) -> Unit,
     onBackClick: () -> Unit,
     onNextClick: () -> Unit,
-    onRegisterSuccess: @Composable () -> Unit
+    onUpdatingSportAndInterestSuccess: @Composable () -> Unit
 ) {
     LoadingStateIndicator(isLoading = state.isLoading) {
 
-        onRegisterSuccess()
+        onUpdatingSportAndInterestSuccess()
 
         Box(modifier = modifier.fillMaxSize()) {
 

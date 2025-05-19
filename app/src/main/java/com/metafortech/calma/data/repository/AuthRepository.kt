@@ -1,6 +1,7 @@
 package com.metafortech.calma.data.repository
 
 import com.metafortech.calma.data.remote.interest.InterestsResponse
+import com.metafortech.calma.data.remote.interest.InterestsUpdateRequest
 import com.metafortech.calma.data.remote.login.LoginBody
 import com.metafortech.calma.data.remote.login.LoginResponse
 import com.metafortech.calma.data.remote.register.RegisterBody
@@ -12,7 +13,8 @@ import retrofit2.Response
 interface AuthRepository {
 
     fun postLoginRequest(loginBody: LoginBody): Flow<Response<LoginResponse>>
+    fun postRegisterRequest(registerBody: RegisterBody): Flow<Response<RegisterResponse>>
     fun getInterest(): Flow<Response<InterestsResponse>>
     fun getSports(): Flow<Response<SportsResponse>>
-    fun postRegisterRequest(registerBody: RegisterBody): Flow<Response<RegisterResponse>>
+    fun postUpdateInterests(request: InterestsUpdateRequest,token: String): Flow<Response<SportsResponse>>
 }

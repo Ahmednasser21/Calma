@@ -2,12 +2,11 @@ package com.metafortech.calma.presentation.authentication.sport
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.metafortech.calma.data.remote.register.RegisterBody
+import com.metafortech.calma.data.remote.interest.InterestsUpdateRequest
 import com.metafortech.calma.di.IODispatcher
-import com.metafortech.calma.domain.register.DomainRegisterState
-import com.metafortech.calma.domain.register.RegisterUseCase
 import com.metafortech.calma.domain.sports.DomainSportState
-import com.metafortech.calma.domain.sports.SportUseCase
+import com.metafortech.calma.domain.sports.GetSportsListUseCase
+import com.metafortech.calma.domain.sports.PostSportsAndInterestUpdateUseCase
 import com.metafortech.calma.presentation.authentication.NavigationEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -25,8 +24,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SportSelectionViewModel @Inject constructor(
-    private val sportUseCase: SportUseCase,
-    private val registerUseCase: RegisterUseCase,
+    private val getSportsListUseCase: GetSportsListUseCase,
+    private val postSportsAndInterestUpdateUseCase: PostSportsAndInterestUpdateUseCase,
     @IODispatcher val ioDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
@@ -40,20 +39,20 @@ class SportSelectionViewModel @Inject constructor(
         }.stateIn(
             viewModelScope,
             SharingStarted.Lazily,
-            SportSelectionUiState().copy(isLoading = true, isSuccessfulRegister = false)
+            SportSelectionUiState().copy(isLoading = true, isSuccessfulUpdate = false)
         )
 
     private suspend fun loadSports() {
         _uiState.update {
             it.copy(
                 isLoading = true,
-                isSuccessfulRegister = false,
+                isSuccessfulUpdate = false,
                 isDataLoaded = false,
                 error = null
             )
         }
 
-        sportUseCase.invoke().collect { domainSportState ->
+        getSportsListUseCase.invoke().collect { domainSportState ->
             when (domainSportState) {
                 is DomainSportState.OnSuccess -> {
                     _uiState.update {
@@ -89,30 +88,30 @@ class SportSelectionViewModel @Inject constructor(
 
     }
 
-    fun register(registerBody: RegisterBody) {
+    fun updateInterestsAndSports(interestRequest: InterestsUpdateRequest, token: String) {
         _uiState.update {
             it.copy(isLoading = true, error = null)
         }
         viewModelScope.launch(ioDispatcher) {
-//            registerUseCase.invoke(registerBody).collect { domainRegisterState ->
-//                when (domainRegisterState) {
-//                    is DomainRegisterState.OnSuccess -> {
-//                        _uiState.update {
-//                            it.copy(isLoading = false, isSuccessfulRegister = true)
-//                        }
-//                        _navigationEvents.emit(NavigationEvent.VerificationScreen(registerBody.phone))
-//                    }
-//
-//                    is DomainRegisterState.OnFailed -> {
-//                        _uiState.update {
-//                            it.copy(
-//                                isLoading = false,
-//                                error = domainRegisterState.error
-//                            )
-//                        }
-//                    }
-//                }
-//            }
+            postSportsAndInterestUpdateUseCase.invoke(interestRequest,"Bearer $token").collect {domainSportState->
+                when (domainSportState) {
+                    is DomainSportState.OnSuccess -> {
+                        _uiState.update {
+                            it.copy(isLoading = false, isSuccessfulUpdate = true)
+                        }
+                        _navigationEvents.emit(NavigationEvent.LoginScreen)
+                    }
+
+                    is DomainSportState.OnFailed -> {
+                        _uiState.update {
+                            it.copy(
+                                isLoading = false,
+                                error = domainSportState.error
+                            )
+                        }
+                    }
+                }
+            }
         }
 
     }

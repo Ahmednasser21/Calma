@@ -6,7 +6,7 @@ data class SportSelectionUiState(
     val isLoading: Boolean = false,
     val error: String? = null,
     val isDataLoaded: Boolean = false,
-    val isSuccessfulRegister: Boolean = false
+    val isSuccessfulUpdate: Boolean = false
 )
 data class Sport(
     val id: Int,

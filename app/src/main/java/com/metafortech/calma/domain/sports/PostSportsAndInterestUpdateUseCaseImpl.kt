@@ -1,5 +1,6 @@
 package com.metafortech.calma.domain.sports
 
+import com.metafortech.calma.data.remote.interest.InterestsUpdateRequest
 import com.metafortech.calma.data.repository.AuthRepository
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
@@ -7,20 +8,23 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import org.json.JSONObject
 
-class SportUseCaseImp @Inject constructor(
+class PostSportsAndInterestUpdateUseCaseImpl @Inject constructor(
     private val authRepository: AuthRepository
-) : SportUseCase {
-    override fun invoke(): Flow<DomainSportState> = flow {
-        authRepository.getSports().collect { sportResponse ->
-            if (sportResponse.isSuccessful) {
-                val body = sportResponse.body()
+) : PostSportsAndInterestUpdateUseCase {
+    override suspend fun invoke(
+        request: InterestsUpdateRequest,
+        token: String
+    ): Flow<DomainSportState> = flow {
+        authRepository.postUpdateInterests(request, token).collect { response ->
+            if (response.isSuccessful) {
+                val body = response.body()
                 if (body != null && body.success) {
-                    emit(DomainSportState.OnSuccess(body))
+                    emit(DomainSportState.OnSuccess(data = body))
                 } else {
                     emit(DomainSportState.OnFailed(error = ("${body?.message} with code: ${body?.code}")))
                 }
             } else {
-                val errorMessage = sportResponse.errorBody()?.string()?.let { errorBodyString ->
+                val errorMessage = response.errorBody()?.string()?.let { errorBodyString ->
                     try {
                         val errorJson = JSONObject(errorBodyString)
                         errorJson.optString(
@@ -36,6 +40,6 @@ class SportUseCaseImp @Inject constructor(
         }
     }.catch { throwable ->
         emit(DomainSportState.OnFailed("Network error: ${throwable.localizedMessage}"))
-
     }
+
 }

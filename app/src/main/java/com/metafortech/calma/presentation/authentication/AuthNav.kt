@@ -12,7 +12,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
 import com.metafortech.calma.LanguageScreen
-import com.metafortech.calma.data.remote.register.RegisterBody
+import com.metafortech.calma.data.remote.interest.InterestsUpdateRequest
+import com.metafortech.calma.presentation.authentication.NavigationEvent.LoginScreen
 import com.metafortech.calma.presentation.authentication.NavigationEvent.VerificationScreen
 import com.metafortech.calma.presentation.authentication.interest.InterestSelectionScreen
 import com.metafortech.calma.presentation.authentication.interest.InterestSelectionViewModel
@@ -27,7 +28,6 @@ import com.metafortech.calma.presentation.authentication.verification.PhoneVerif
 import com.metafortech.calma.presentation.home.HomeNav
 import com.metafortech.calma.presentation.welcom.LanguageScreenViewModel
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
 
 fun NavGraphBuilder.authNav(
     innerPadding: PaddingValues,
@@ -112,8 +112,13 @@ fun NavGraphBuilder.authNav(
                     LaunchedEffect(Unit) {
                         registerViewModel.navigationEvent.collect { event ->
                             when (event) {
-                                is VerificationScreen ->
-                                    navController.navigate(VerificationScreen(event.phoneNumber))
+                                is VerificationScreen -> {
+                                    navController.navigate(VerificationScreen(event.phoneNumber,event.userToken))
+                                }
+
+                                else -> {
+
+                                }
                             }
                         }
                     }
@@ -122,10 +127,34 @@ fun NavGraphBuilder.authNav(
 
             )
         }
+        composable<VerificationScreen> { navBackStackEntry ->
+            val phoneVerificationViewModel: PhoneVerificationViewModel = hiltViewModel()
+            val state = phoneVerificationViewModel.uiState.collectAsStateWithLifecycle().value
+            val screenArgs = navBackStackEntry.toRoute<VerificationScreen>()
+            PhoneVerificationScreen(
+                modifier = Modifier.padding(innerPadding),
+                state = state,
+                onCodeValueChange = { index, value ->
+                    phoneVerificationViewModel.onCodeValueChange(index, value)
+                },
+                onResendCodeClick = { phoneVerificationViewModel.onResendCode() },
+                onNextClick = {
+                    phoneVerificationViewModel.onNextClick(
+                        navigate = {
+                            navController.navigate(InterestSelectionScreen(screenArgs.userToken))
+                        }
+                    )
+                },
+                phoneNumber = screenArgs.phoneNumber
+            )
+
+        }
+
         composable<InterestSelectionScreen> { backStackEntry ->
             val interestSelectionViewModel: InterestSelectionViewModel = hiltViewModel()
-            val screenArg = backStackEntry.toRoute<InterestSelectionScreen>()
-            val registerDTO = Json.decodeFromString<RegisterDTO>(screenArg.registerJsonInterest)
+            val languageScreenViewModel: LanguageScreenViewModel = hiltViewModel()
+            val screenArgs = backStackEntry.toRoute<InterestSelectionScreen>()
+            val selectedLang = languageScreenViewModel.currentLanguage.value
             val state =
                 interestSelectionViewModel.interestUIState.collectAsStateWithLifecycle().value
             InterestSelectionScreen(
@@ -135,15 +164,15 @@ fun NavGraphBuilder.authNav(
                 onInterestSelected = { selectedInterest ->
                     interestSelectionViewModel.onInterestSelected(selectedInterest)
                 },
-                selectedLang = registerDTO.lang.toString(),
+                selectedLang = selectedLang,
                 onNextClick = {
-                    val registerJson =
-                        Json.encodeToString(
-                            registerDTO.copy(
-                                interests = listOf(state.selectedInterestId ?: 0)
-                            )
+                    navController.navigate(
+                        SportSelectionScreen(
+                            state.selectedInterestId ?: 0,
+                            selectedLang,
+                            screenArgs.userToken
                         )
-                    navController.navigate(SportSelectionScreen(registerJson))
+                    )
                 }
             )
 
@@ -152,7 +181,8 @@ fun NavGraphBuilder.authNav(
             val sportSelectionViewModel: SportSelectionViewModel = hiltViewModel()
             val state = sportSelectionViewModel.uiState.collectAsStateWithLifecycle().value
             val screenArg = backStackEntry.toRoute<SportSelectionScreen>()
-            val registerDTO = Json.decodeFromString<RegisterDTO>(screenArg.registerJsonSport)
+            val selectedInterestId = screenArg.interestId
+            val selectedLang = screenArg.selectedLang
             SportSelectionScreen(
                 state = state,
                 modifier = Modifier.padding(innerPadding),
@@ -161,55 +191,30 @@ fun NavGraphBuilder.authNav(
                     sportSelectionViewModel.selectSport(id)
                 },
                 onNextClick = {
-                    val updatedDTO = registerDTO.copy(sports = listOf(state.selectedSportId ?: 0))
-                    sportSelectionViewModel.register(
-                        RegisterBody(
-                            name = updatedDTO.name,
-                            email = updatedDTO.email,
-                            dob = updatedDTO.dop,
-                            password = updatedDTO.password,
-                            phone = updatedDTO.phone,
-                            gendar = updatedDTO.gender,
-                            lang = updatedDTO.lang.toString(),
-                            sports = updatedDTO.sports ?: emptyList(),
-                            intersets = updatedDTO.interests ?: emptyList()
-                        )
+                    sportSelectionViewModel.updateInterestsAndSports(
+                        InterestsUpdateRequest(
+                            listOf(selectedInterestId),
+                            listOf(state.selectedSportId ?: 0)
+                        ),
+                        screenArg.userToken.toString()
                     )
-
                 },
-                onRegisterSuccess = {
+                selectedLang = selectedLang,
+
+                onUpdatingSportAndInterestSuccess = {
                     LaunchedEffect(Unit) {
                         sportSelectionViewModel.navigationEvent.collect { event ->
                             when (event) {
-                                is VerificationScreen ->
-                                    navController.navigate(VerificationScreen(event.phoneNumber))
+                                is LoginScreen ->
+                                    navController.navigate(LoginScreen)
+                                else -> {
+                                }
                             }
                         }
                     }
 
-                },
-                selectedLang = registerDTO.lang.toString()
+                }
             )
-        }
-        composable<VerificationScreen> {
-            val phoneVerificationViewModel: PhoneVerificationViewModel = hiltViewModel()
-            val state = phoneVerificationViewModel.uiState.collectAsStateWithLifecycle().value
-            val screenArgs = it.toRoute<VerificationScreen>()
-            PhoneVerificationScreen(
-                modifier = Modifier.padding(innerPadding),
-                state = state,
-                onCodeValueChange = phoneVerificationViewModel::onCodeValueChange,
-                onResendCodeClick = phoneVerificationViewModel::onResendCode,
-                onNextClick = {
-                    phoneVerificationViewModel.onNextClick(
-                        navigate = {
-                            navController.navigate(LoginScreen)
-                        }
-                    )
-                },
-                phoneNumber = screenArgs.phoneNumber
-            )
-
         }
     }
 }
@@ -218,18 +223,18 @@ fun NavGraphBuilder.authNav(
 object AuthNav
 
 @Serializable
-object LoginScreen
-
-@Serializable
 object RegisterScreen
 
 @Serializable
-data class InterestSelectionScreen(val registerJsonInterest: String)
+data class InterestSelectionScreen(val userToken: String? = null)
 
 @Serializable
-data class SportSelectionScreen(val registerJsonSport: String)
+data class SportSelectionScreen(val interestId: Int, val selectedLang: String, val userToken: String? = null)
 
 sealed class NavigationEvent() {
     @Serializable
-    data class VerificationScreen(val phoneNumber: String) : NavigationEvent()
+    data class VerificationScreen(val phoneNumber: String,val userToken: String? = null) : NavigationEvent()
+
+    @Serializable
+    object LoginScreen : NavigationEvent()
 }
