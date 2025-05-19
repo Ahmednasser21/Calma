@@ -35,9 +35,9 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.metafortech.calma.R
 import com.metafortech.calma.presentation.BottomPartOfLoginAndRegisterScreen
-import com.metafortech.calma.presentation.CircularProgressOnLoadingState
 import com.metafortech.calma.presentation.ErrorStateIndicator
 import com.metafortech.calma.presentation.GeneralTextField
+import com.metafortech.calma.presentation.LoadingStateIndicator
 import com.metafortech.calma.presentation.PasswordTextField
 import com.metafortech.calma.presentation.TextButton
 
@@ -56,70 +56,71 @@ fun LoginScreen(
     onLoginWithGoogleClick: (Context) -> Unit,
     onLoginWithFacebookClick: () -> Unit
 ) {
-    val context = LocalContext.current
-    var showDialog by remember { mutableStateOf(true) }
-    if (uiState.loginSuccess) {
-        showDialog = false
-        onLoginSuccess()
-    }
-    if (showDialog) {
-        Dialog(
-            onDismissRequest = {
-                showDialog = false
-                onDismiss()
-            },
-            properties = DialogProperties(
-                dismissOnBackPress = true,
-                dismissOnClickOutside = true,
-                usePlatformDefaultWidth = false
-            )
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Transparent),
-                contentAlignment = Alignment.BottomCenter
+    LoadingStateIndicator(uiState.isLoading) {
+        val context = LocalContext.current
+        var showDialog by remember { mutableStateOf(true) }
+        if (uiState.loginSuccess) {
+            showDialog = false
+            onLoginSuccess()
+        }
+        if (showDialog && !uiState.isLoading) {
+            Dialog(
+                onDismissRequest = {
+                    showDialog = false
+                    onDismiss()
+                },
+                properties = DialogProperties(
+                    dismissOnBackPress = true,
+                    dismissOnClickOutside = true,
+                    usePlatformDefaultWidth = false
+                )
             ) {
-
                 Box(
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight(0.75f)
-                        .background(
-                            color = MaterialTheme.colorScheme.background,
-                            shape = RoundedCornerShape(topStart = 48.dp, topEnd = 48.dp)
-                        )
-                        .padding(horizontal = 16.dp)
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Transparent),
+                    contentAlignment = Alignment.BottomCenter
                 ) {
-                    LoginScreenContents(
-                        modifier = Modifier,
-                        email = uiState.email,
-                        password = uiState.password,
-                        errorMessage = uiState.errorMessageResId?.let { stringResource(it) }
-                            ?: uiState.loginError,
-                        isLoading = uiState.isLoading,
-                        onEmailValueChange = { email ->
-                            onEmailValueChange(
-                                email
+
+                    Box(
+                        modifier = modifier
+                            .fillMaxWidth()
+                            .fillMaxHeight(0.75f)
+                            .background(
+                                color = MaterialTheme.colorScheme.background,
+                                shape = RoundedCornerShape(topStart = 48.dp, topEnd = 48.dp)
                             )
-                        },
-                        onPasswordValueChange = { password ->
-                            onPasswordValueChange(password)
-                        },
-                        onForgotPasswordClick = {
-                            showDialog = false
-                            onForgotPasswordClick()
-                        },
-                        onLoginClick = { onLoginClick() },
-                        onRegisterClick = {
-                            showDialog = false
-                            onRegisterClick()
-                        },
-                        onLoginWithGoogleClick = {
-                            onLoginWithGoogleClick(context)
-                        },
-                        onLoginWithFacebookClick = { onLoginWithFacebookClick() }
-                    )
+                            .padding(horizontal = 16.dp)
+                    ) {
+                        LoginScreenContents(
+                            modifier = Modifier,
+                            email = uiState.email,
+                            password = uiState.password,
+                            errorMessage = uiState.errorMessageResId?.let { stringResource(it) }
+                                ?: uiState.loginError,
+                            onEmailValueChange = { email ->
+                                onEmailValueChange(
+                                    email
+                                )
+                            },
+                            onPasswordValueChange = { password ->
+                                onPasswordValueChange(password)
+                            },
+                            onForgotPasswordClick = {
+                                showDialog = false
+                                onForgotPasswordClick()
+                            },
+                            onLoginClick = { onLoginClick() },
+                            onRegisterClick = {
+                                showDialog = false
+                                onRegisterClick()
+                            },
+                            onLoginWithGoogleClick = {
+                                onLoginWithGoogleClick(context)
+                            },
+                            onLoginWithFacebookClick = { onLoginWithFacebookClick() }
+                        )
+                    }
                 }
             }
         }
@@ -132,7 +133,6 @@ fun LoginScreenContents(
     email: String,
     password: String = "",
     errorMessage: String?,
-    isLoading: Boolean,
     onEmailValueChange: (String) -> Unit,
     onPasswordValueChange: (String) -> Unit,
     onForgotPasswordClick: () -> Unit,
@@ -197,8 +197,6 @@ fun LoginScreenContents(
             error = errorMessage,
             onRetry = null
         )
-
-        CircularProgressOnLoadingState(isLoading)
 
         TextButton(
             modifier = Modifier
