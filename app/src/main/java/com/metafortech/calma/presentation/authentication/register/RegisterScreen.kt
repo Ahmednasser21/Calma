@@ -83,8 +83,10 @@ fun RegisterScreen(
     onLoginClick: () -> Unit = {},
     onLoginWithGoogleClick: (Context) -> Unit,
     onLoginWithFacebookClick: () -> Unit,
+    onRegisterSuccess: @Composable () -> Unit
 ) {
     LoadingStateIndicator(isLoading = state.isLoading) {
+        onRegisterSuccess()
         val context = LocalContext.current
         Column(
             modifier = modifier

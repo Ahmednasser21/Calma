@@ -94,25 +94,25 @@ class SportSelectionViewModel @Inject constructor(
             it.copy(isLoading = true, error = null)
         }
         viewModelScope.launch(ioDispatcher) {
-            registerUseCase.invoke(registerBody).collect { domainRegisterState ->
-                when (domainRegisterState) {
-                    is DomainRegisterState.OnSuccess -> {
-                        _uiState.update {
-                            it.copy(isLoading = false, isSuccessfulRegister = true)
-                        }
-                        _navigationEvents.emit(NavigationEvent.VerificationScreen(registerBody.phone))
-                    }
-
-                    is DomainRegisterState.OnFailed -> {
-                        _uiState.update {
-                            it.copy(
-                                isLoading = false,
-                                error = domainRegisterState.error
-                            )
-                        }
-                    }
-                }
-            }
+//            registerUseCase.invoke(registerBody).collect { domainRegisterState ->
+//                when (domainRegisterState) {
+//                    is DomainRegisterState.OnSuccess -> {
+//                        _uiState.update {
+//                            it.copy(isLoading = false, isSuccessfulRegister = true)
+//                        }
+//                        _navigationEvents.emit(NavigationEvent.VerificationScreen(registerBody.phone))
+//                    }
+//
+//                    is DomainRegisterState.OnFailed -> {
+//                        _uiState.update {
+//                            it.copy(
+//                                isLoading = false,
+//                                error = domainRegisterState.error
+//                            )
+//                        }
+//                    }
+//                }
+//            }
         }
 
     }

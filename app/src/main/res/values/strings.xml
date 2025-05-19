@@ -58,4 +58,7 @@
     <string name="google_login_failed">Failed to login with google. please try again</string>
     <string name="loading">Loading</string>
     <string name="retry">Retry</string>
+    <string name="name_too_short">Name can\'t be less than 2 characters</string>
+    <string name="password_too_short">Password should be 8 or more characters</string>
+    <string name="password_requirements_not_met">Password should contains numbers, symbols and characters</string>
 </resources>

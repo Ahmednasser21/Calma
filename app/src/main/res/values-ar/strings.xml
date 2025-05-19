@@ -50,4 +50,7 @@
     <string name="google_login_failed">فشل تسجيل الدخول بواسطة حساب جوجل. حاول مرة أخرى</string>
     <string name="loading">برجاء الإنتظار</string>
     <string name="retry">أعد المحاولة</string>
+    <string name="name_too_short">يجب الا يقل عدد الأحرف في الأسم عن حرفين</string>
+    <string name="password_too_short">يجب أن تتكون كلمة المرورمن 8 أحرف أو أكثر</string>
+    <string name="password_requirements_not_met">يجب أن تحتوي كلمة المرور على أرقام ورحروف ورموز</string>
 </resources>

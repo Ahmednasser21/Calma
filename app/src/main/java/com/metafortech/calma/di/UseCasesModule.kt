@@ -6,8 +6,12 @@ import com.metafortech.calma.domain.interest.InterestUseCase
 import com.metafortech.calma.domain.interest.InterestUseCaseImpl
 import com.metafortech.calma.domain.login.LoginUseCase
 import com.metafortech.calma.domain.login.LoginUseCaseImpl
+import com.metafortech.calma.domain.mappers.FormStateToRegisterBodyMapper
+import com.metafortech.calma.domain.mappers.FormStateToRegisterBodyMapperImpl
 import com.metafortech.calma.domain.register.RegisterUseCase
 import com.metafortech.calma.domain.register.RegisterUseCaseImpl
+import com.metafortech.calma.domain.register.ValidateFormUseCase
+import com.metafortech.calma.domain.register.ValidateFormUseCaseImp
 import com.metafortech.calma.domain.sports.SportUseCase
 import com.metafortech.calma.domain.sports.SportUseCaseImp
 import dagger.Binds
@@ -35,4 +39,10 @@ abstract class UseCasesModule {
 
     @Binds
     abstract fun bindSportUseCase(sportUseCaseImp: SportUseCaseImp): SportUseCase
+
+    @Binds
+    abstract fun bindValidateFormUseCase(validateFormUseCaseImp: ValidateFormUseCaseImp): ValidateFormUseCase
+
+    @Binds
+    abstract fun bindFormStateToRegisterBodyMapper(formStateToRegisterBodyMapperImpl: FormStateToRegisterBodyMapperImpl): FormStateToRegisterBodyMapper
 }
