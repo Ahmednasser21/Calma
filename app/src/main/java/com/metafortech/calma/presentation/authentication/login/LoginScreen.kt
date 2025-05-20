@@ -46,7 +46,6 @@ import com.metafortech.calma.presentation.TextButton
 fun LoginScreen(
     modifier: Modifier = Modifier,
     uiState: LoginScreenUIState,
-    onDismiss: () -> Unit = {},
     onEmailValueChange: (String) -> Unit,
     onPasswordValueChange: (String) -> Unit,
     onForgotPasswordClick: () -> Unit = {},
@@ -63,65 +62,53 @@ fun LoginScreen(
             showDialog = false
             onLoginSuccess()
         }
-        if (showDialog && !uiState.isLoading) {
-            Dialog(
-                onDismissRequest = {
-                    showDialog = false
-                    onDismiss()
-                },
-                properties = DialogProperties(
-                    dismissOnBackPress = true,
-                    dismissOnClickOutside = true,
-                    usePlatformDefaultWidth = false
-                )
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.Transparent),
-                    contentAlignment = Alignment.BottomCenter
-                ) {
 
-                    Box(
-                        modifier = modifier
-                            .fillMaxWidth()
-                            .fillMaxHeight(0.75f)
-                            .background(
-                                color = MaterialTheme.colorScheme.background,
-                                shape = RoundedCornerShape(topStart = 48.dp, topEnd = 48.dp)
-                            )
-                            .padding(horizontal = 16.dp)
-                    ) {
-                        LoginScreenContents(
-                            modifier = Modifier,
-                            email = uiState.email,
-                            password = uiState.password,
-                            errorMessage = uiState.errorMessageResId?.let { stringResource(it) }
-                                ?: uiState.loginError,
-                            onEmailValueChange = { email ->
-                                onEmailValueChange(
-                                    email
-                                )
-                            },
-                            onPasswordValueChange = { password ->
-                                onPasswordValueChange(password)
-                            },
-                            onForgotPasswordClick = {
-                                showDialog = false
-                                onForgotPasswordClick()
-                            },
-                            onLoginClick = { onLoginClick() },
-                            onRegisterClick = {
-                                showDialog = false
-                                onRegisterClick()
-                            },
-                            onLoginWithGoogleClick = {
-                                onLoginWithGoogleClick(context)
-                            },
-                            onLoginWithFacebookClick = { onLoginWithFacebookClick() }
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xBE272727)),
+            contentAlignment = Alignment.BottomCenter
+        ) {
+
+            Box(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.78f)
+                    .background(
+                        color = MaterialTheme.colorScheme.background,
+                        shape = RoundedCornerShape(topStart = 48.dp, topEnd = 48.dp)
+                    )
+                    .padding(horizontal = 16.dp),
+                contentAlignment = Alignment.BottomCenter
+            ) {
+                LoginScreenContents(
+                    modifier = Modifier,
+                    email = uiState.email,
+                    password = uiState.password,
+                    errorMessage = uiState.errorMessageResId?.let { stringResource(it) }
+                        ?: uiState.loginError,
+                    onEmailValueChange = { email ->
+                        onEmailValueChange(
+                            email
                         )
-                    }
-                }
+                    },
+                    onPasswordValueChange = { password ->
+                        onPasswordValueChange(password)
+                    },
+                    onForgotPasswordClick = {
+                        showDialog = false
+                        onForgotPasswordClick()
+                    },
+                    onLoginClick = { onLoginClick() },
+                    onRegisterClick = {
+                        showDialog = false
+                        onRegisterClick()
+                    },
+                    onLoginWithGoogleClick = {
+                        onLoginWithGoogleClick(context)
+                    },
+                    onLoginWithFacebookClick = { onLoginWithFacebookClick() }
+                )
             }
         }
     }
@@ -154,7 +141,6 @@ fun LoginScreenContents(
             style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.primary
         )
-        Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = buildAnnotatedString {
                 append(stringResource(R.string.welcome_back))

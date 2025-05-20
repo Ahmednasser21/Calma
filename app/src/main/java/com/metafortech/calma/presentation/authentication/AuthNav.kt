@@ -57,7 +57,6 @@ fun NavGraphBuilder.authNav(
                     }
                 },
                 onRegisterClick = { navController.navigate(RegisterScreen) },
-                onDismiss = { navController.navigate(LanguageScreen) },
                 onLoginWithGoogleClick = { loginViewModel.onLoginWithGoogleClick(it) },
                 onLoginWithFacebookClick = { loginViewModel.onLoginWithFacebookClick() }
             )
@@ -113,7 +112,12 @@ fun NavGraphBuilder.authNav(
                         registerViewModel.navigationEvent.collect { event ->
                             when (event) {
                                 is VerificationScreen -> {
-                                    navController.navigate(VerificationScreen(event.phoneNumber,event.userToken))
+                                    navController.navigate(
+                                        VerificationScreen(
+                                            event.phoneNumber,
+                                            event.userToken
+                                        )
+                                    )
                                 }
 
                                 else -> {
@@ -229,11 +233,16 @@ object RegisterScreen
 data class InterestSelectionScreen(val userToken: String? = null)
 
 @Serializable
-data class SportSelectionScreen(val interestId: Int, val selectedLang: String, val userToken: String? = null)
+data class SportSelectionScreen(
+    val interestId: Int,
+    val selectedLang: String,
+    val userToken: String? = null
+)
 
 sealed class NavigationEvent() {
     @Serializable
-    data class VerificationScreen(val phoneNumber: String,val userToken: String? = null) : NavigationEvent()
+    data class VerificationScreen(val phoneNumber: String, val userToken: String? = null) :
+        NavigationEvent()
 
     @Serializable
     object LoginScreen : NavigationEvent()

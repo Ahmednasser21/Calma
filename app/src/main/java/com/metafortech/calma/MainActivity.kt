@@ -79,7 +79,6 @@ class MainActivity : ComponentActivity() {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
                 val intent = Intent(this, MainActivity::class.java)
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-                finishAffinity()
                 startActivity(intent)
             }
         }
