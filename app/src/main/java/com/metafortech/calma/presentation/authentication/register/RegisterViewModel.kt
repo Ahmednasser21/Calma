@@ -5,6 +5,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.metafortech.calma.R
+import com.metafortech.calma.data.local.AppPreferences
 import com.metafortech.calma.di.IODispatcher
 import com.metafortech.calma.domain.google.GoogleSignInUseCase
 import com.metafortech.calma.domain.register.DomainCountry
@@ -26,6 +27,7 @@ import javax.inject.Inject
 class RegisterViewModel @Inject constructor(
     val registerUseCase: RegisterUseCase,
     val googleSignInUseCase: GoogleSignInUseCase,
+    val appPreferences: AppPreferences,
     @IODispatcher val dispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
@@ -141,6 +143,7 @@ class RegisterViewModel @Inject constructor(
                             result.registerResponse.data.token
                         )
                     )
+                    appPreferences.saveBoolean("isRegistered", true)
                 }
 
                 is DomainRegisterState.OnFailed -> {

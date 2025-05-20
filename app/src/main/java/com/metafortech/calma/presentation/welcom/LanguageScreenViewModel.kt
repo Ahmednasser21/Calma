@@ -12,16 +12,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import java.util.Locale
-import androidx.core.content.edit
+import com.metafortech.calma.data.local.AppPreferences
 
 @HiltViewModel
 class LanguageScreenViewModel @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val appPreferences: AppPreferences
 ) : ViewModel() {
 
-    private val sharedPrefs by lazy {
-        context.getSharedPreferences("app_settings", Context.MODE_PRIVATE)
-    }
 
     private val _currentLanguage = MutableStateFlow(getSavedLocale())
     val currentLanguage: StateFlow<String> = _currentLanguage.asStateFlow()
@@ -50,11 +48,11 @@ class LanguageScreenViewModel @Inject constructor(
     }
 
     private fun getSavedLocale(): String {
-        return sharedPrefs.getString("selected_language", "en") ?: "en"
+        return appPreferences.getString("selected_language", "en")
     }
 
     private fun saveLocale(languageTag: String) {
-        sharedPrefs.edit { putString("selected_language", languageTag) }
+        appPreferences.saveString("selected_language", languageTag)
     }
 
     fun isLocaleChanged(newLanguageTag: String): Boolean {

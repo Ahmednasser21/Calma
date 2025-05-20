@@ -50,10 +50,7 @@ fun NavGraphBuilder.authNav(
                 onLoginClick = { loginViewModel.onLoginClick() },
                 onLoginSuccess = {
                     navController.navigate(HomeNav) {
-                        popUpTo(LanguageScreen) {
-                            inclusive = true
-                        }
-                        launchSingleTop = true
+                        popUpTo(0) { inclusive = true }
                     }
                 },
                 onRegisterClick = { navController.navigate(RegisterScreen) },
@@ -210,7 +207,10 @@ fun NavGraphBuilder.authNav(
                         sportSelectionViewModel.navigationEvent.collect { event ->
                             when (event) {
                                 is LoginScreen ->
-                                    navController.navigate(LoginScreen)
+                                    navController.navigate(LoginScreen) {
+                                        popUpTo(0) { inclusive = true }
+                                    }
+
                                 else -> {
                                 }
                             }

@@ -6,6 +6,7 @@ import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.metafortech.calma.R
+import com.metafortech.calma.data.local.AppPreferences
 import com.metafortech.calma.di.IODispatcher
 import com.metafortech.calma.data.remote.login.LoginBody
 import com.metafortech.calma.domain.google.GoogleSignInUseCase
@@ -23,6 +24,7 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     val loginUseCase: LoginUseCase,
     val googleSignInUseCase: GoogleSignInUseCase,
+    val appPreferences: AppPreferences,
     @IODispatcher private val dispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
@@ -84,6 +86,8 @@ class LoginViewModel @Inject constructor(
             .collect { domainLoginState ->
                 when (domainLoginState) {
                     is DomainLoginState.OnSuccess -> {
+                        appPreferences.saveString("userToken",domainLoginState.loginResponse.data.token)
+                        appPreferences.saveBoolean("isLoggedIn",true)
                         _uiState.update {
                             it.copy(isLoading = false, loginSuccess = true)
                         }

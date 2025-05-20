@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -22,7 +23,9 @@ import com.metafortech.calma.presentation.welcom.LanguageScreen
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.serialization.Serializable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.graphics.Color
 import com.metafortech.calma.presentation.home.ConditionalScaffold
+import com.metafortech.calma.presentation.home.HomeNav
 import com.metafortech.calma.presentation.welcom.LanguageScreenViewModel
 import com.metafortech.calma.presentation.welcom.LocaleHelper
 
@@ -30,11 +33,14 @@ import com.metafortech.calma.presentation.welcom.LocaleHelper
 class MainActivity : ComponentActivity() {
 
     private lateinit var languageScreenViewModel: LanguageScreenViewModel
+    private var isRegistered: Boolean = false
+    private var isLoggedIn: Boolean = false
 
     override fun attachBaseContext(newBase: Context) {
         val prefs = newBase.getSharedPreferences("app_settings", MODE_PRIVATE)
         val lang = prefs.getString("selected_language", "en") ?: "en"
-
+        isRegistered = prefs.getBoolean("isRegistered", false)
+        isLoggedIn = prefs.getBoolean("isLoggedIn", false)
         val contextWithLocale = LocaleHelper.wrapContextWithLocale(newBase, lang)
         super.attachBaseContext(contextWithLocale)
     }
@@ -42,8 +48,12 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         languageScreenViewModel = viewModels<LanguageScreenViewModel>().value
-
-        enableEdgeToEdge()
+        enableEdgeToEdge(
+            navigationBarStyle = SystemBarStyle.light(
+                Color.White.hashCode(),
+                Color.Transparent.hashCode()
+            )
+        )
 
         setContent {
             val navController = rememberNavController()
@@ -55,7 +65,10 @@ class MainActivity : ComponentActivity() {
                 ConditionalScaffold(
                     isHomeNavigation
                 ) { innerPadding ->
-                    NavHost(navController = navController, startDestination = LanguageScreen) {
+                    NavHost(
+                        navController = navController, startDestination =
+                            if (isRegistered && !isLoggedIn) AuthNav else if (isLoggedIn) HomeNav else LanguageScreen
+                    ) {
                         composable<LanguageScreen> {
                             LanguageScreen(
                                 modifier = Modifier.padding(innerPadding)
