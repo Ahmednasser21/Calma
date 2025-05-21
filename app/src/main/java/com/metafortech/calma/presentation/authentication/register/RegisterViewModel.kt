@@ -14,6 +14,7 @@ import com.metafortech.calma.domain.register.ValidationFormState
 import com.metafortech.calma.domain.register.RegisterUseCase
 import com.metafortech.calma.presentation.authentication.NavigationEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,6 +29,7 @@ class RegisterViewModel @Inject constructor(
     val registerUseCase: RegisterUseCase,
     val googleSignInUseCase: GoogleSignInUseCase,
     val appPreferences: AppPreferences,
+    @ApplicationContext val context: Context,
     @IODispatcher val dispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
@@ -98,7 +100,7 @@ class RegisterViewModel @Inject constructor(
         _uiState.update { it.copy(gender = gender) }
     }
 
-    fun onRegisterClick(lang: String) {
+    fun onRegisterClick() {
         _uiState.update {
             it.copy(
                 isLoading = true,
@@ -107,12 +109,12 @@ class RegisterViewModel @Inject constructor(
             )
         }
         viewModelScope.launch(dispatcher) {
-            register(lang)
+            register()
 
         }
     }
 
-    suspend fun register(lang: String) {
+    suspend fun register() {
         registerUseCase.invoke(
             ValidationFormState(
                 name = _uiState.value.name,
@@ -126,7 +128,7 @@ class RegisterViewModel @Inject constructor(
                     dialCode = _uiState.value.country.dialCode
                 )
             ),
-            lang = lang
+            lang = appPreferences.getString(context.getString(R.string.selected_language),"en")
         ).collect { result ->
             when (result) {
                 is DomainRegisterState.OnSuccess -> {
@@ -143,7 +145,7 @@ class RegisterViewModel @Inject constructor(
                             result.registerResponse.data.token
                         )
                     )
-                    appPreferences.saveBoolean("isRegistered", true)
+                    appPreferences.saveBoolean(context.getString(R.string.is_registered), true)
                 }
 
                 is DomainRegisterState.OnFailed -> {

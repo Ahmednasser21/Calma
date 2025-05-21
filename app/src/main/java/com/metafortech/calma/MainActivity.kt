@@ -39,8 +39,8 @@ class MainActivity : ComponentActivity() {
     override fun attachBaseContext(newBase: Context) {
         val prefs = newBase.getSharedPreferences("app_settings", MODE_PRIVATE)
         val lang = prefs.getString("selected_language", "en") ?: "en"
-        isRegistered = prefs.getBoolean("isRegistered", false)
-        isLoggedIn = prefs.getBoolean("isLoggedIn", false)
+        isRegistered = prefs.getBoolean("is_registered", false)
+        isLoggedIn = prefs.getBoolean("is_loggedIn", false)
         val contextWithLocale = LocaleHelper.wrapContextWithLocale(newBase, lang)
         super.attachBaseContext(contextWithLocale)
     }

@@ -39,7 +39,7 @@
     <string name="male">Male</string>
     <string name="create_acc">Create account</string>
     <string name="already_have_account">Already have an account?</string>
-    <string name="ok">Ok</string>
+    <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="name_required">User name is required</string>
     <string name="phone_number_required">Phone number is requierd</string>
@@ -61,4 +61,9 @@
     <string name="name_too_short">Name can\'t be less than 2 characters</string>
     <string name="password_too_short">Password should be 8 or more characters</string>
     <string name="password_requirements_not_met">Password should contains numbers, symbols and characters</string>
+    <string name="app_settings" translatable="false">app_settings</string>
+    <string name="selected_language" translatable="false">selected_language</string>
+    <string name="is_registered" translatable="false">is_registered</string>
+    <string name="is_loggedin" translatable="false">is_loggedIn</string>
+    <string name="user_token" translatable="false">user_token</string>
 </resources>

@@ -11,7 +11,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
-import com.metafortech.calma.LanguageScreen
 import com.metafortech.calma.data.remote.interest.InterestsUpdateRequest
 import com.metafortech.calma.presentation.authentication.NavigationEvent.LoginScreen
 import com.metafortech.calma.presentation.authentication.NavigationEvent.VerificationScreen
@@ -26,7 +25,6 @@ import com.metafortech.calma.presentation.authentication.sport.SportSelectionVie
 import com.metafortech.calma.presentation.authentication.verification.PhoneVerificationScreen
 import com.metafortech.calma.presentation.authentication.verification.PhoneVerificationViewModel
 import com.metafortech.calma.presentation.home.HomeNav
-import com.metafortech.calma.presentation.welcom.LanguageScreenViewModel
 import kotlinx.serialization.Serializable
 
 fun NavGraphBuilder.authNav(
@@ -60,9 +58,7 @@ fun NavGraphBuilder.authNav(
         }
         composable<RegisterScreen> {
             val registerViewModel: RegisterViewModel = hiltViewModel()
-            val languageScreenViewModel: LanguageScreenViewModel = hiltViewModel()
             val registerState = registerViewModel.uiState.collectAsStateWithLifecycle().value
-            val lang = languageScreenViewModel.currentLanguage.value
             RegisterScreen(
                 modifier = Modifier.padding(innerPadding),
                 state = registerState,
@@ -97,7 +93,7 @@ fun NavGraphBuilder.authNav(
                     registerViewModel.onGenderClick(gender)
                 },
                 onRegisterClick = {
-                    registerViewModel.onRegisterClick(lang)
+                    registerViewModel.onRegisterClick()
                 },
                 onLoginClick = { navController.navigate(LoginScreen) },
                 onLoginWithGoogleClick = { registerViewModel.onRegisterWithGoogleClick(it) },
@@ -153,11 +149,10 @@ fun NavGraphBuilder.authNav(
 
         composable<InterestSelectionScreen> { backStackEntry ->
             val interestSelectionViewModel: InterestSelectionViewModel = hiltViewModel()
-            val languageScreenViewModel: LanguageScreenViewModel = hiltViewModel()
             val screenArgs = backStackEntry.toRoute<InterestSelectionScreen>()
-            val selectedLang = languageScreenViewModel.currentLanguage.value
             val state =
                 interestSelectionViewModel.interestUIState.collectAsStateWithLifecycle().value
+            val selectedLanguage = interestSelectionViewModel.getSelectedLanguage()
             InterestSelectionScreen(
                 modifier = Modifier.padding(innerPadding),
                 state = state,
@@ -165,12 +160,12 @@ fun NavGraphBuilder.authNav(
                 onInterestSelected = { selectedInterest ->
                     interestSelectionViewModel.onInterestSelected(selectedInterest)
                 },
-                selectedLang = selectedLang,
+                selectedLang = selectedLanguage,
                 onNextClick = {
                     navController.navigate(
                         SportSelectionScreen(
                             state.selectedInterestId ?: 0,
-                            selectedLang,
+                            selectedLanguage,
                             screenArgs.userToken
                         )
                     )

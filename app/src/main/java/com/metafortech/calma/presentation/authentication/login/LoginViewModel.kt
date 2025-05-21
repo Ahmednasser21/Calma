@@ -13,6 +13,7 @@ import com.metafortech.calma.domain.google.GoogleSignInUseCase
 import com.metafortech.calma.domain.login.DomainLoginState
 import com.metafortech.calma.domain.login.LoginUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,6 +26,7 @@ class LoginViewModel @Inject constructor(
     val loginUseCase: LoginUseCase,
     val googleSignInUseCase: GoogleSignInUseCase,
     val appPreferences: AppPreferences,
+    @ApplicationContext val context: Context,
     @IODispatcher private val dispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
@@ -86,8 +88,8 @@ class LoginViewModel @Inject constructor(
             .collect { domainLoginState ->
                 when (domainLoginState) {
                     is DomainLoginState.OnSuccess -> {
-                        appPreferences.saveString("userToken",domainLoginState.loginResponse.data.token)
-                        appPreferences.saveBoolean("isLoggedIn",true)
+                        appPreferences.saveString(context.getString(R.string.user_token),domainLoginState.loginResponse.data.token)
+                        appPreferences.saveBoolean(context.getString(R.string.is_loggedin),true)
                         _uiState.update {
                             it.copy(isLoading = false, loginSuccess = true)
                         }

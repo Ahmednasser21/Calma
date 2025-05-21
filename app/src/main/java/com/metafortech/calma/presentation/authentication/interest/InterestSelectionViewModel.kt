@@ -1,11 +1,15 @@
 package com.metafortech.calma.presentation.authentication.interest
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.metafortech.calma.R
+import com.metafortech.calma.data.local.AppPreferences
 import com.metafortech.calma.di.IODispatcher
 import com.metafortech.calma.domain.interest.DomainInterestState
 import com.metafortech.calma.domain.interest.InterestUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -19,6 +23,8 @@ import javax.inject.Inject
 @HiltViewModel
 class InterestSelectionViewModel @Inject constructor(
     private val interestUseCase: InterestUseCase,
+    private val appPreferences: AppPreferences,
+    @ApplicationContext private val context: Context,
     @IODispatcher private val dispatcher: CoroutineDispatcher
 ) : ViewModel() {
     private val _interestUIState = MutableStateFlow(InterestScreenUiState())
@@ -66,10 +72,16 @@ class InterestSelectionViewModel @Inject constructor(
     }
 
     fun onInterestSelected(interestItemId: Int) {
-        _interestUIState.update {currentState ->
+        _interestUIState.update { currentState ->
             currentState.copy(
                 selectedInterestId = interestItemId
             )
         }
     }
+
+    fun getSelectedLanguage(): String = appPreferences.getString(
+        context.getString(R.string.selected_language),
+        "en"
+    )
+
 }
