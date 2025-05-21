@@ -153,8 +153,8 @@ fun LoginScreenContents(
         GeneralTextField(
             modifier = Modifier,
             textValue = email,
-            label = stringResource(R.string.email_label),
-            placeHolder = stringResource(R.string.email_placeholder),
+            label = stringResource(R.string.email_phone_label),
+            placeHolder = stringResource(R.string.email_phone_placeholder),
             imeAction = ImeAction.Next,
             keyboardType = KeyboardType.Email
         ) { email ->

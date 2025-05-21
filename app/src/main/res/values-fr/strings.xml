@@ -53,4 +53,5 @@
     <string name="name_too_short">Le nom ne peut pas comporter moins de 2 caractères</string>
     <string name="password_too_short">Le mot de passe doit comporter 8 caractères ou plus</string>
     <string name="password_requirements_not_met">Le mot de passe doit contenir des chiffres, des symboles et des caractères</string>
+    <string name="email_phone_label">Courriel ou numéro de téléphone</string>
 </resources>

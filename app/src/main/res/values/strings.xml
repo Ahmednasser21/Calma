@@ -66,4 +66,6 @@
     <string name="is_registered" translatable="false">is_registered</string>
     <string name="is_loggedin" translatable="false">is_loggedIn</string>
     <string name="user_token" translatable="false">user_token</string>
+    <string name="email_phone_label">E-Mail or phone number</string>
+    <string name="email_phone_placeholder" translatable="false">user@example.com / +962781010101</string>
 </resources>
