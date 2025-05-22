@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -79,7 +80,7 @@ fun UserTopBar(
             contentDescription = stringResource(R.string.profile_image),
             modifier = Modifier
                 .padding(start = 8.dp)
-                .size(64.dp)
+                .size(54.dp)
                 .clip(CircleShape)
                 .background(MaterialTheme.colorScheme.surfaceVariant),
             contentScale = ContentScale.FillBounds,
@@ -182,9 +183,9 @@ private fun NavigationItem(
         )
 
         Text(
-            modifier = Modifier.padding(4.dp),
+            modifier = Modifier.padding(horizontal = 2.dp),
             text = text,
-            style = MaterialTheme.typography.bodySmall,
+            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
             color = MaterialTheme.colorScheme.primary,
             textAlign = TextAlign.Center,
             maxLines = 1
