@@ -54,4 +54,11 @@
     <string name="password_too_short">يجب أن تتكون كلمة المرورمن 8 أحرف أو أكثر</string>
     <string name="password_requirements_not_met">يجب أن تحتوي كلمة المرور على أرقام ورحروف ورموز</string>
     <string name="email_phone_label">البريد الإلكتروني أو رقم الهاتف</string>
+    <string name="profile_image">صورة الملف الشخصي</string>
+    <string name="notification">الإشعارات</string>
+    <string name="user_profile">الملف الشخصي</string>
+    <string name="friends">الأصدقاء</string>
+    <string name="championships">البطولات</string>
+    <string name="edifices">الأصرحة</string>
+    <string name="live">بث مباشر</string>
 </resources>

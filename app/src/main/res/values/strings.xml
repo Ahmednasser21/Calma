@@ -68,4 +68,11 @@
     <string name="user_token" translatable="false">user_token</string>
     <string name="email_phone_label">E-Mail or phone number</string>
     <string name="email_phone_placeholder" translatable="false">user@example.com / +962781010101</string>
+    <string name="profile_image">Profile image</string>
+    <string name="notification">Notifications</string>
+    <string name="user_profile">User profile</string>
+    <string name="friends">Friends</string>
+    <string name="championships">Championships</string>
+    <string name="edifices">Edifices</string>
+    <string name="live">Live</string>
 </resources>

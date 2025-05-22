@@ -54,4 +54,11 @@
     <string name="password_too_short">Le mot de passe doit comporter 8 caractères ou plus</string>
     <string name="password_requirements_not_met">Le mot de passe doit contenir des chiffres, des symboles et des caractères</string>
     <string name="email_phone_label">Courriel ou numéro de téléphone</string>
+    <string name="profile_image">Image de profil</string>
+    <string name="notification">Notifications</string>
+    <string name="user_profile">Profil utilisateur</string>
+    <string name="friends">Amis</string>
+    <string name="championships">Championnats</string>
+    <string name="edifices">Édifices</string>
+    <string name="live">En direct</string>
 </resources>

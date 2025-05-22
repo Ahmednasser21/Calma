@@ -63,7 +63,8 @@ class MainActivity : ComponentActivity() {
                 val isHomeNavigation = currentDestination?.route?.contains("Home", true) == true
 
                 ConditionalScaffold(
-                    isHomeNavigation
+                    isHomeNavigation,
+                    navController
                 ) { innerPadding ->
                     NavHost(
                         navController = navController, startDestination =
