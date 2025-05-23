@@ -85,7 +85,6 @@ fun UserTopBar(
                 .clip(CircleShape)
                 .background(MaterialTheme.colorScheme.surfaceVariant),
             contentScale = ContentScale.FillBounds,
-            placeholder = painterResource(R.drawable.outline_person_24),
             error = painterResource(R.drawable.outline_person_24)
         )
         Spacer(modifier = Modifier.weight(1f))

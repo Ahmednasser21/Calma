@@ -29,7 +29,6 @@ import com.metafortech.calma.presentation.authentication.sport.SportSelectionScr
 import com.metafortech.calma.presentation.authentication.sport.SportSelectionViewModel
 import com.metafortech.calma.presentation.authentication.verification.PhoneVerificationScreen
 import com.metafortech.calma.presentation.authentication.verification.PhoneVerificationViewModel
-import kotlinx.serialization.Serializable
 
 fun NavGraphBuilder.authNav(
     innerPadding: PaddingValues,
@@ -51,7 +50,10 @@ fun NavGraphBuilder.authNav(
                 },
                 onLoginClick = { loginViewModel.onLoginClick() },
                 onLoginSuccess = {
-                    navController.navigate(HomeNav) {
+                    navController.navigate(HomeNav(
+                        userName = state.userName,
+                        userImageUrl = state.userImageUrl
+                    )) {
                         popUpTo(0) { inclusive = true }
                     }
                 },

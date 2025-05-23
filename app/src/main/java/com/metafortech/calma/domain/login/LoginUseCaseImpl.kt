@@ -2,6 +2,7 @@ package com.metafortech.calma.domain.login
 
 import com.metafortech.calma.data.remote.login.LoginBody
 import com.metafortech.calma.data.repository.AuthRepository
+import com.metafortech.calma.domain.mappers.LoginResponseMapper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
@@ -10,7 +11,10 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class LoginUseCaseImpl @Inject constructor(private val authRepository: AuthRepository) :
+class LoginUseCaseImpl @Inject constructor(
+    private val authRepository: AuthRepository,
+    private val loginResponseMapper: LoginResponseMapper
+) :
     LoginUseCase {
     override operator fun invoke(loginBody: LoginBody): Flow<DomainLoginState> = flow {
 
@@ -18,7 +22,9 @@ class LoginUseCaseImpl @Inject constructor(private val authRepository: AuthRepos
             if (loginResponse.isSuccessful) {
                 val body = loginResponse.body()
                 if (body != null && body.success) {
-                    emit(DomainLoginState.OnSuccess(body))
+                    emit(
+                        DomainLoginState.OnSuccess(loginResponseMapper(body))
+                    )
                 } else {
                     emit(
                         DomainLoginState.OnFailed(

@@ -88,10 +88,26 @@ class LoginViewModel @Inject constructor(
             .collect { domainLoginState ->
                 when (domainLoginState) {
                     is DomainLoginState.OnSuccess -> {
-                        appPreferences.saveString(context.getString(R.string.user_token),domainLoginState.loginResponse.data.token)
-                        appPreferences.saveBoolean(context.getString(R.string.is_loggedin),true)
+                        appPreferences.saveString(
+                            context.getString(R.string.user_token),
+                            domainLoginState.loginResponseModel.userToken
+                        )
+                        appPreferences.saveBoolean(context.getString(R.string.is_loggedin), true)
+                        appPreferences.saveString(
+                            context.getString(R.string.name),
+                            domainLoginState.loginResponseModel.userName
+                        )
+                        appPreferences.saveString(
+                            context.getString(R.string.user_image_url),
+                            domainLoginState.loginResponseModel.userImageUrl
+                        )
                         _uiState.update {
-                            it.copy(isLoading = false, loginSuccess = true)
+                            it.copy(
+                                isLoading = false,
+                                loginSuccess = true,
+                                userName = domainLoginState.loginResponseModel.userName,
+                                userImageUrl = domainLoginState.loginResponseModel.userImageUrl
+                            )
                         }
                     }
 

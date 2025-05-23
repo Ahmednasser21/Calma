@@ -34,7 +34,10 @@ sealed class AppRoute {
 
 
     @Serializable
-    object HomeNav : AppRoute()
+    data class HomeNav(
+        val userImageUrl: String? = null,
+        val userName: String? = null,
+    ) : AppRoute()
 
     @Serializable
     object HomeScreen : AppRoute()

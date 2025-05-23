@@ -35,12 +35,19 @@ class MainActivity : ComponentActivity() {
     private lateinit var languageScreenViewModel: LanguageScreenViewModel
     private var isRegistered: Boolean = false
     private var isLoggedIn: Boolean = false
+    private lateinit var name: String
+    private lateinit var userImageUrl: String
 
     override fun attachBaseContext(newBase: Context) {
         val prefs = newBase.getSharedPreferences("app_settings", MODE_PRIVATE)
         val lang = prefs.getString("selected_language", "en") ?: "en"
         isRegistered = prefs.getBoolean("is_registered", false)
         isLoggedIn = prefs.getBoolean("is_loggedIn", false)
+        name = prefs.getString("Name", "Calma User") ?: "Calma User"
+        userImageUrl = prefs.getString(
+            "ImageUrl",
+            "https://www.iconpacks.net/icons/1/free-user-icon-972-thumb.png"
+        ) ?: "https://www.iconpacks.net/icons/1/free-user-icon-972-thumb.png"
         val contextWithLocale = LocaleHelper.wrapContextWithLocale(newBase, lang)
         super.attachBaseContext(contextWithLocale)
     }
@@ -64,11 +71,14 @@ class MainActivity : ComponentActivity() {
 
                 ConditionalScaffold(
                     isHomeNavigation,
-                    navController
+                    navController,
+                    userImageUrl
                 ) { innerPadding ->
                     NavHost(
                         navController = navController, startDestination =
-                            if (isRegistered && !isLoggedIn) AuthNav else if (isLoggedIn) HomeNav else LanguageScreen
+                            if (isRegistered && !isLoggedIn) AuthNav
+                            else if (isLoggedIn) HomeNav()
+                            else LanguageScreen
                     ) {
                         composable<LanguageScreen> {
                             LanguageScreen(
@@ -97,12 +107,19 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-}
-fun isHomeNavigationRoute(route: String?): Boolean {
-    return route?.let { r ->
-        listOf("HomeScreen", "SportsFacilitiesScreen", "ReelsScreen", "StoreScreen", "ChattingScreen")
-            .any { screenName -> r.contains(screenName) }
-    } == true
+
+    fun isHomeNavigationRoute(route: String?): Boolean {
+        return route?.let { r ->
+            listOf(
+                "HomeScreen",
+                "SportsFacilitiesScreen",
+                "ReelsScreen",
+                "StoreScreen",
+                "ChattingScreen"
+            )
+                .any { screenName -> r.contains(screenName) }
+        } == true
+    }
 }
 
 

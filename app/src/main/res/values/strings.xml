@@ -80,4 +80,6 @@
     <string name="home">Home Page</string>
     <string name="store">Store</string>
     <string name="chat">Chat</string>
+    <string name="name" translatable="false">Name</string>
+    <string name="user_image_url" translatable="false">ImageUrl</string>
 </resources>

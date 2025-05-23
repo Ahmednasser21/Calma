@@ -1,4 +1,4 @@
-package com.metafortech.calma.presentation.home.home
+package com.metafortech.calma.presentation.home
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
@@ -99,7 +99,7 @@ fun BottomNavigationBar(
                             painterResource(item.unselectedIcon)
                         },
                         contentDescription = stringResource(item.title),
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(if (isSelected) 28.dp else 24.dp)
                     )
                 },
                 label = {

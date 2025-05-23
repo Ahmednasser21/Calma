@@ -8,6 +8,8 @@ import com.metafortech.calma.domain.login.LoginUseCase
 import com.metafortech.calma.domain.login.LoginUseCaseImpl
 import com.metafortech.calma.domain.mappers.FormStateToRegisterBodyMapper
 import com.metafortech.calma.domain.mappers.FormStateToRegisterBodyMapperImpl
+import com.metafortech.calma.domain.mappers.LoginResponseMapper
+import com.metafortech.calma.domain.mappers.LoginResponseMapperImpl
 import com.metafortech.calma.domain.register.RegisterUseCase
 import com.metafortech.calma.domain.register.RegisterUseCaseImpl
 import com.metafortech.calma.domain.register.ValidateFormUseCase
@@ -56,4 +58,9 @@ abstract class UseCasesModule {
     abstract fun bindPostSportsAndInterestUpdateUseCase(
         postSportsAndInterestUpdateUseCaseImp: PostSportsAndInterestUpdateUseCaseImpl
     ): PostSportsAndInterestUpdateUseCase
+
+    @Binds
+    abstract fun bindLoginResponseMapper(
+        loginResponseMapperImpl:LoginResponseMapperImpl
+    ): LoginResponseMapper
 }

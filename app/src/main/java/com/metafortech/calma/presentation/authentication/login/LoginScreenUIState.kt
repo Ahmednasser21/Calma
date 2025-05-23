@@ -7,5 +7,7 @@ data class LoginScreenUIState(
     val errorMessageResId: Int? = null,
     val isLoading: Boolean = false,
     val loginSuccess: Boolean = false,
-    val loginError: String? = null
+    val loginError: String? = null,
+    val userImageUrl: String? = null,
+    val userName: String? = null
 )

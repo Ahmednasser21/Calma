@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -16,15 +17,14 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navigation
+import androidx.navigation.toRoute
 import com.metafortech.calma.presentation.AppRoute.HomeNav
 import com.metafortech.calma.presentation.AppRoute.HomeScreen
 import com.metafortech.calma.presentation.AppRoute.ChattingScreen
 import com.metafortech.calma.presentation.AppRoute.ReelsScreen
 import com.metafortech.calma.presentation.AppRoute.SportsFacilitiesScreen
 import com.metafortech.calma.presentation.AppRoute.StoreScreen
-import com.metafortech.calma.presentation.home.home.BottomNavigationBar
 import com.metafortech.calma.presentation.home.home.HomeScreen
-
 
 fun NavGraphBuilder.homeNav(
     innerPadding: PaddingValues,
@@ -32,7 +32,11 @@ fun NavGraphBuilder.homeNav(
 ) {
     navigation<HomeNav>(startDestination = HomeScreen) {
 
-        composable<HomeScreen> {
+        composable<HomeScreen> { backStackEntry ->
+//            val homeNavEntry = remember(backStackEntry) {
+//                navController.getBackStackEntry<HomeNav>()
+//            }
+//            val homeArgs = homeNavEntry.toRoute<HomeNav>()
             HomeScreen(modifier = Modifier.padding(innerPadding))
         }
         composable<SportsFacilitiesScreen> {
@@ -58,17 +62,21 @@ fun NavGraphBuilder.homeNav(
 fun ConditionalScaffold(
     isHomeNavigation: Boolean,
     navController: NavHostController,
+    userImageUrl: String,
     content: @Composable (PaddingValues) -> Unit
 ) {
     if (isHomeNavigation) {
         val currentBackStackEntry = navController.currentBackStackEntryAsState().value
         val route = currentBackStackEntry?.destination?.route
-
+        val homeNavEntry =
+            remember(currentBackStackEntry) { navController.getBackStackEntry<HomeNav>() }
+        val homeArgs = homeNavEntry.toRoute<HomeNav>()
         Scaffold(
             modifier = Modifier.systemBarsPadding(),
             topBar = {
                 TopBar(
-                    userImageUrl = "https://i.pinimg.com/736x/a0/06/fb/a006fb4e67553b035f355e08c144595b.jpg",
+                    userImageUrl = homeArgs.userImageUrl
+                        ?: userImageUrl,
                     notificationCount = 5
                 )
             },
