@@ -15,17 +15,17 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.metafortech.calma.presentation.authentication.AuthNav
 import com.metafortech.calma.presentation.authentication.authNav
-import com.metafortech.calma.presentation.home.homeNav
 import com.metafortech.calma.presentation.theme.CalmaTheme
 import com.metafortech.calma.presentation.welcom.LanguageScreen
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.serialization.Serializable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
+import com.metafortech.calma.presentation.AppRoute.AuthNav
+import com.metafortech.calma.presentation.AppRoute.HomeNav
+import com.metafortech.calma.presentation.AppRoute.LanguageScreen
 import com.metafortech.calma.presentation.home.ConditionalScaffold
-import com.metafortech.calma.presentation.home.HomeNav
+import com.metafortech.calma.presentation.home.homeNav
 import com.metafortech.calma.presentation.welcom.LanguageScreenViewModel
 import com.metafortech.calma.presentation.welcom.LocaleHelper
 
@@ -60,7 +60,7 @@ class MainActivity : ComponentActivity() {
             CalmaTheme {
                 val currentBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentDestination = currentBackStackEntry?.destination
-                val isHomeNavigation = currentDestination?.route?.contains("Home", true) == true
+                val isHomeNavigation = isHomeNavigationRoute(currentDestination?.route)
 
                 ConditionalScaffold(
                     isHomeNavigation,
@@ -98,7 +98,11 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+fun isHomeNavigationRoute(route: String?): Boolean {
+    return route?.let { r ->
+        listOf("HomeScreen", "SportsFacilitiesScreen", "ReelsScreen", "StoreScreen", "ChattingScreen")
+            .any { screenName -> r.contains(screenName) }
+    } == true
+}
 
 
-@Serializable
-object LanguageScreen

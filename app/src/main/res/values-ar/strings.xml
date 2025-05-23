@@ -61,4 +61,9 @@
     <string name="championships">البطولات</string>
     <string name="edifices">الأصرحة</string>
     <string name="live">بث مباشر</string>
+    <string name="facilities">المنشآت الرياضية</string>
+    <string name="reels">ريلز</string>
+    <string name="home">الصفحة الرئيسة</string>
+    <string name="store">المتجر</string>
+    <string name="chat">دردشة</string>
 </resources>

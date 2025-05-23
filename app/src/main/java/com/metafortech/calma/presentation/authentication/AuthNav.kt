@@ -12,8 +12,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
 import com.metafortech.calma.data.remote.interest.InterestsUpdateRequest
-import com.metafortech.calma.presentation.authentication.NavigationEvent.LoginScreen
-import com.metafortech.calma.presentation.authentication.NavigationEvent.VerificationScreen
+import com.metafortech.calma.presentation.AppRoute.AuthNav
+import com.metafortech.calma.presentation.AppRoute.HomeNav
+import com.metafortech.calma.presentation.AppRoute.InterestSelectionScreen
+import com.metafortech.calma.presentation.AppRoute.LoginScreen
+import com.metafortech.calma.presentation.AppRoute.RegisterScreen
+import com.metafortech.calma.presentation.AppRoute.SportSelectionScreen
+import com.metafortech.calma.presentation.AppRoute.VerificationScreen
 import com.metafortech.calma.presentation.authentication.interest.InterestSelectionScreen
 import com.metafortech.calma.presentation.authentication.interest.InterestSelectionViewModel
 import com.metafortech.calma.presentation.authentication.login.LoginScreen
@@ -24,7 +29,6 @@ import com.metafortech.calma.presentation.authentication.sport.SportSelectionScr
 import com.metafortech.calma.presentation.authentication.sport.SportSelectionViewModel
 import com.metafortech.calma.presentation.authentication.verification.PhoneVerificationScreen
 import com.metafortech.calma.presentation.authentication.verification.PhoneVerificationViewModel
-import com.metafortech.calma.presentation.home.HomeNav
 import kotlinx.serialization.Serializable
 
 fun NavGraphBuilder.authNav(
@@ -216,29 +220,4 @@ fun NavGraphBuilder.authNav(
             )
         }
     }
-}
-
-@Serializable
-object AuthNav
-
-@Serializable
-object RegisterScreen
-
-@Serializable
-data class InterestSelectionScreen(val userToken: String? = null)
-
-@Serializable
-data class SportSelectionScreen(
-    val interestId: Int,
-    val selectedLang: String,
-    val userToken: String? = null
-)
-
-sealed class NavigationEvent() {
-    @Serializable
-    data class VerificationScreen(val phoneNumber: String, val userToken: String? = null) :
-        NavigationEvent()
-
-    @Serializable
-    object LoginScreen : NavigationEvent()
 }

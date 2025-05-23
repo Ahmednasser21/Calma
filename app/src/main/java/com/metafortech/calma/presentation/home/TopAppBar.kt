@@ -72,6 +72,7 @@ fun UserTopBar(
     onUserProfileClick: () -> Unit = {}
 ) {
     Row(
+        modifier = Modifier.padding(top = 2.dp),
         horizontalArrangement = Arrangement.spacedBy(0.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -101,7 +102,7 @@ fun UserTopBar(
                         .align(Alignment.Top)
                         .offset((-10).dp, 6.dp)
                         .size(16.dp),
-                    containerColor = Color(0xFFFF0000)
+                    containerColor = MaterialTheme.colorScheme.secondary
                 ) {
                     Text(
                         text = if (notificationCount > 9) "9+" else notificationCount.toString(),

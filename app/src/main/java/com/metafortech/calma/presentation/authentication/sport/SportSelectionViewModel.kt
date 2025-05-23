@@ -7,7 +7,8 @@ import com.metafortech.calma.di.IODispatcher
 import com.metafortech.calma.domain.sports.DomainSportState
 import com.metafortech.calma.domain.sports.GetSportsListUseCase
 import com.metafortech.calma.domain.sports.PostSportsAndInterestUpdateUseCase
-import com.metafortech.calma.presentation.authentication.NavigationEvent
+import com.metafortech.calma.presentation.AppRoute
+import com.metafortech.calma.presentation.AppRoute.LoginScreen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -29,7 +30,7 @@ class SportSelectionViewModel @Inject constructor(
     @IODispatcher val ioDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
-    private val _navigationEvents = MutableSharedFlow<NavigationEvent>()
+    private val _navigationEvents = MutableSharedFlow<AppRoute>()
     val navigationEvent = _navigationEvents.asSharedFlow()
 
     private val _uiState = MutableStateFlow(SportSelectionUiState())
@@ -99,7 +100,7 @@ class SportSelectionViewModel @Inject constructor(
                         _uiState.update {
                             it.copy(isLoading = false, isSuccessfulUpdate = true)
                         }
-                        _navigationEvents.emit(NavigationEvent.LoginScreen)
+                        _navigationEvents.emit(LoginScreen)
                     }
 
                     is DomainSportState.OnFailed -> {

@@ -61,4 +61,9 @@
     <string name="championships">Championnats</string>
     <string name="edifices">Édifices</string>
     <string name="live">En direct</string>
+    <string name="facilities">Installations sportives</string>
+    <string name="reels">Bobines</string>
+    <string name="home">Page d\'accueil</string>
+    <string name="store">Magasin</string>
+    <string name="chat">Chat</string>
 </resources>

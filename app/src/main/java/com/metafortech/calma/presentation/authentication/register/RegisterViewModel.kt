@@ -12,7 +12,8 @@ import com.metafortech.calma.domain.register.DomainCountry
 import com.metafortech.calma.domain.register.DomainRegisterState
 import com.metafortech.calma.domain.register.ValidationFormState
 import com.metafortech.calma.domain.register.RegisterUseCase
-import com.metafortech.calma.presentation.authentication.NavigationEvent
+import com.metafortech.calma.presentation.AppRoute
+import com.metafortech.calma.presentation.AppRoute.VerificationScreen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
@@ -36,7 +37,7 @@ class RegisterViewModel @Inject constructor(
     private var _uiState = MutableStateFlow(RegisterUiState())
     val uiState = _uiState.asStateFlow()
 
-    private val _navigationEvents = MutableSharedFlow<NavigationEvent>()
+    private val _navigationEvents = MutableSharedFlow<AppRoute>()
     val navigationEvent = _navigationEvents.asSharedFlow()
 
     fun onNameValueChange(name: String) {
@@ -140,7 +141,7 @@ class RegisterViewModel @Inject constructor(
                         )
                     }
                     _navigationEvents.emit(
-                        NavigationEvent.VerificationScreen(
+                        VerificationScreen(
                             _uiState.value.country.dialCode + _uiState.value.phoneNumber,
                             result.registerResponse.data.token
                         )
