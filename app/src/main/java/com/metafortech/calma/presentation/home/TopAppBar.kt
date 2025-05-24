@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.metafortech.calma.R
+import com.metafortech.calma.presentation.LoadingUserCircularImage
 
 @Composable
 fun TopBar(
@@ -76,17 +77,7 @@ fun UserTopBar(
         horizontalArrangement = Arrangement.spacedBy(0.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        AsyncImage(
-            model = imageUrl,
-            contentDescription = stringResource(R.string.profile_image),
-            modifier = Modifier
-                .padding(start = 8.dp)
-                .size(54.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.surfaceVariant),
-            contentScale = ContentScale.FillBounds,
-            error = painterResource(R.drawable.outline_person_24)
-        )
+        LoadingUserCircularImage(imageUrl)
         Spacer(modifier = Modifier.weight(1f))
         IconButton(onClick = onNotificationClick) {
             Icon(

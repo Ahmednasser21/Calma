@@ -47,6 +47,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -56,6 +57,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
 import com.metafortech.calma.R
@@ -402,6 +404,20 @@ fun ImageLoading(
             )
         }
     }
+}
+@Composable
+fun LoadingUserCircularImage(imageUrl: String){
+    AsyncImage(
+        model = imageUrl,
+        contentDescription = stringResource(R.string.profile_image),
+        modifier = Modifier
+            .padding(start = 8.dp)
+            .size(54.dp)
+            .clip(CircleShape)
+            .background(MaterialTheme.colorScheme.surfaceVariant),
+        contentScale = ContentScale.FillBounds,
+        error = painterResource(R.drawable.outline_person_24)
+    )
 }
 @Composable
 fun LoadingStateIndicator(
