@@ -66,4 +66,9 @@
     <string name="home">الصفحة الرئيسة</string>
     <string name="store">المتجر</string>
     <string name="chat">دردشة</string>
+    <string name="what_is_new_in_your_sports_Journey">ما الجديد في رحلتك الرياضية؟</string>
+    <string name="record_video">سجيل مقطع فيديو</string>
+    <string name="take_photo">التقط صورة</string>
+    <string name="record_audio">أضف مقطع صوتي</string>
+    <string name="select_from_gallery">أختر من معرض الصور</string>
 </resources>

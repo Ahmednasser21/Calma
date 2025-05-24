@@ -11,6 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -25,6 +27,7 @@ import com.metafortech.calma.presentation.AppRoute.ReelsScreen
 import com.metafortech.calma.presentation.AppRoute.SportsFacilitiesScreen
 import com.metafortech.calma.presentation.AppRoute.StoreScreen
 import com.metafortech.calma.presentation.home.home.HomeScreen
+import com.metafortech.calma.presentation.home.home.HomeViewModel
 
 fun NavGraphBuilder.homeNav(
     innerPadding: PaddingValues,
@@ -33,11 +36,11 @@ fun NavGraphBuilder.homeNav(
     navigation<HomeNav>(startDestination = HomeScreen) {
 
         composable<HomeScreen> { backStackEntry ->
-//            val homeNavEntry = remember(backStackEntry) {
-//                navController.getBackStackEntry<HomeNav>()
-//            }
-//            val homeArgs = homeNavEntry.toRoute<HomeNav>()
-            HomeScreen(modifier = Modifier.padding(innerPadding))
+
+            val homeViewModel: HomeViewModel = hiltViewModel()
+            val state = homeViewModel.homeState.collectAsStateWithLifecycle().value
+
+            HomeScreen(modifier = Modifier.padding(innerPadding), state = state)
         }
         composable<SportsFacilitiesScreen> {
             SportsFacilitiesScreen(modifier = Modifier.padding(innerPadding))

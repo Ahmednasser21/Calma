@@ -82,4 +82,9 @@
     <string name="chat">Chat</string>
     <string name="name" translatable="false">Name</string>
     <string name="user_image_url" translatable="false">ImageUrl</string>
+    <string name="what_is_new_in_your_sports_Journey">what\'s_new_in_your_sports_Journey</string>
+    <string name="record_video">Record video</string>
+    <string name="take_photo">Take a picture</string>
+    <string name="record_audio">Add recorded audio</string>
+    <string name="select_from_gallery">Select from gallery</string>
 </resources>

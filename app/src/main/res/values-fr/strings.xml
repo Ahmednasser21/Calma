@@ -66,4 +66,9 @@
     <string name="home">Page d\'accueil</string>
     <string name="store">Magasin</string>
     <string name="chat">Chat</string>
+    <string name="what_is_new_in_your_sports_Journey">Quoi de neuf dans votre parcours sportif ?</string>
+    <string name="record_video">Enregistrer une vidéo</string>
+    <string name="take_photo">Prendre une photo</string>
+    <string name="record_audio">Ajouter un enregistrement audio</string>
+    <string name="select_from_gallery">Sélectionnez dans la galerie</string>
 </resources>

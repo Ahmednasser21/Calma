@@ -105,7 +105,7 @@ fun BottomNavigationBar(
                 label = {
                     Text(
                         text = stringResource(item.title),
-                        fontSize = 9.sp,
+                        fontSize = 11.sp,
                         fontWeight = if (isSelected) {
                             FontWeight.Bold
                         } else {
