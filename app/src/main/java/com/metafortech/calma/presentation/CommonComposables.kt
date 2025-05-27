@@ -7,6 +7,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -47,7 +48,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -406,7 +406,7 @@ fun ImageLoading(
     }
 }
 @Composable
-fun LoadingUserCircularImage(imageUrl: String){
+fun UserCircularImage(imageUrl: String,onUserClick: () -> Unit = {}){
     AsyncImage(
         model = imageUrl,
         contentDescription = stringResource(R.string.profile_image),
@@ -414,7 +414,8 @@ fun LoadingUserCircularImage(imageUrl: String){
             .padding(start = 8.dp)
             .size(54.dp)
             .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.surfaceVariant),
+            .background(MaterialTheme.colorScheme.surfaceVariant)
+            .clickable { onUserClick() },
         contentScale = ContentScale.FillBounds,
         error = painterResource(R.drawable.outline_person_24)
     )

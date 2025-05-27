@@ -22,14 +22,14 @@ class HomeViewModel @Inject constructor(
 
     private val _homeState = MutableStateFlow<HomeScreenState>(HomeScreenState())
     val homeState = _homeState.asStateFlow().onStart {
-        getUserData()
+        getStoredUserData()
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.Eagerly,
-        initialValue = HomeScreenState()
+        initialValue = HomeScreenState(posts = SamplePosts.samplePosts)
     )
 
-    private fun getUserData(){
+    private fun getStoredUserData(){
         _homeState.value = _homeState.value.copy(
             userImageUrl = appPreferences.getString(context.getString(R.string.user_image_url)),
             userName = appPreferences.getString(context.getString(R.string.name))

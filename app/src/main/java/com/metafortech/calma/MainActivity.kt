@@ -13,19 +13,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.metafortech.calma.presentation.authentication.authNav
 import com.metafortech.calma.presentation.theme.CalmaTheme
 import com.metafortech.calma.presentation.welcom.LanguageScreen
 import dagger.hilt.android.AndroidEntryPoint
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import com.metafortech.calma.presentation.AppRoute.AuthNav
 import com.metafortech.calma.presentation.AppRoute.HomeNav
 import com.metafortech.calma.presentation.AppRoute.LanguageScreen
 import com.metafortech.calma.presentation.home.ConditionalScaffold
 import com.metafortech.calma.presentation.home.homeNav
+import com.metafortech.calma.presentation.home.rememberAppInitState
 import com.metafortech.calma.presentation.welcom.LanguageScreenViewModel
 import com.metafortech.calma.presentation.welcom.LocaleHelper
 
@@ -33,21 +32,10 @@ import com.metafortech.calma.presentation.welcom.LocaleHelper
 class MainActivity : ComponentActivity() {
 
     private lateinit var languageScreenViewModel: LanguageScreenViewModel
-    private var isRegistered: Boolean = false
-    private var isLoggedIn: Boolean = false
-    private lateinit var name: String
-    private lateinit var userImageUrl: String
 
     override fun attachBaseContext(newBase: Context) {
         val prefs = newBase.getSharedPreferences("app_settings", MODE_PRIVATE)
         val lang = prefs.getString("selected_language", "en") ?: "en"
-        isRegistered = prefs.getBoolean("is_registered", false)
-        isLoggedIn = prefs.getBoolean("is_loggedIn", false)
-        name = prefs.getString("Name", "Calma User") ?: "Calma User"
-        userImageUrl = prefs.getString(
-            "ImageUrl",
-            "https://www.iconpacks.net/icons/1/free-user-icon-972-thumb.png"
-        ) ?: "https://www.iconpacks.net/icons/1/free-user-icon-972-thumb.png"
         val contextWithLocale = LocaleHelper.wrapContextWithLocale(newBase, lang)
         super.attachBaseContext(contextWithLocale)
     }
@@ -64,21 +52,21 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val navController = rememberNavController()
+            val (isRegistered, isLoggedIn, userImageUrl) = rememberAppInitState()
+            val startDestination = when {
+                isLoggedIn -> HomeNav()
+                isRegistered -> AuthNav
+                else -> LanguageScreen
+            }
             CalmaTheme {
-                val currentBackStackEntry by navController.currentBackStackEntryAsState()
-                val currentDestination = currentBackStackEntry?.destination
-                val isHomeNavigation = isHomeNavigationRoute(currentDestination?.route)
-
                 ConditionalScaffold(
-                    isHomeNavigation,
                     navController,
-                    userImageUrl
+                    userImageUrl,
+                    isLoggedIn
                 ) { innerPadding ->
                     NavHost(
-                        navController = navController, startDestination =
-                            if (isRegistered && !isLoggedIn) AuthNav
-                            else if (isLoggedIn) HomeNav()
-                            else LanguageScreen
+                        navController = navController,
+                        startDestination = startDestination
                     ) {
                         composable<LanguageScreen> {
                             LanguageScreen(
@@ -106,19 +94,6 @@ class MainActivity : ComponentActivity() {
                 startActivity(intent)
             }
         }
-    }
-
-    fun isHomeNavigationRoute(route: String?): Boolean {
-        return route?.let { r ->
-            listOf(
-                "HomeScreen",
-                "SportsFacilitiesScreen",
-                "ReelsScreen",
-                "StoreScreen",
-                "ChattingScreen"
-            )
-                .any { screenName -> r.contains(screenName) }
-        } == true
     }
 }
 

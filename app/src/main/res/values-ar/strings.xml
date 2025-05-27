@@ -71,4 +71,16 @@
     <string name="take_photo">التقط صورة</string>
     <string name="record_audio">أضف مقطع صوتي</string>
     <string name="select_from_gallery">أختر من معرض الصور</string>
+    <string name="more">المزيد</string>
+    <string name="post_image">صورة المنشور</string>
+    <string name="media_thumbnail">صورة مصغرة للوسائط</string>
+    <string name="video_thumbnail">صورة مصغرة للفيديو</string>
+    <string name="play_video">تشغيل الفيديو</string>
+    <string name="audio_file">ملف صوتي</string>
+    <string name="pause">إيقاف</string>
+    <string name="play">تشغيل</string>
+    <string name="like">إعجاب</string>
+    <string name="comment">تعليق</string>
+    <string name="share">مشاركة</string>
+    <string name="like_verb">أعجبني</string>
 </resources>

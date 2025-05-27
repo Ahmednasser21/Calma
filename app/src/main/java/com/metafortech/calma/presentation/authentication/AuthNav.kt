@@ -51,7 +51,6 @@ fun NavGraphBuilder.authNav(
                 onLoginClick = { loginViewModel.onLoginClick() },
                 onLoginSuccess = {
                     navController.navigate(HomeNav(
-                        userName = state.userName,
                         userImageUrl = state.userImageUrl
                     )) {
                         popUpTo(0) { inclusive = true }

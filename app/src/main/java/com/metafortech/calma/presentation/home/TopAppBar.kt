@@ -1,41 +1,48 @@
 package com.metafortech.calma.presentation.home
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Badge
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil3.compose.AsyncImage
 import com.metafortech.calma.R
-import com.metafortech.calma.presentation.LoadingUserCircularImage
+import com.metafortech.calma.presentation.UserCircularImage
 
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBar(
+    modifier: Modifier = Modifier,
     userImageUrl: String,
     notificationCount: Int,
     onNotificationClick: () -> Unit = {},
@@ -43,77 +50,76 @@ fun TopBar(
     onLiveClick: () -> Unit = {},
     onEdificesClick: () -> Unit = {},
     onChampionsClick: () -> Unit = {},
-    onFriendsClick: () -> Unit = {}
+    onFriendsClick: () -> Unit = {},
+    scrollBehavior: TopAppBarScrollBehavior? = null,
+    screenTitle: String? = null
 ) {
-    Column {
-        UserTopBar(
-            imageUrl = userImageUrl,
-            notificationCount = notificationCount,
-            onNotificationClick = {onNotificationClick()},
-            onUserProfileClick = {onUserProfileClick()}
-        )
-        NavigationTopBar(
-            onLiveClick = { onLiveClick() },
-            onEdificesClick = {onEdificesClick()},
-            onChampionshipsClick = {onChampionsClick()},
-            onFriendsClick = {onFriendsClick()}
-        )
-        HorizontalDivider(
-            thickness = 1.dp
-        )
+    Column(modifier = modifier) {
+        CenterAlignedTopAppBar(
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = MaterialTheme.colorScheme.background
+            ),
+            title = {
+                Text(
+                    text = screenTitle ?: "",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            },
+            navigationIcon = {
+                UserCircularImage(userImageUrl)
+            },
+            actions = {
+                Box {
+                    IconButton(onClick = onNotificationClick) {
+                        Icon(
+                            painter = painterResource(R.drawable.notification_bing),
+                            contentDescription = stringResource(R.string.notification),
+                            modifier = Modifier.size(32.dp)
+                        )
+                    }
+                    if (notificationCount > 0) {
+                        Badge(
+                            modifier = Modifier
+                                .align(Alignment.BottomEnd)
+                                .offset((-4).dp, -(12).dp)
+                                .size(18.dp)
+                                .clip(CircleShape),
+                            containerColor = Color(0xFFFF0000)
+                        ) {
+                            Text(
+                                modifier = Modifier
+                                    .offset(0.dp, (-4).dp)
+                                    .align(Alignment.CenterVertically),
+                                text = if (notificationCount > 99) "99+" else notificationCount.toString(),
+                                fontSize = 10.sp,
+                                color = MaterialTheme.colorScheme.onError
+                            )
+                        }
+                    }
+                }
 
-    }
-}
-
-@Composable
-fun UserTopBar(
-    imageUrl: String,
-    notificationCount: Int,
-    onNotificationClick: () -> Unit = {},
-    onUserProfileClick: () -> Unit = {}
-) {
-    Row(
-        modifier = Modifier.padding(top = 2.dp),
-        horizontalArrangement = Arrangement.spacedBy(0.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        LoadingUserCircularImage(imageUrl)
-        Spacer(modifier = Modifier.weight(1f))
-        IconButton(onClick = onNotificationClick) {
-            Icon(
-                painter = painterResource(R.drawable.notification_bing),
-                contentDescription = stringResource(R.string.notification),
-                tint = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.size(32.dp)
-            )
-            if (notificationCount > 0) {
-                Badge(
-                    modifier = Modifier
-                        .align(Alignment.Top)
-                        .offset((-10).dp, 6.dp)
-                        .size(16.dp),
-                    containerColor = MaterialTheme.colorScheme.secondary
-                ) {
-                    Text(
-                        text = if (notificationCount > 9) "9+" else notificationCount.toString(),
-                        fontSize = 8.sp,
-                        color = Color.White,
-                        modifier = Modifier.offset(0.dp, (-4.5).dp)
+                IconButton(onClick = onUserProfileClick) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.user_profile),
+                        contentDescription = stringResource(R.string.user_profile)
                     )
                 }
-            }
-        }
+            },
+            scrollBehavior = scrollBehavior
+        )
 
-        IconButton(onClick = onUserProfileClick) {
-            Icon(
-                painter = painterResource(id = R.drawable.user_profile),
-                contentDescription = stringResource(R.string.user_profile),
-                tint = MaterialTheme.colorScheme.onSurface,
-            )
-        }
+        NavigationTopBar(
+            onLiveClick = onLiveClick,
+            onEdificesClick = onEdificesClick,
+            onChampionshipsClick = onChampionsClick,
+            onFriendsClick = onFriendsClick
+        )
 
+        HorizontalDivider(thickness = 1.dp)
     }
 }
+
 
 @Composable
 fun NavigationTopBar(
@@ -163,7 +169,13 @@ private fun NavigationItem(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .padding(horizontal = 8.dp)
-            .clickable { onClick() }
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = ripple(
+                    radius = 36.dp,
+                    color = MaterialTheme.colorScheme.secondary
+                ),
+            ) { onClick() }
     ) {
 
         Icon(
