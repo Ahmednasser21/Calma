@@ -52,16 +52,15 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val navController = rememberNavController()
-            val (isRegistered, isLoggedIn, userImageUrl) = rememberAppInitState()
+            val (isRegistered, isLoggedIn) = rememberAppInitState()
             val startDestination = when {
-                isLoggedIn -> HomeNav()
+                isLoggedIn -> HomeNav
                 isRegistered -> AuthNav
                 else -> LanguageScreen
             }
             CalmaTheme {
                 ConditionalScaffold(
                     navController,
-                    userImageUrl,
                     isLoggedIn
                 ) { innerPadding ->
                     NavHost(

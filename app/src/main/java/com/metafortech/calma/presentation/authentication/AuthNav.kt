@@ -50,9 +50,7 @@ fun NavGraphBuilder.authNav(
                 },
                 onLoginClick = { loginViewModel.onLoginClick() },
                 onLoginSuccess = {
-                    navController.navigate(HomeNav(
-                        userImageUrl = state.userImageUrl
-                    )) {
+                    navController.navigate(HomeNav) {
                         popUpTo(0) { inclusive = true }
                     }
                 },

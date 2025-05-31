@@ -47,7 +47,7 @@ import kotlinx.serialization.json.Json
 @androidx.annotation.OptIn(UnstableApi::class)
 fun NavGraphBuilder.homeNav(
     innerPadding: PaddingValues,
-    navController: NavHostController
+    navController: NavHostController,
 ) {
     navigation<HomeNav>(startDestination = HomeScreen) {
 
@@ -132,9 +132,8 @@ fun NavGraphBuilder.homeNav(
 @Composable
 fun ConditionalScaffold(
     navController: NavHostController,
-    userImageUrl: String,
     isLoggedIn: Boolean,
-    content: @Composable (PaddingValues) -> Unit
+    content: @Composable (PaddingValues) -> Unit,
 ) {
 
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
@@ -145,13 +144,10 @@ fun ConditionalScaffold(
     } else isLoggedIn
 
     if (isHomeNavigation) {
-        val homeNavEntry = remember(currentBackStackEntry) {
-            runCatching { navController.getBackStackEntry(route ?: "") }.getOrNull()
-        }
-        val homeArgs = homeNavEntry?.toRoute<HomeNav>()
-
+        val userImageViewModel: UserImageViewModel = hiltViewModel()
+        val userImageUrl = userImageViewModel.userImageUrl.collectAsState().value
         HomeScaffold(
-            userImageUrl = homeArgs?.userImageUrl ?: userImageUrl,
+            userImageUrl = userImageUrl.toString() ,
             screenTitle = null,
             currentRoute = route,
             onNavigationItemSelected = { targetRoute ->
@@ -181,7 +177,7 @@ private fun HomeScaffold(
     screenTitle: String? = null,
     currentRoute: String?,
     onNavigationItemSelected: (AppRoute) -> Unit,
-    content: @Composable (PaddingValues) -> Unit
+    content: @Composable (PaddingValues) -> Unit,
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
@@ -210,7 +206,7 @@ private fun HomeScaffold(
 
 @Composable
 private fun SimpleScaffold(
-    content: @Composable (PaddingValues) -> Unit
+    content: @Composable (PaddingValues) -> Unit,
 ) {
     Scaffold(
         modifier = Modifier.systemBarsPadding(),
