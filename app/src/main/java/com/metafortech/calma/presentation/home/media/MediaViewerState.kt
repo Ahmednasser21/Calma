@@ -16,7 +16,9 @@ data class MediaViewerState(
     val isAudioPlaying: Boolean = false,
     val audioProgress: Float = 0f,
     val currentAudioPosition: Long = 0L,
-    val audioDuration: Long = 0L
+    val audioDuration: Long = 0L,
+    val savedVideoPositions: Map<String, Long> = emptyMap(),
+    val savedAudioPositions: Map<String, Long> = emptyMap()
 )
 enum class MediaControlsSize(
     val playPauseSize: Dp,

@@ -39,7 +39,6 @@ class MediaViewerViewModel @Inject constructor(
         initializeAudioPlayer()
     }
 
-
     @OptIn(UnstableApi::class)
     private fun initializeVideoPlayer() {
         videoPlayer = ExoPlayer.Builder(context).build().apply {
@@ -65,6 +64,12 @@ class MediaViewerViewModel @Inject constructor(
                         Player.STATE_ENDED -> {
                             _state.value = _state.value.copy(isVideoPlaying = false)
                             stopVideoProgressUpdates()
+                            // Clear saved position when video ends
+                            getCurrentMedia()?.let { media ->
+                                if (media.type == MediaType.VIDEO) {
+                                    clearSavedVideoPosition(media.url)
+                                }
+                            }
                         }
 
                         Player.STATE_IDLE -> {
@@ -108,6 +113,12 @@ class MediaViewerViewModel @Inject constructor(
                         Player.STATE_ENDED -> {
                             _state.value = _state.value.copy(isAudioPlaying = false)
                             stopAudioProgressUpdates()
+                            // Clear saved position when audio ends
+                            getCurrentMedia()?.let { media ->
+                                if (media.type == MediaType.AUDIO) {
+                                    clearSavedAudioPosition(media.url)
+                                }
+                            }
                         }
 
                         Player.STATE_IDLE -> {
@@ -132,6 +143,8 @@ class MediaViewerViewModel @Inject constructor(
             while (videoPlayer?.isPlaying == true) {
                 videoPlayer?.let { player ->
                     updateVideoProgress(player.currentPosition, player.duration)
+                    // Save current video position
+                    saveCurrentVideoPosition()
                 }
                 delay(100)
             }
@@ -141,11 +154,14 @@ class MediaViewerViewModel @Inject constructor(
     private fun stopVideoProgressUpdates() {
         videoProgressUpdateJob?.cancel()
         videoProgressUpdateJob = null
+        // Save position when stopping updates
+        saveCurrentVideoPosition()
     }
 
     private fun stopProgressUpdates() {
         videoProgressUpdateJob?.cancel()
         videoProgressUpdateJob = null
+        saveCurrentVideoPosition()
     }
 
     private fun startAudioProgressUpdates() {
@@ -154,6 +170,8 @@ class MediaViewerViewModel @Inject constructor(
             while (audioPlayer?.isPlaying == true) {
                 audioPlayer?.let { player ->
                     updateAudioProgress(player.currentPosition, player.duration)
+                    // Save current audio position
+                    saveCurrentAudioPosition()
                 }
                 delay(100)
             }
@@ -163,9 +181,43 @@ class MediaViewerViewModel @Inject constructor(
     private fun stopAudioProgressUpdates() {
         audioProgressUpdateJob?.cancel()
         audioProgressUpdateJob = null
+        // Save position when stopping updates
+        saveCurrentAudioPosition()
+    }
+
+    private fun saveCurrentVideoPosition() {
+        videoPlayer?.let { player ->
+            getCurrentMedia()?.let { media ->
+                if (media.type == MediaType.VIDEO && player.currentPosition > 0) {
+                    val currentVideoPositions = _state.value.savedVideoPositions.toMutableMap()
+                    currentVideoPositions[media.url] = player.currentPosition
+                    _state.value = _state.value.copy(savedVideoPositions = currentVideoPositions)
+                }
+            }
+        }
+    }
+
+    private fun saveCurrentAudioPosition() {
+        audioPlayer?.let { player ->
+            getCurrentMedia()?.let { media ->
+                if (media.type == MediaType.AUDIO && player.currentPosition > 0) {
+                    val currentAudioPositions = _state.value.savedAudioPositions.toMutableMap()
+                    currentAudioPositions[media.url] = player.currentPosition
+                    _state.value = _state.value.copy(savedAudioPositions = currentAudioPositions)
+                }
+            }
+        }
+    }
+
+    private fun getCurrentMedia(): UIMediaItem? {
+        val currentState = _state.value
+        return currentState.uiMediaItems.getOrNull(currentState.currentMediaIndex)
     }
 
     private fun stopAllMedia() {
+        // Save positions before stopping
+        saveCurrentVideoPosition()
+        saveCurrentAudioPosition()
 
         videoPlayer?.let { player ->
             if (player.isPlaying) {
@@ -184,7 +236,6 @@ class MediaViewerViewModel @Inject constructor(
         stopProgressUpdates()
         stopAudioProgressUpdates()
     }
-
 
     fun initializeMedia(uiMediaItems: List<UIMediaItem>, startIndex: Int = 0) {
         if (uiMediaItems.isEmpty()) return
@@ -251,6 +302,15 @@ class MediaViewerViewModel @Inject constructor(
             audioPlayer?.apply {
                 setMediaItem(mediaItem)
                 prepare()
+
+                // Restore saved audio position if available
+                val savedPosition = _state.value.savedAudioPositions[audioUrl]
+                if (savedPosition != null && savedPosition > 0) {
+                    seekTo(savedPosition)
+                    _state.value = _state.value.copy(
+                        currentAudioPosition = savedPosition
+                    )
+                }
             }
         } catch (e: Exception) {
             _state.value = _state.value.copy(
@@ -265,6 +325,15 @@ class MediaViewerViewModel @Inject constructor(
             videoPlayer?.apply {
                 setMediaItem(MediaItem.fromUri(url))
                 prepare()
+
+                // Restore saved video position if available
+                val savedPosition = _state.value.savedVideoPositions[url]
+                if (savedPosition != null && savedPosition > 0) {
+                    seekTo(savedPosition)
+                    _state.value = _state.value.copy(
+                        currentVideoPosition = savedPosition
+                    )
+                }
             }
         } catch (e: Exception) {
             _state.value = _state.value.copy(
@@ -345,6 +414,8 @@ class MediaViewerViewModel @Inject constructor(
                 videoProgress = if (_state.value.videoDuration > 0)
                     clampedPosition.toFloat() / _state.value.videoDuration.toFloat() else 0f
             )
+            // Save the new position
+            saveCurrentVideoPosition()
         }
     }
 
@@ -357,10 +428,11 @@ class MediaViewerViewModel @Inject constructor(
                 audioProgress = if (_state.value.audioDuration > 0)
                     clampedPosition.toFloat() / _state.value.audioDuration.toFloat() else 0f
             )
+            // Save the new position
+            saveCurrentAudioPosition()
         }
     }
 
-    // Video seek functions
     fun seekForward() {
         videoPlayer?.let { player ->
             val currentPosition = player.currentPosition
@@ -378,7 +450,6 @@ class MediaViewerViewModel @Inject constructor(
         }
     }
 
-    // Audio seek functions
     fun seekAudioForward() {
         audioPlayer?.let { player ->
             val currentPosition = player.currentPosition
@@ -399,6 +470,34 @@ class MediaViewerViewModel @Inject constructor(
     fun getVideoPlayer(): ExoPlayer? = videoPlayer
 
     fun formatTime(timeInMillis: Long): String = timeFormater.formatTime(timeInMillis)
+
+    // Helper methods for position management
+    fun clearSavedVideoPosition(videoUrl: String) {
+        val currentVideoPositions = _state.value.savedVideoPositions.toMutableMap()
+        currentVideoPositions.remove(videoUrl)
+        _state.value = _state.value.copy(savedVideoPositions = currentVideoPositions)
+    }
+
+    fun clearSavedAudioPosition(audioUrl: String) {
+        val currentAudioPositions = _state.value.savedAudioPositions.toMutableMap()
+        currentAudioPositions.remove(audioUrl)
+        _state.value = _state.value.copy(savedAudioPositions = currentAudioPositions)
+    }
+
+    fun clearAllSavedVideoPositions() {
+        _state.value = _state.value.copy(savedVideoPositions = emptyMap())
+    }
+
+    fun clearAllSavedAudioPositions() {
+        _state.value = _state.value.copy(savedAudioPositions = emptyMap())
+    }
+
+    fun clearAllSavedPositions() {
+        _state.value = _state.value.copy(
+            savedVideoPositions = emptyMap(),
+            savedAudioPositions = emptyMap()
+        )
+    }
 
     override fun onCleared() {
         super.onCleared()
