@@ -135,16 +135,11 @@ fun NavigationTopBar(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         NavigationItem(
-            text = stringResource(R.string.friends),
-            icon = painterResource(R.drawable.friends),
-            onClick = onFriendsClick
+            text = stringResource(R.string.live),
+            icon = painterResource(R.drawable.live),
+            onClick = onLiveClick
         )
 
-        NavigationItem(
-            text = stringResource(R.string.championships),
-            icon = painterResource(R.drawable.championship),
-            onClick = onChampionshipsClick
-        )
         NavigationItem(
             text = stringResource(R.string.edifices),
             icon = painterResource(R.drawable.groups),
@@ -152,10 +147,17 @@ fun NavigationTopBar(
         )
 
         NavigationItem(
-            text = stringResource(R.string.live),
-            icon = painterResource(R.drawable.live),
-            onClick = onLiveClick
+            text = stringResource(R.string.championships),
+            icon = painterResource(R.drawable.championship),
+            onClick = onChampionshipsClick
         )
+
+        NavigationItem(
+            text = stringResource(R.string.friends),
+            icon = painterResource(R.drawable.friends),
+            onClick = onFriendsClick
+        )
+
     }
 }
 

@@ -83,4 +83,10 @@
     <string name="comment">Commentaire</string>
     <string name="share">Partager</string>
     <string name="like_verb">Comme</string>
+    <string name="back">Dos</string>
+    <string name="zoomable_image">Image zoomable</string>
+    <string name="forward_10">Avancer de 10 secondes</string>
+    <string name="replay_10">Rejouer 10 secondes</string>
+    <string name="video">vidéo</string>
+    <string name="audio">Audio</string>
 </resources>

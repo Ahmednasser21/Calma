@@ -75,14 +75,14 @@
     <string name="championships">Championships</string>
     <string name="edifices">Edifices</string>
     <string name="live">Live</string>
-    <string name="facilities">SportsFacilities</string>
+    <string name="facilities">Sport Facilities</string>
     <string name="reels">Reels</string>
     <string name="home">Home Page</string>
     <string name="store">Store</string>
     <string name="chat">Chat</string>
     <string name="name" translatable="false">Name</string>
     <string name="user_image_url" translatable="false">ImageUrl</string>
-    <string name="what_is_new_in_your_sports_Journey">what\'s_new_in_your_sports_Journey</string>
+    <string name="what_is_new_in_your_sports_Journey">what\'s new in your sports Journey</string>
     <string name="record_video">Record video</string>
     <string name="take_photo">Take a picture</string>
     <string name="record_audio">Add recorded audio</string>
@@ -99,4 +99,10 @@
     <string name="comment">Comment</string>
     <string name="share">Share</string>
     <string name="like_verb">Like</string>
+    <string name="back">Back</string>
+    <string name="zoomable_image">Zoomable Image</string>
+    <string name="forward_10">Forward 10 seconds</string>
+    <string name="replay_10">Replay 10 seconds</string>
+    <string name="video">Video</string>
+    <string name="audio">Audio</string>
 </resources>

@@ -9,8 +9,8 @@ object SamplePosts {
             userName = "خالد الجراح",
             timeAgo = "منذ 20 د",
             content = "اليوم كان يوم رائع! ✨ لأول مرة قدرت أكمل كل شيء من الخطة إلي بدون توقف عن العمل. اقدر لهذا الانجاز واشكر كل اللي شجعوني ووقفوا معي 💯 القادم أفضل إن شاء الله",
-            mediaItems = listOf(
-                MediaItem(
+            uiMediaItems = listOf(
+                UIMediaItem(
                     id = "img1",
                     type = MediaType.IMAGE,
                     url = "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop"
@@ -30,11 +30,11 @@ object SamplePosts {
             userName = "عمر أحمد",
             timeAgo = "منذ ساعة",
             content = "كل خطوة هي خطوة نحو النجاح ✌️",
-            mediaItems = listOf(
-                MediaItem(
+            uiMediaItems = listOf(
+                UIMediaItem(
                     id = "vid1",
                     type = MediaType.VIDEO,
-                    url = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+                    url = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
                     thumbnailUrl = "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=600&fit=crop",
                     duration = "2:15"
                 )
@@ -53,13 +53,13 @@ object SamplePosts {
             userName = "فاطمة محمد",
             timeAgo = "منذ 3 ساعات",
             content = "صباح الخير من المكتبة! وقت الدراسة والتركيز 📚✨",
-            mediaItems = listOf(
-                MediaItem(
+            uiMediaItems = listOf(
+                UIMediaItem(
                     id = "img2",
                     type = MediaType.IMAGE,
                     url = "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=800&h=600&fit=crop"
                 ),
-                MediaItem(
+                UIMediaItem(
                     id = "img3",
                     type = MediaType.IMAGE,
                     url = "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=600&fit=crop"
@@ -79,18 +79,18 @@ object SamplePosts {
             userName = "أحمد علي",
             timeAgo = "منذ 5 ساعات",
             content = "رحلة رائعة مع الأصدقاء اليوم! الطبيعة جميلة والأجواء مثالية 🌿🏔️",
-            mediaItems = listOf(
-                MediaItem(
+            uiMediaItems = listOf(
+                UIMediaItem(
                     id = "img4",
                     type = MediaType.IMAGE,
                     url = "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop"
                 ),
-                MediaItem(
+                UIMediaItem(
                     id = "img5",
                     type = MediaType.IMAGE,
                     url = "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=600&fit=crop"
                 ),
-                MediaItem(
+                UIMediaItem(
                     id = "img6",
                     type = MediaType.IMAGE,
                     url = "https://images.unsplash.com/photo-1448375240586-882707db888b?w=800&h=600&fit=crop"
@@ -110,28 +110,28 @@ object SamplePosts {
             userName = "سارة الأحمد",
             timeAgo = "منذ يوم",
             content = "معرض الفن المحلي كان مذهلاً! شكراً لكل الفنانين على الإبداع الرائع 🎨",
-            mediaItems = listOf(
-                MediaItem(
+            uiMediaItems = listOf(
+                UIMediaItem(
                     id = "img7",
                     type = MediaType.IMAGE,
                     url = "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop"
                 ),
-                MediaItem(
+                UIMediaItem(
                     id = "img8",
                     type = MediaType.IMAGE,
                     url = "https://images.unsplash.com/photo-1578662996446-a65c7b6740b2?w=800&h=600&fit=crop"
                 ),
-                MediaItem(
+                UIMediaItem(
                     id = "img9",
                     type = MediaType.IMAGE,
                     url = "https://images.unsplash.com/photo-1578662996443-08ecb0f1adeb?w=800&h=600&fit=crop"
                 ),
-                MediaItem(
+                UIMediaItem(
                     id = "img10",
                     type = MediaType.IMAGE,
                     url = "https://images.unsplash.com/photo-1579952363873-27d3bfad9c0d?w=800&h=600&fit=crop"
                 ),
-                MediaItem(
+                UIMediaItem(
                     id = "img11",
                     type = MediaType.IMAGE,
                     url = "https://images.unsplash.com/photo-1582201943021-e0ce3ba96307?w=800&h=600&fit=crop"
@@ -151,11 +151,11 @@ object SamplePosts {
             userName = "محمد الطيب",
             timeAgo = "منذ يومين",
             content = "تسجيل صوتي قصير عن تجربتي في التأمل وأهميته في الحياة اليومية 🧘‍♂️",
-            mediaItems = listOf(
-                MediaItem(
+            uiMediaItems = listOf(
+                UIMediaItem(
                     id = "audio1",
                     type = MediaType.AUDIO,
-                    url = "https://www.soundjay.com/misc/sounds-1159.mp3",
+                    url = "https://commondatastorage.googleapis.com/codeskulptor-demos/DDR_assets/Sevish_-__nbsp_.mp3",
                     duration = "3:42"
                 )
             ),
@@ -173,7 +173,7 @@ object SamplePosts {
             userName = "نور الهدى",
             timeAgo = "منذ 3 أيام",
             content = "أحياناً أفضل الأوقات هي تلك البسيطة التي نقضيها مع أنفسنا. قراءة كتاب، شرب الشاي، والاستمتاع بالصمت. السعادة في التفاصيل الصغيرة ✨📖☕",
-            mediaItems = emptyList(),
+            uiMediaItems = emptyList(),
             hashtags = listOf("#تأمل", "#سعادة", "#بساطة", "#قراءة"),
             likesCount = 234,
             commentsCount = 87,
@@ -188,35 +188,77 @@ object SamplePosts {
             userName = "يوسف كريم",
             timeAgo = "منذ أسبوع",
             content = "ورشة عمل اليوم كانت مفيدة جداً! تعلمنا مهارات جديدة وتبادلنا الخبرات 💡",
-            mediaItems = listOf(
-                MediaItem(
+            uiMediaItems = listOf(
+                UIMediaItem(
                     id = "img12",
                     type = MediaType.IMAGE,
                     url = "https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=600&fit=crop"
                 ),
-                MediaItem(
+                UIMediaItem(
                     id = "vid2",
                     type = MediaType.VIDEO,
                     url = "https://sample-videos.com/zip/10/mp4/SampleVideo_640x360_1mb.mp4",
                     thumbnailUrl = "https://images.unsplash.com/photo-1553877522-43269d4ea984?w=800&h=600&fit=crop",
                     duration = "1:30"
                 ),
-                MediaItem(
+                UIMediaItem(
                     id = "img13",
                     type = MediaType.IMAGE,
                     url = "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800&h=600&fit=crop"
                 ),
-                MediaItem(
+                UIMediaItem(
                     id = "img14",
                     type = MediaType.IMAGE,
                     url = "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=800&h=600&fit=crop"
+                ),
+                UIMediaItem(
+                    id = "vid1",
+                    type = MediaType.VIDEO,
+                    url = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+                    thumbnailUrl = "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=600&fit=crop",
+                    duration = "2:15"
+                ),
+                UIMediaItem(
+                    id = "audio1",
+                    type = MediaType.AUDIO,
+                    url = "https://commondatastorage.googleapis.com/codeskulptor-demos/DDR_assets/Sevish_-__nbsp_.mp3",
+                    duration = "3:42"
                 )
+
             ),
             hashtags = listOf("#ورشة_عمل", "#تعلم", "#مهارات", "#تطوير"),
             likesCount = 198,
             commentsCount = 65,
             sharesCount = 33,
             isLiked = false
+        ),
+        PostModel(
+            id = "9",
+            userAvatar = "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
+            userName = "نور الهدى",
+            timeAgo = "منذ 3 أيام",
+            content = "أحياناً أفضل الأوقات هي تلك البسيطة التي نقضيها مع أنفسنا. قراءة كتاب، شرب الشاي، والاستمتاع بالصمت. السعادة في التفاصيل الصغيرة ✨📖☕",
+            uiMediaItems = emptyList(),
+            hashtags = listOf("#تأمل", "#سعادة", "#بساطة", "#قراءة"),
+            likesCount = 234,
+            commentsCount = 87,
+            sharesCount = 45,
+            isLiked = true
+        ),
+        PostModel(
+            id = "10",
+            userAvatar = "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
+            userName = "نور الهدى",
+            timeAgo = "منذ 3 أيام",
+            content = "أحياناً أفضل الأوقات هي تلك البسيطة التي نقضيها مع أنفسنا. قراءة كتاب، شرب الشاي، والاستمتاع بالصمت. السعادة في التفاصيل الصغيرة ✨📖☕",
+            uiMediaItems = emptyList(),
+            hashtags = listOf("#تأمل", "#سعادة", "#بساطة", "#قراءة"),
+            likesCount = 234,
+            commentsCount = 87,
+            sharesCount = 45,
+            isLiked = true
         )
+
     )
+
 }

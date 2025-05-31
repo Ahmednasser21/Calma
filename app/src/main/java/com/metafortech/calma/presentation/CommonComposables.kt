@@ -1,13 +1,18 @@
 package com.metafortech.calma.presentation
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.Indication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,6 +41,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -47,8 +54,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -56,11 +65,14 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
 import com.metafortech.calma.R
+import com.metafortech.calma.presentation.home.media.MediaControlsSize
+import kotlin.math.abs
 
 @Composable
 fun GeneralTextField(
@@ -368,7 +380,7 @@ fun BackButton(modifier: Modifier = Modifier, onBackClick: () -> Unit){
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "back"
+                contentDescription = stringResource(R.string.back)
             )
         }
     }
@@ -516,5 +528,285 @@ fun ErrorStateIndicator(
                 }
             }
         }
+    }
+}
+@Composable
+fun MediaProgressBar(
+    modifier: Modifier = Modifier,
+    progress: Float,
+    currentPosition: Long,
+    duration: Long,
+    onSeek: (Long) -> Unit,
+    formatTime : (Long) -> String
+) {
+    Column(modifier = modifier) {
+        Slider(
+            value = progress,
+            onValueChange = { newProgress ->
+                val newPosition = (newProgress * duration).toLong()
+                onSeek(newPosition)
+            },
+            colors = SliderDefaults.colors(
+                thumbColor = MaterialTheme.colorScheme.secondary,
+                activeTrackColor = MaterialTheme.colorScheme.secondary,
+                inactiveTrackColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f)
+            ),
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = formatTime(currentPosition),
+                color = Color.White,
+                style = MaterialTheme.typography.bodySmall
+            )
+
+            Text(
+                text = formatTime(duration),
+                color = Color.White,
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+    }
+}
+
+@Composable
+fun MediaControls(
+    isPlaying: Boolean,
+    onPlayPause: () -> Unit,
+    onSeekBackward: () -> Unit,
+    onSeekForward: () -> Unit,
+    modifier: Modifier = Modifier,
+    showBackwardForward: Boolean = true,
+    controlsSize: MediaControlsSize = MediaControlsSize.MEDIUM
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(
+            if (controlsSize == MediaControlsSize.LARGE) 32.dp else 16.dp
+        ),
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+    ) {
+        if (showBackwardForward) {
+            IconButton(
+                onClick = onSeekBackward,
+                modifier = Modifier
+                    .background(
+                        Color.Black.copy(alpha = 0.6f),
+                        CircleShape
+                    )
+                    .size(controlsSize.backwardForwardSize)
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.replay_10),
+                    contentDescription = stringResource(R.string.replay_10),
+                    tint = Color.White,
+                    modifier = Modifier.size(controlsSize.iconSize)
+                )
+            }
+        }
+
+        IconButton(
+            onClick = onPlayPause,
+            modifier = Modifier
+                .background(
+                    Color.Black.copy(alpha = 0.6f),
+                    CircleShape
+                )
+                .size(controlsSize.playPauseSize)
+        ) {
+            Icon(
+                painter = if (isPlaying) painterResource(R.drawable.pause) else painterResource(R.drawable.play_arrow),
+                contentDescription = if (isPlaying) stringResource(R.string.pause) else stringResource(R.string.play),
+                tint = Color.White,
+                modifier = Modifier.size(controlsSize.playIconSize)
+            )
+        }
+
+        if (showBackwardForward) {
+            IconButton(
+                onClick = onSeekForward,
+                modifier = Modifier
+                    .background(
+                        Color.Black.copy(alpha = 0.6f),
+                        CircleShape
+                    )
+                    .size(controlsSize.backwardForwardSize)
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.forward_10),
+                    contentDescription = stringResource(R.string.forward_10),
+                    tint = Color.White,
+                    modifier = Modifier.size(controlsSize.iconSize)
+                )
+            }
+        }
+    }
+}
+
+
+@Composable
+fun SwipeDetector(
+    modifier: Modifier = Modifier,
+    onSwipeLeft: () -> Unit,
+    onSwipeRight: () -> Unit,
+    enabled: Boolean = true,
+    swipeThreshold: Float = 50f,
+    content: @Composable () -> Unit
+) {
+    Box(
+        modifier = modifier.pointerInput(enabled) {
+            if (enabled) {
+                var totalDragX = 0f
+                var hasNavigated = false
+
+                detectDragGestures(
+                    onDragStart = {
+                        totalDragX = 0f
+                        hasNavigated = false
+                    },
+                    onDragEnd = {
+                        totalDragX = 0f
+                        hasNavigated = false
+                    }
+                ) { _, dragAmount ->
+                    totalDragX += dragAmount.x
+
+                    if (!hasNavigated && abs(totalDragX) > abs(dragAmount.y * 2)) {
+                        if (totalDragX > swipeThreshold) {
+                            onSwipeLeft()
+                            hasNavigated = true
+                        } else if (totalDragX < -swipeThreshold) {
+                            onSwipeRight()
+                            hasNavigated = true
+                        }
+                    }
+                }
+            }
+        }
+    ) {
+        content()
+    }
+}
+
+@Composable
+fun AnimatedVisibility(
+    visible: Boolean,
+    modifier: Modifier = Modifier,
+    enter: EnterTransition = fadeIn(),
+    exit: ExitTransition = fadeOut(),
+    content: @Composable () -> Unit
+) {
+    AnimatedVisibility(
+        visible = visible,
+        enter = enter,
+        exit = exit,
+        modifier = modifier
+    ) {
+        content()
+    }
+}
+
+@Composable
+fun MediaBackButton(
+    onBackClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    backgroundColor: Color = Color.Black.copy(alpha = 0.5f)
+) {
+    IconButton(
+        onClick = onBackClick,
+        modifier = modifier.background(
+            backgroundColor,
+            CircleShape
+        )
+    ) {
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+            contentDescription = stringResource(R.string.back),
+            tint = Color.White
+        )
+    }
+}
+
+@Composable
+fun MediaCounter(
+    currentIndex: Int,
+    totalCount: Int,
+    modifier: Modifier = Modifier,
+    backgroundColor: Color = Color.Black.copy(alpha = 0.5f)
+) {
+    Text(
+        text = "${currentIndex + 1} / $totalCount",
+        color = Color.White,
+        style = MaterialTheme.typography.bodyMedium,
+        modifier = modifier
+            .background(
+                backgroundColor,
+                RoundedCornerShape(16.dp)
+            )
+            .padding(horizontal = 12.dp, vertical = 6.dp)
+    )
+}
+
+@Composable
+fun LoadingIndicator(
+    modifier: Modifier = Modifier,
+    color: Color = Color.White
+) {
+    CircularProgressIndicator(
+        modifier = modifier,
+        color = color
+    )
+}
+
+@Composable
+fun GradientBackground(
+    modifier: Modifier = Modifier,
+    colors: List<Color> = listOf(
+        Color.Transparent,
+        Color.Black.copy(alpha = 0.7f)
+    ),
+    content: @Composable () -> Unit
+) {
+    Box(
+        modifier = modifier.background(
+            Brush.verticalGradient(colors = colors)
+        )
+    ) {
+        content()
+    }
+}
+
+@Composable
+fun AudioFileIcon(
+    modifier: Modifier = Modifier,
+    size: Dp = 24.dp,
+    tint: Color = Color.White
+) {
+    Icon(
+        painter = painterResource(R.drawable.audio_file),
+        contentDescription = stringResource(R.string.audio_file),
+        tint = tint,
+        modifier = modifier.size(size)
+    )
+}
+
+@Composable
+fun ClickableArea(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    indication: Indication? = null,
+    content: @Composable () -> Unit
+) {
+    Box(
+        modifier = modifier.clickable(
+            indication = indication,
+            interactionSource = remember { MutableInteractionSource() }
+        ) { onClick() }
+    ) {
+        content()
     }
 }

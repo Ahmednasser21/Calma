@@ -83,4 +83,10 @@
     <string name="comment">تعليق</string>
     <string name="share">مشاركة</string>
     <string name="like_verb">أعجبني</string>
+    <string name="back">للخلف</string>
+    <string name="zoomable_image">صورة قابلة للتكبير</string>
+    <string name="forward_10">إلى الأمام 10 ثوانٍ</string>
+    <string name="replay_10">رجوع لمدة 10 ثوانٍ</string>
+    <string name="video">فيديو</string>
+    <string name="audio">مقطع صوتي</string>
 </resources>

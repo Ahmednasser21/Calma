@@ -11,6 +11,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -19,6 +21,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -30,13 +33,18 @@ import com.metafortech.calma.presentation.AppRoute
 import com.metafortech.calma.presentation.AppRoute.HomeNav
 import com.metafortech.calma.presentation.AppRoute.HomeScreen
 import com.metafortech.calma.presentation.AppRoute.ChattingScreen
+import com.metafortech.calma.presentation.AppRoute.MediaScreen
 import com.metafortech.calma.presentation.AppRoute.ReelsScreen
 import com.metafortech.calma.presentation.AppRoute.SportsFacilitiesScreen
 import com.metafortech.calma.presentation.AppRoute.StoreScreen
 import com.metafortech.calma.presentation.home.home.HomeScreen
 import com.metafortech.calma.presentation.home.home.HomeViewModel
-import com.metafortech.calma.presentation.home.home.SamplePosts
+import com.metafortech.calma.presentation.home.media.MediaViewerScreen
+import com.metafortech.calma.presentation.home.media.MediaViewerViewModel
+import com.metafortech.calma.presentation.home.home.UIMediaItem
+import kotlinx.serialization.json.Json
 
+@androidx.annotation.OptIn(UnstableApi::class)
 fun NavGraphBuilder.homeNav(
     innerPadding: PaddingValues,
     navController: NavHostController
@@ -46,10 +54,28 @@ fun NavGraphBuilder.homeNav(
         composable<HomeScreen> { backStackEntry ->
 
             val homeViewModel: HomeViewModel = hiltViewModel()
-            val state = homeViewModel.homeState.collectAsStateWithLifecycle().value
+            val state = homeViewModel.homeState.collectAsState().value
 
             HomeScreen(
-                modifier = Modifier.padding(innerPadding), state = state
+                modifier = Modifier.padding(innerPadding), state = state,
+                onPlayAudio = homeViewModel::playAudio,
+                onPauseAudio = homeViewModel::pauseAudio,
+                onSeekAudio = homeViewModel::seekAudio,
+                onLikePost = homeViewModel::likePost,
+                onMediaClick = {mediaItems, index->
+                    val mediaItemsJson = Json.encodeToString(mediaItems)
+                    navController.navigate(MediaScreen(mediaItemsJson, index)) {
+                        launchSingleTop = true
+                    }
+                },
+                onScroll = homeViewModel::onScroll,
+                formatTime = homeViewModel::formatTime,
+                onCreateNewPostClick = { },
+                onCommentPost = {},
+                onSharePost = {},
+                onPostCreatorClick = {},
+                onPostOptionsMenuClick = {},
+                onHashtagClick = {}
             )
         }
         composable<SportsFacilitiesScreen> {
@@ -66,6 +92,38 @@ fun NavGraphBuilder.homeNav(
 
         composable<ChattingScreen> {
             ChatScreen(modifier = Modifier.padding(innerPadding))
+        }
+        composable <MediaScreen> {backStackEntry->
+            val mediaViewerViewModel: MediaViewerViewModel = hiltViewModel()
+            val state = mediaViewerViewModel.state.collectAsStateWithLifecycle().value
+            val args = backStackEntry.toRoute<MediaScreen>()
+            val mediaItems = Json.decodeFromString<List<UIMediaItem>>(args.mediaItems)
+            val startIndex = args.startIndex
+
+            LaunchedEffect(mediaItems, startIndex) {
+                mediaViewerViewModel.initializeMedia(mediaItems, startIndex)
+            }
+
+            MediaViewerScreen(
+                modifier = Modifier.padding(innerPadding),
+                state = state,
+                onBackClick = { navController.popBackStack() },
+                onNavigateToNext = mediaViewerViewModel::navigateToNextMedia,
+                onNavigateToPrevious = mediaViewerViewModel::navigateToPreviousMedia,
+                onNavigateToIndex = { index ->
+                    mediaViewerViewModel.navigateToIndex(index)
+                },
+                onToggleVideoPlayback = mediaViewerViewModel::toggleVideoPlayback,
+                onSeekVideo = mediaViewerViewModel::seekVideo,
+                onSeekVideoForward = mediaViewerViewModel::seekForward,
+                onSeekVideoBackward = mediaViewerViewModel::seekBackward,
+                onToggleAudioPlayback = mediaViewerViewModel::toggleAudioPlayback,
+                onSeekAudio = mediaViewerViewModel::seekAudio,
+                onSeekAudioForward = mediaViewerViewModel::seekAudioForward,
+                onSeekAudioBackward = mediaViewerViewModel::seekAudioBackward,
+                getVideoPlayer = mediaViewerViewModel::getVideoPlayer,
+                formatTime = mediaViewerViewModel::formatTime
+            )
         }
     }
 

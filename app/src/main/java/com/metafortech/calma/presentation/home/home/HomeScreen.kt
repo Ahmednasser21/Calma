@@ -1,6 +1,5 @@
 package com.metafortech.calma.presentation.home.home
 
-import android.R.attr.progress
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,27 +17,28 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -59,39 +59,76 @@ import kotlin.collections.List
 fun HomeScreen(
     modifier: Modifier = Modifier,
     state: HomeScreenState,
-    onCreateNewPostClick: () -> Unit = {},
-    onLikePost: (String) -> Unit = {},
-    onCommentPost: (String) -> Unit = {},
-    onSharePost: (String) -> Unit = {},
-    onMediaClick: (MediaItem) -> Unit = {},
-    onPostCreatorClick: () -> Unit = {},
-    onPostOptionsMenuClick: () -> Unit = {}
+    onCreateNewPostClick: () -> Unit,
+    onLikePost: (String) -> Unit,
+    onCommentPost: (String) -> Unit,
+    onSharePost: (String) -> Unit,
+    onMediaClick: (List<UIMediaItem>, index: Int) -> Unit,
+    onPostCreatorClick: () -> Unit,
+    onPostOptionsMenuClick: () -> Unit,
+    onPlayAudio: (String) -> Unit,
+    onPauseAudio: () -> Unit,
+    onSeekAudio: (Long) -> Unit,
+    onHashtagClick: (String) -> Unit,
+    onScroll: (List<Int>) -> Unit,
+    formatTime: (Long) -> String,
 ) {
+    val listState = state.listState
     Column(
         modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.Top
     ) {
-        CreateNewPost(
-            onCreateNewPostClick = { onCreateNewPostClick() },
-            state = state
+        LaunchedEffect(listState) {
+            snapshotFlow {
+                listState.layoutInfo.visibleItemsInfo.map { it.index }
+            }.collect { visibleIndices ->
+                onScroll(visibleIndices)
+            }
+        }
+
+        NewPost(
+            onCreateNewPostClick = { onCreateNewPostClick() }, state = state
         )
+
         SocialMediaFeed(
             posts = state.posts,
-            onLikePost = onLikePost,
-            onCommentPost = onCommentPost,
-            onSharePost = onSharePost,
-            onMediaClick = onMediaClick,
-            onPostCreatorClick = onPostCreatorClick,
-            onPostOptionsMenuClick = { onPostOptionsMenuClick() }
+            audioPlayerState = state.audioPlayerState,
+            listState = listState,
+            onLikePost = { postID ->
+                onLikePost(postID)
+            },
+            onCommentPost = { postID ->
+                onCommentPost(postID)
+            },
+            onSharePost = { postID ->
+                onSharePost(postID)
+            },
+            onMediaClick = { mediaItems, index ->
+                onMediaClick(mediaItems, index)
+            },
+            onPostCreatorClick = { onPostCreatorClick() },
+            onPostOptionsMenuClick = { onPostOptionsMenuClick() },
+            onPlayAudio = { audioUrl ->
+                onPlayAudio(audioUrl)
+            },
+            onPauseAudio = { onPauseAudio() },
+            onSeekAudio = { seekTime ->
+                onSeekAudio(seekTime)
+            },
+            onHashtagClick = { hashtag ->
+                onHashtagClick(hashtag)
+            },
+            formatTime = { timeLong ->
+                formatTime(timeLong)
+            }
         )
     }
 }
 
 @Composable
-fun CreateNewPost(
-    onCreateNewPostClick: () -> Unit = {},
-    state: HomeScreenState
+fun NewPost(
+    onCreateNewPostClick: () -> Unit = {}, state: HomeScreenState,
 ) {
     Row(
         modifier = Modifier
@@ -102,8 +139,7 @@ fun CreateNewPost(
     ) {
         UserCircularImage(imageUrl = state.userImageUrl)
         Column(
-            horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.Center
+            horizontalAlignment = Alignment.Start, verticalArrangement = Arrangement.Center
         ) {
             Text(
                 text = state.userName,
@@ -124,19 +160,19 @@ fun CreateNewPost(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    CreatePostOptionsItem(
+                    PostOptionsItem(
                         painter = painterResource(id = R.drawable.live_gray),
                         stringResource(R.string.record_video)
                     )
-                    CreatePostOptionsItem(
+                    PostOptionsItem(
                         painter = painterResource(id = R.drawable.camera),
                         stringResource(R.string.take_photo)
                     )
-                    CreatePostOptionsItem(
+                    PostOptionsItem(
                         painter = painterResource(id = R.drawable.voice_mail),
                         stringResource(R.string.record_audio)
                     )
-                    CreatePostOptionsItem(
+                    PostOptionsItem(
                         painter = painterResource(id = R.drawable.gallery),
                         stringResource(R.string.select_from_gallery)
                     )
@@ -148,43 +184,67 @@ fun CreateNewPost(
 }
 
 @Composable
-fun CreatePostOptionsItem(painter: Painter, description: String) {
+fun PostOptionsItem(painter: Painter, description: String) {
     Image(
-        modifier = Modifier.size(18.dp),
-        painter = painter,
-        contentDescription = description
+        modifier = Modifier.size(18.dp), painter = painter, contentDescription = description
     )
 }
 
 @Composable
 fun SocialMediaFeed(
     posts: List<PostModel>,
-    onLikePost: (String) -> Unit = {},
-    onCommentPost: (String) -> Unit = {},
-    onSharePost: (String) -> Unit = {},
-    onMediaClick: (MediaItem) -> Unit = {},
+    audioPlayerState: AudioPlayerState,
+    listState: LazyListState,
+    onLikePost: (String) -> Unit,
+    onCommentPost: (String) -> Unit,
+    onSharePost: (String) -> Unit,
+    onMediaClick: (List<UIMediaItem>, index: Int) -> Unit,
     onPostCreatorClick: () -> Unit,
     onPostOptionsMenuClick: () -> Unit,
-    onHashtagClick: (String) -> Unit = {}
+    onHashtagClick: (String) -> Unit,
+    onPlayAudio: (String) -> Unit,
+    onPauseAudio: () -> Unit,
+    onSeekAudio: (Long) -> Unit,
+    formatTime: (Long) -> String,
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
+        state = listState
     ) {
         items(
-            items = posts,
-            key = { it.id }
-        ) { post ->
+            items = posts, key = { it.id }) { post ->
             SocialMediaFeedItem(
                 post = post,
-                onLikeClick = onLikePost,
-                onCommentClick = onCommentPost,
-                onShareClick = onSharePost,
-                onMediaClick = onMediaClick,
-                onPostCreatorClick = onPostCreatorClick,
-                onPostOptionsMenuClick = onPostOptionsMenuClick,
-                onHashtagClick = onHashtagClick
-
+                audioPlayerState = audioPlayerState,
+                onLikeClick = { postID ->
+                    onLikePost(postID)
+                },
+                onCommentClick = { postID ->
+                    onCommentPost(postID)
+                },
+                onShareClick = { postID ->
+                    onSharePost(postID)
+                },
+                onMediaClick = { mediaItems, index ->
+                    onMediaClick(mediaItems, index)
+                },
+                onPostCreatorClick = { onPostCreatorClick() },
+                onPostOptionsMenuClick = { onPostOptionsMenuClick() },
+                onPlayAudio = { audioUrl ->
+                    onPlayAudio(audioUrl)
+                },
+                onPauseAudio = { onPauseAudio() },
+                onSeekAudio = { seekTime ->
+                    onSeekAudio(seekTime)
+                },
+                onHashtagClick = { hashtag ->
+                    onHashtagClick(hashtag)
+                },
+                formatTime = { timeLong ->
+                    formatTime(timeLong)
+                }
             )
+
         }
     }
 }
@@ -196,10 +256,15 @@ fun SocialMediaFeedItem(
     onLikeClick: (String) -> Unit,
     onCommentClick: (String) -> Unit,
     onShareClick: (String) -> Unit,
-    onMediaClick: (MediaItem) -> Unit,
+    onMediaClick: (List<UIMediaItem>, index: Int) -> Unit,
     onPostCreatorClick: () -> Unit,
     onPostOptionsMenuClick: () -> Unit,
-    onHashtagClick: (String) -> Unit
+    onHashtagClick: (String) -> Unit,
+    onPlayAudio: (String) -> Unit,
+    onPauseAudio: () -> Unit,
+    onSeekAudio: (Long) -> Unit,
+    audioPlayerState: AudioPlayerState,
+    formatTime: (Long) -> String,
 ) {
     Card(
         modifier = modifier
@@ -218,8 +283,7 @@ fun SocialMediaFeedItem(
                 userName = post.userName,
                 timeAgo = post.timeAgo,
                 onPostCreatorClick = { onPostCreatorClick() },
-                onPostOptionsMenuClick = { onPostOptionsMenuClick() }
-            )
+                onPostOptionsMenuClick = { onPostOptionsMenuClick() })
 
             Spacer(modifier = Modifier.height(12.dp))
 
@@ -233,11 +297,22 @@ fun SocialMediaFeedItem(
                 Spacer(modifier = Modifier.height(12.dp))
             }
 
-            if (post.mediaItems.isNotEmpty()) {
+            if (post.uiMediaItems.isNotEmpty()) {
                 MediaContent(
                     modifier = Modifier.fillMaxWidth(),
-                    mediaItems = post.mediaItems,
-                    onMediaClick = { mediaItem -> onMediaClick(mediaItem) }
+                    uiMediaItems = post.uiMediaItems,
+                    onMediaClick = { mediaItems, index -> onMediaClick(mediaItems, index) },
+                    audioPlayerState = audioPlayerState,
+                    onPlayAudio = { audioUrl ->
+                        onPlayAudio(audioUrl)
+                    },
+                    onPauseAudio = { onPauseAudio() },
+                    onSeekAudio = { seekTime ->
+                        onSeekAudio(seekTime)
+                    },
+                    formatTime = { timeLong ->
+                        formatTime(timeLong)
+                    }
                 )
                 Spacer(modifier = Modifier.height(12.dp))
             }
@@ -261,8 +336,7 @@ fun SocialMediaFeedItem(
                 isLiked = post.isLiked,
                 onLikeClick = { onLikeClick(post.id) },
                 onCommentClick = { onCommentClick(post.id) },
-                onShareClick = { onShareClick(post.id) }
-            )
+                onShareClick = { onShareClick(post.id) })
         }
     }
 }
@@ -277,8 +351,7 @@ private fun PostHeader(
     onPostOptionsMenuClick: () -> Unit,
 ) {
     Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically
+        modifier = modifier, verticalAlignment = Alignment.CenterVertically
     ) {
         UserCircularImage(imageUrl = userAvatar, onPostCreatorClick)
         Spacer(modifier = Modifier.width(8.dp))
@@ -293,9 +366,7 @@ private fun PostHeader(
                 color = Color.Black
             )
             Text(
-                text = timeAgo,
-                style = MaterialTheme.typography.bodySmall,
-                color = Color.Gray
+                text = timeAgo, style = MaterialTheme.typography.bodySmall, color = Color.Gray
             )
         }
         Spacer(modifier = Modifier.weight(1f))
@@ -305,70 +376,86 @@ private fun PostHeader(
             tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier
                 .size(24.dp)
-                .clickable { onPostOptionsMenuClick() }
-        )
+                .clickable { onPostOptionsMenuClick() })
 
     }
 }
 
 @Composable
 private fun MediaContent(
-    mediaItems: List<MediaItem>,
-    onMediaClick: (MediaItem) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    uiMediaItems: List<UIMediaItem>,
+    onMediaClick: (List<UIMediaItem>, Int) -> Unit,
+    audioPlayerState: AudioPlayerState,
+    onPlayAudio: (String) -> Unit,
+    onPauseAudio: () -> Unit,
+    onSeekAudio: (Long) -> Unit,
+    formatTime: (Long) -> String,
 ) {
-    when (mediaItems.size) {
+    when (uiMediaItems.size) {
         1 -> SingleMediaItem(
-            mediaItem = mediaItems[0],
+            modifier = modifier,
+            uiMediaItem = uiMediaItems[0],
             onMediaClick = onMediaClick,
-            modifier = modifier
+            audioPlayerState = audioPlayerState,
+            onPlayAudio = onPlayAudio,
+            onPauseAudio = onPauseAudio,
+            onSeekAudio = onSeekAudio,
+            formatTime = formatTime
         )
 
+
         2 -> TwoMediaItems(
-            mediaItems = mediaItems,
-            onMediaClick = onMediaClick,
-            modifier = modifier
+            modifier = modifier,
+            uiMediaItems = uiMediaItems,
+            onMediaClick = onMediaClick
         )
 
         3 -> ThreeMediaItems(
-            mediaItems = mediaItems,
-            onMediaClick = onMediaClick,
-            modifier = modifier
+            modifier = modifier,
+            uiMediaItems = uiMediaItems,
+            onMediaClick = onMediaClick
         )
 
         else -> MultipleMediaItems(
-            mediaItems = mediaItems,
-            onMediaClick = onMediaClick,
-            modifier = modifier
+            modifier = modifier,
+            uiMediaItems = uiMediaItems,
+            onMediaClick = onMediaClick
         )
     }
 }
 
+
 @Composable
 private fun SingleMediaItem(
-    mediaItem: MediaItem,
-    onMediaClick: (MediaItem) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    uiMediaItem: UIMediaItem,
+    onMediaClick: (List<UIMediaItem>, index: Int) -> Unit,
+    audioPlayerState: AudioPlayerState,
+    onPlayAudio: (String) -> Unit,
+    onPauseAudio: () -> Unit,
+    onSeekAudio: (Long) -> Unit,
+    formatTime: (Long) -> String,
 ) {
-    when (mediaItem.type) {
+    when (uiMediaItem.type) {
         MediaType.IMAGE -> {
             ImageLoading(
                 modifier = modifier
                     .fillMaxWidth()
                     .height(200.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .clickable { onMediaClick(mediaItem) },
-                imageURL = mediaItem.url,
+                    .clickable { onMediaClick(listOf(uiMediaItem), 0) },
+                imageURL = uiMediaItem.url,
                 contentDescription = stringResource(R.string.post_image)
             )
         }
 
         MediaType.VIDEO -> {
             VideoThumbnail(
-                videoUrl = mediaItem.url,
-                thumbnailUrl = mediaItem.thumbnailUrl,
-                duration = mediaItem.duration,
-                onVideoClick = { onMediaClick(mediaItem) },
+                videoUrl = uiMediaItem.url,
+                thumbnailUrl = uiMediaItem.thumbnailUrl,
+                duration = uiMediaItem.duration,
+                onVideoClick = { onMediaClick(listOf(uiMediaItem), 0) },
                 modifier = modifier
                     .fillMaxWidth()
                     .height(200.dp)
@@ -377,9 +464,21 @@ private fun SingleMediaItem(
 
         MediaType.AUDIO -> {
             AudioPlayer(
-                audioUrl = mediaItem.url,
-                duration = mediaItem.duration,
-                modifier = modifier.fillMaxWidth()
+                modifier = modifier.fillMaxWidth(),
+                audioUrl = uiMediaItem.url,
+                duration = uiMediaItem.duration,
+                audioPlayerState = audioPlayerState,
+                onPlayClick = { audioUrl ->
+                    onPlayAudio(audioUrl)
+                },
+                onPauseClick = { onPauseAudio() },
+                onSeek = { seekTime ->
+                    onSeekAudio(seekTime)
+                },
+                formatTime = { timeLong ->
+                    formatTime(timeLong)
+                }
+
             )
         }
     }
@@ -387,18 +486,18 @@ private fun SingleMediaItem(
 
 @Composable
 private fun TwoMediaItems(
-    mediaItems: List<MediaItem>,
-    onMediaClick: (MediaItem) -> Unit,
-    modifier: Modifier = Modifier
+    uiMediaItems: List<UIMediaItem>,
+    onMediaClick: (List<UIMediaItem>, index: Int) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier.height(160.dp),
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        mediaItems.take(2).forEach { mediaItem ->
+        uiMediaItems.take(2).forEachIndexed { index, mediaItem ->
             MediaItemThumbnail(
-                mediaItem = mediaItem,
-                onMediaClick = onMediaClick,
+                uiMediaItem = mediaItem,
+                onMediaClick = { onMediaClick(uiMediaItems, index) },
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight()
@@ -409,17 +508,17 @@ private fun TwoMediaItems(
 
 @Composable
 private fun ThreeMediaItems(
-    mediaItems: List<MediaItem>,
-    onMediaClick: (MediaItem) -> Unit,
-    modifier: Modifier = Modifier
+    uiMediaItems: List<UIMediaItem>,
+    onMediaClick: (List<UIMediaItem>, index: Int) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier.height(160.dp),
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         MediaItemThumbnail(
-            mediaItem = mediaItems[0],
-            onMediaClick = onMediaClick,
+            uiMediaItem = uiMediaItems[0],
+            onMediaClick = { onMediaClick(uiMediaItems, 0) },
             modifier = Modifier
                 .weight(1f)
                 .fillMaxHeight()
@@ -430,15 +529,15 @@ private fun ThreeMediaItems(
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             MediaItemThumbnail(
-                mediaItem = mediaItems[1],
-                onMediaClick = onMediaClick,
+                uiMediaItem = uiMediaItems[1],
+                onMediaClick = { onMediaClick(uiMediaItems, 1) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
             )
             MediaItemThumbnail(
-                mediaItem = mediaItems[2],
-                onMediaClick = onMediaClick,
+                uiMediaItem = uiMediaItems[2],
+                onMediaClick = { onMediaClick(uiMediaItems, 2) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
@@ -449,17 +548,17 @@ private fun ThreeMediaItems(
 
 @Composable
 private fun MultipleMediaItems(
-    mediaItems: List<MediaItem>,
-    onMediaClick: (MediaItem) -> Unit,
-    modifier: Modifier = Modifier
+    uiMediaItems: List<UIMediaItem>,
+    onMediaClick: (List<UIMediaItem>, index: Int) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier.height(160.dp),
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         MediaItemThumbnail(
-            mediaItem = mediaItems[0],
-            onMediaClick = onMediaClick,
+            uiMediaItem = uiMediaItems[0],
+            onMediaClick = { onMediaClick(uiMediaItems, 0) },
             modifier = Modifier
                 .weight(1f)
                 .fillMaxHeight()
@@ -470,8 +569,8 @@ private fun MultipleMediaItems(
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             MediaItemThumbnail(
-                mediaItem = mediaItems[1],
-                onMediaClick = onMediaClick,
+                uiMediaItem = uiMediaItems[1],
+                onMediaClick = { onMediaClick(uiMediaItems, 1) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
@@ -483,24 +582,26 @@ private fun MultipleMediaItems(
                     .weight(1f)
             ) {
                 MediaItemThumbnail(
-                    mediaItem = mediaItems[2],
-                    onMediaClick = onMediaClick,
+                    uiMediaItem = uiMediaItems[2],
+                    onMediaClick = { onMediaClick(uiMediaItems, 2) },
                     modifier = Modifier.fillMaxSize()
                 )
 
-                if (mediaItems.size > 3) {
+                if (uiMediaItems.size > 3) {
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .background(
-                                Color.Black.copy(alpha = 0.6f),
-                                RoundedCornerShape(8.dp)
-                            )
-                            .clickable { onMediaClick(mediaItems[2]) },
+                            .background(Color.Black.copy(alpha = 0.6f), RoundedCornerShape(8.dp))
+                            .clickable {
+                                onMediaClick(
+                                    uiMediaItems,
+                                    2
+                                )
+                            },
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "+${mediaItems.size - 3}",
+                            text = "+${uiMediaItems.size - 3}",
                             color = Color.White,
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold
@@ -514,20 +615,17 @@ private fun MultipleMediaItems(
 
 @Composable
 private fun MediaItemThumbnail(
-    mediaItem: MediaItem,
-    onMediaClick: (MediaItem) -> Unit,
-    modifier: Modifier = Modifier
+    uiMediaItem: UIMediaItem, onMediaClick: (UIMediaItem) -> Unit, modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(8.dp))
-            .clickable { onMediaClick(mediaItem) }
-    ) {
-        when (mediaItem.type) {
+            .clickable { onMediaClick(uiMediaItem) }) {
+        when (uiMediaItem.type) {
             MediaType.IMAGE -> {
                 ImageLoading(
                     modifier = Modifier.fillMaxSize(),
-                    imageURL = mediaItem.url,
+                    imageURL = uiMediaItem.url,
                     contentDescription = stringResource(R.string.media_thumbnail)
                 )
             }
@@ -535,12 +633,12 @@ private fun MediaItemThumbnail(
             MediaType.VIDEO -> {
                 ImageLoading(
                     modifier = Modifier.fillMaxSize(),
-                    imageURL = mediaItem.thumbnailUrl ?: mediaItem.url,
+                    imageURL = uiMediaItem.thumbnailUrl ?: uiMediaItem.url,
                     contentDescription = stringResource(R.string.video_thumbnail),
                 )
 
                 Icon(
-                    imageVector = Icons.Default.PlayArrow,
+                    painter = painterResource(R.drawable.play_arrow),
                     contentDescription = stringResource(R.string.play_video),
                     tint = Color.White,
                     modifier = Modifier
@@ -562,7 +660,7 @@ private fun MediaItemThumbnail(
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        imageVector = Icons.Default.PlayArrow,
+                        painter = painterResource(R.drawable.play_arrow),
                         contentDescription = stringResource(R.string.audio_file),
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(32.dp)
@@ -579,13 +677,12 @@ private fun VideoThumbnail(
     thumbnailUrl: String?,
     duration: String?,
     onVideoClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(12.dp))
-            .clickable { onVideoClick() }
-    ) {
+            .clickable { onVideoClick() }) {
         ImageLoading(
             modifier = Modifier.fillMaxSize(),
             imageURL = thumbnailUrl ?: videoUrl,
@@ -593,7 +690,7 @@ private fun VideoThumbnail(
         )
 
         Icon(
-            imageVector = Icons.Default.PlayArrow,
+            painter = painterResource(R.drawable.play_arrow),
             contentDescription = stringResource(R.string.play_video),
             tint = Color.White,
             modifier = Modifier
@@ -605,7 +702,6 @@ private fun VideoThumbnail(
                 )
                 .padding(12.dp)
         )
-
         duration?.let {
             Text(
                 text = it,
@@ -615,8 +711,7 @@ private fun VideoThumbnail(
                     .align(Alignment.BottomEnd)
                     .padding(8.dp)
                     .background(
-                        Color.Black.copy(alpha = 0.6f),
-                        RoundedCornerShape(4.dp)
+                        Color.Black.copy(alpha = 0.6f), RoundedCornerShape(4.dp)
                     )
                     .padding(horizontal = 6.dp, vertical = 2.dp)
             )
@@ -626,111 +721,137 @@ private fun VideoThumbnail(
 
 @Composable
 private fun AudioPlayer(
+    modifier: Modifier = Modifier,
     audioUrl: String,
     duration: String?,
-    modifier: Modifier = Modifier
+    audioPlayerState: AudioPlayerState,
+    onPlayClick: (String) -> Unit,
+    onPauseClick: () -> Unit,
+    onSeek: (Long) -> Unit,
+    formatTime: (Long) -> String,
 ) {
-    var isPlaying by remember { mutableStateOf(false) }
-    var currentPosition by remember { mutableFloatStateOf(0f) }
-
     Card(
-        modifier = modifier,
-        colors = CardDefaults.cardColors(
+        modifier = modifier, colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.05f)
-        ),
-        shape = RoundedCornerShape(12.dp)
+        ), shape = RoundedCornerShape(12.dp)
     ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+        Column(
+            modifier = Modifier.padding(16.dp)
         ) {
-            IconButton(
-                onClick = { isPlaying = !isPlaying }
+            Row(
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    painter = if (isPlaying) painterResource(id = R.drawable.pause)
-                    else painterResource(
-                        id = R.drawable.play_arrow
-                    ),
-                    contentDescription = if (isPlaying) stringResource(R.string.pause) else stringResource(
-                        R.string.play
-                    ),
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
-
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Modifier.fillMaxWidth()
-                LinearProgressIndicator(
-                    progress = { progress.toFloat() },
-                    modifier = modifier,
-                    color = MaterialTheme.colorScheme.secondary,
-                    trackColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f),
-                    strokeCap = StrokeCap.Round,
-                )
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                IconButton(
+                    onClick = {
+                        if (audioPlayerState.isPlaying && audioPlayerState.currentAudioUrl == audioUrl) {
+                            onPauseClick()
+                        } else {
+                            onPlayClick(audioUrl)
+                        }
+                    }
                 ) {
-                    Text(
-                        text = "0:00",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color.Gray
-                    )
-                    Text(
-                        text = duration ?: "0:00",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color.Gray
-                    )
+                    if (audioPlayerState.isLoading && audioPlayerState.currentAudioUrl == audioUrl) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            strokeWidth = 2.dp,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    } else {
+                        Icon(
+                            painter = if (audioPlayerState.isPlaying && audioPlayerState.currentAudioUrl == audioUrl) painterResource(
+                                R.drawable.pause
+                            ) else painterResource(R.drawable.play_arrow),
+                            contentDescription = if (audioPlayerState.isPlaying && audioPlayerState.currentAudioUrl == audioUrl) stringResource(
+                                R.string.pause
+                            ) else stringResource(R.string.play),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
                 }
-            }
 
-            Icon(
-                painter = painterResource(R.drawable.mic),
-                contentDescription = "Audio",
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(24.dp)
-            )
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    if (audioPlayerState.currentAudioUrl == audioUrl) {
+                        Slider(
+                            value = audioPlayerState.progress,
+                            onValueChange = { progress ->
+                                val newPosition = (progress * audioPlayerState.duration).toLong()
+                                onSeek(newPosition)
+                            },
+                            colors = SliderDefaults.colors(
+                                thumbColor = MaterialTheme.colorScheme.secondary,
+                                activeTrackColor = MaterialTheme.colorScheme.secondary,
+                                inactiveTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
+                            )
+                        )
+                    } else {
+                        LinearProgressIndicator(
+                            progress = { 0f },
+                            modifier = Modifier.fillMaxWidth(),
+                            color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f),
+                            trackColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f),
+                            strokeCap = StrokeCap.Round
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = if (audioPlayerState.currentAudioUrl == audioUrl) formatTime(
+                                audioPlayerState.currentPosition
+                            ) else "0:00",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Color.Gray
+                        )
+                        Text(
+                            text = if (audioPlayerState.currentAudioUrl == audioUrl) formatTime(
+                                audioPlayerState.duration
+                            ) else (duration ?: "0:00"),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Color.Gray
+                        )
+                    }
+                }
+
+                Icon(
+                    painter = painterResource(R.drawable.mic),
+                    contentDescription = "Audio",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
         }
     }
 }
 
 @Composable
 private fun HashtagsRow(
-    hashtags: List<String>,
-    modifier: Modifier = Modifier,
-    onHashtagClick: (String) -> Unit
+    hashtags: List<String>, modifier: Modifier = Modifier, onHashtagClick: (String) -> Unit,
 ) {
     LazyRow(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        modifier = modifier, horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(hashtags) { hashtag ->
             Text(
                 text = hashtag,
                 color = Color(0xFF1DA1F2),
                 style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.clickable { onHashtagClick(hashtag) }
-            )
+                modifier = Modifier.clickable { onHashtagClick(hashtag) })
         }
     }
 }
 
 @Composable
 private fun EngagementStats(
-    likesCount: Int,
-    commentsCount: Int,
-    sharesCount: Int,
-    modifier: Modifier = Modifier
+    likesCount: Int, commentsCount: Int, sharesCount: Int, modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
+        modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
             text = "$likesCount ${stringResource(R.string.like)}",
@@ -760,11 +881,10 @@ private fun ActionButtons(
     onLikeClick: () -> Unit,
     onCommentClick: () -> Unit,
     onShareClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
+        modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
     ) {
         ActionButton(
             icon = if (isLiked) painterResource(R.drawable.like_selected) else painterResource(
@@ -794,36 +914,23 @@ private fun ActionButtons(
 
 @Composable
 private fun ActionButton(
-    icon: Painter,
-    text: String,
-    tint: Color,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    icon: Painter, text: String, tint: Color, onClick: () -> Unit, modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = ripple(
-                    bounded = false,
-                    radius = 32.dp,
-                    color = MaterialTheme.colorScheme.secondary
+                    bounded = false, radius = 32.dp, color = MaterialTheme.colorScheme.secondary
                 ),
             ) { onClick() }
-            .padding(8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
+            .padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
         Icon(
-            painter = icon,
-            contentDescription = text,
-            tint = tint,
-            modifier = Modifier.size(20.dp)
+            painter = icon, contentDescription = text, tint = tint, modifier = Modifier.size(20.dp)
         )
         Spacer(modifier = Modifier.width(4.dp))
         Text(
-            text = text,
-            color = tint,
-            style = MaterialTheme.typography.bodySmall
+            text = text, color = tint, style = MaterialTheme.typography.bodySmall
         )
     }
 }

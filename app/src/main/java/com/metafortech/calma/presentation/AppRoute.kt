@@ -53,4 +53,8 @@ sealed class AppRoute {
     @Serializable
     object ChattingScreen : AppRoute()
 
+    @Serializable
+    data class MediaScreen(val mediaItems: String, val startIndex: Int) : AppRoute()
+
+
 }
