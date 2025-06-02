@@ -89,4 +89,6 @@
     <string name="replay_10">رجوع لمدة 10 ثوانٍ</string>
     <string name="video">فيديو</string>
     <string name="audio">مقطع صوتي</string>
+    <string name="show_more">المزيد</string>
+    <string name="show_less">أقل</string>
 </resources>

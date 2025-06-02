@@ -89,4 +89,6 @@
     <string name="replay_10">Rejouer 10 secondes</string>
     <string name="video">vidéo</string>
     <string name="audio">Audio</string>
+    <string name="show_more">Afficher plus</string>
+    <string name="show_less">Afficher moins</string>
 </resources>

@@ -1,5 +1,13 @@
 package com.metafortech.calma.presentation.home.home
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.EaseInOutCubic
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -37,7 +45,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,11 +58,14 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.metafortech.calma.R
 import com.metafortech.calma.presentation.ImageLoading
+import com.metafortech.calma.presentation.TextButton
 import com.metafortech.calma.presentation.UserCircularImage
 import kotlin.collections.List
 
@@ -72,6 +86,7 @@ fun HomeScreen(
     onHashtagClick: (String) -> Unit,
     onScroll: (List<Int>) -> Unit,
     formatTime: (Long) -> String,
+    onShowMoreClicked: (String) -> Unit,
 ) {
     val listState = state.listState
     Column(
@@ -121,7 +136,8 @@ fun HomeScreen(
             },
             formatTime = { timeLong ->
                 formatTime(timeLong)
-            }
+            },
+            onShowMoreClicked = onShowMoreClicked
         )
     }
 }
@@ -206,6 +222,7 @@ fun SocialMediaFeed(
     onPauseAudio: () -> Unit,
     onSeekAudio: (Long) -> Unit,
     formatTime: (Long) -> String,
+    onShowMoreClicked: (String) -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -242,7 +259,8 @@ fun SocialMediaFeed(
                 },
                 formatTime = { timeLong ->
                     formatTime(timeLong)
-                }
+                },
+                onShowMoreClicked = onShowMoreClicked
             )
 
         }
@@ -265,6 +283,7 @@ fun SocialMediaFeedItem(
     onSeekAudio: (Long) -> Unit,
     audioPlayerState: AudioPlayerState,
     formatTime: (Long) -> String,
+    onShowMoreClicked: (String) -> Unit,
 ) {
     Card(
         modifier = modifier
@@ -287,14 +306,12 @@ fun SocialMediaFeedItem(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            if (post.content.isNotEmpty()) {
-                Text(
-                    text = post.content,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Black,
-                    lineHeight = 20.sp
-                )
-                Spacer(modifier = Modifier.height(12.dp))
+            PostContent(
+                content = post.content,
+                postId = post.id,
+                isShowMoreClicked = post.isShowMoreClicked,
+            ) {postId->
+                onShowMoreClicked(postId)
             }
 
             if (post.uiMediaItems.isNotEmpty()) {
@@ -378,6 +395,62 @@ private fun PostHeader(
                 .size(24.dp)
                 .clickable { onPostOptionsMenuClick() })
 
+    }
+}
+@Composable
+private fun PostContent(
+    content: String,
+    postId :String,
+    isShowMoreClicked: Boolean,
+    onShowMoreClicked: (String) -> Unit
+){
+    if (content.isNotEmpty()) {
+        var textLayoutResult by remember { mutableStateOf<TextLayoutResult?>(null) }
+        val isTextOverflowing = textLayoutResult?.hasVisualOverflow == true
+
+        Column {
+            AnimatedContent(
+                targetState = isShowMoreClicked,
+                transitionSpec = {
+                    (slideInVertically(
+                        initialOffsetY = { if (targetState) 50 else -50 },
+                        animationSpec = tween(250, easing = EaseInOutCubic)
+                    ) + fadeIn(tween(250))).togetherWith(
+                        slideOutVertically(
+                            targetOffsetY = { if (targetState) -50 else 50 },
+                            animationSpec = tween(250, easing = EaseInOutCubic)
+                        ) + fadeOut(tween(250))
+                    )
+                },
+                label = "textAnimation"
+            ) { isExpanded ->
+                Text(
+                    text = content,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Black,
+                    lineHeight = 20.sp,
+                    maxLines = if (isExpanded) Int.MAX_VALUE else 3,
+                    overflow = TextOverflow.Ellipsis,
+                    onTextLayout = { textLayoutResult = it }
+                )
+            }
+
+            if (isTextOverflowing) {
+                TextButton(
+                    text = stringResource(R.string.show_more)
+                ) {
+                    onShowMoreClicked(postId)
+                }
+            } else if (isShowMoreClicked) {
+                TextButton(
+                    text = stringResource(R.string.show_less)
+                ) {
+                    onShowMoreClicked(postId)
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+        }
     }
 }
 

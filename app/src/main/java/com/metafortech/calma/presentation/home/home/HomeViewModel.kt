@@ -29,7 +29,7 @@ import kotlinx.coroutines.launch
 class HomeViewModel @Inject constructor(
     private val appPreferences: AppPreferences,
     @ApplicationContext private val context: Context,
-    private val timeFormater: TimeFormater
+    private val timeFormater: TimeFormater,
 ) : ViewModel() {
     private var audioPlayer: ExoPlayer? = null
     private var progressUpdateJob: Job? = null
@@ -52,185 +52,199 @@ class HomeViewModel @Inject constructor(
         )
 
     }
+
     fun fetchPosts() {
         val posts = SamplePosts.samplePosts
         _homeState.update { it.copy(posts = posts) }
     }
 
-    @UnstableApi
-    private fun initializeAudioPlayer() {
-        audioPlayer = ExoPlayer.Builder(context).build().apply {
-            addListener(object : Player.Listener {
-                override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
-                    when (playbackState) {
-                        Player.STATE_READY -> {
-                            _homeState.value = _homeState.value.copy(
-                                audioPlayerState = _homeState.value.audioPlayerState.copy(
-                                    isLoading = false,
-                                    duration = duration
+    fun onShowMoreClicked(postId: String) {
+        _homeState.update { currentState ->
+           val updatedPosts = currentState.posts.map { post ->
+                if (post.id == postId) {
+                    post.copy(isShowMoreClicked = !post.isShowMoreClicked)
+                } else post
+            }
+            currentState.copy(posts = updatedPosts)
+        }
+    }
+
+        @UnstableApi
+        private fun initializeAudioPlayer() {
+            audioPlayer = ExoPlayer.Builder(context).build().apply {
+                addListener(object : Player.Listener {
+                    override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
+                        when (playbackState) {
+                            Player.STATE_READY -> {
+                                _homeState.value = _homeState.value.copy(
+                                    audioPlayerState = _homeState.value.audioPlayerState.copy(
+                                        isLoading = false,
+                                        duration = duration
+                                    )
                                 )
-                            )
-                            if (playWhenReady) {
-                                startProgressUpdates()
-                            } else {
+                                if (playWhenReady) {
+                                    startProgressUpdates()
+                                } else {
+                                    stopProgressUpdates()
+                                }
+                            }
+
+                            Player.STATE_BUFFERING -> {
+                                _homeState.value = _homeState.value.copy(
+                                    audioPlayerState = _homeState.value.audioPlayerState.copy(
+                                        isLoading = true
+                                    )
+                                )
+                            }
+
+                            Player.STATE_ENDED -> {
+                                _homeState.value = _homeState.value.copy(
+                                    audioPlayerState = _homeState.value.audioPlayerState.copy(
+                                        isPlaying = false
+                                    )
+                                )
                                 stopProgressUpdates()
                             }
-                        }
-                        Player.STATE_BUFFERING -> {
-                            _homeState.value = _homeState.value.copy(
-                                audioPlayerState = _homeState.value.audioPlayerState.copy(
-                                    isLoading = true
-                                )
-                            )
-                        }
-                        Player.STATE_ENDED -> {
-                            _homeState.value = _homeState.value.copy(
-                                audioPlayerState = _homeState.value.audioPlayerState.copy(
-                                    isPlaying = false
-                                )
-                            )
-                            stopProgressUpdates()
-                        }
 
-                        Player.STATE_IDLE -> {
+                            Player.STATE_IDLE -> {
 
+                            }
                         }
                     }
-                }
 
-                override fun onPlayerError(error: PlaybackException) {
-                    _homeState.value = _homeState.value.copy(
-                        audioPlayerState = _homeState.value.audioPlayerState.copy(
-                            isLoading = false,
-                            error = error.message
+                    override fun onPlayerError(error: PlaybackException) {
+                        _homeState.value = _homeState.value.copy(
+                            audioPlayerState = _homeState.value.audioPlayerState.copy(
+                                isLoading = false,
+                                error = error.message
+                            )
                         )
+                    }
+                })
+            }
+        }
+
+        private fun startProgressUpdates() {
+            stopProgressUpdates()
+            progressUpdateJob = viewModelScope.launch {
+                while (audioPlayer?.isPlaying == true) {
+                    audioPlayer?.let { player ->
+                        updateAudioProgress(player.currentPosition, player.duration)
+                    }
+                    delay(1000)
+                }
+            }
+        }
+
+        private fun stopProgressUpdates() {
+            progressUpdateJob?.cancel()
+            progressUpdateJob = null
+        }
+
+
+        fun playAudio(audioUrl: String) {
+            val currentState = _homeState.value.audioPlayerState
+
+            if (currentState.currentAudioUrl != audioUrl) {
+                stopAudio()
+
+                val mediaItem = MediaItem.fromUri(audioUrl)
+                audioPlayer?.apply {
+                    setMediaItem(mediaItem)
+                    prepare()
+                }
+
+                _homeState.value = _homeState.value.copy(
+                    audioPlayerState = AudioPlayerState(
+                        isPlaying = true,
+                        currentAudioUrl = audioUrl,
+                        isLoading = true
                     )
-                }
-            })
-        }
-    }
+                )
+            } else {
 
-    private fun startProgressUpdates() {
-        stopProgressUpdates()
-        progressUpdateJob = viewModelScope.launch {
-            while (audioPlayer?.isPlaying == true) {
-                audioPlayer?.let { player ->
-                    updateAudioProgress(player.currentPosition, player.duration)
-                }
-                delay(1000)
-            }
-        }
-    }
-
-    private fun stopProgressUpdates() {
-        progressUpdateJob?.cancel()
-        progressUpdateJob = null
-    }
-
-
-    fun playAudio(audioUrl: String) {
-        val currentState = _homeState.value.audioPlayerState
-
-        if (currentState.currentAudioUrl != audioUrl) {
-            stopAudio()
-
-            val mediaItem = MediaItem.fromUri(audioUrl)
-            audioPlayer?.apply {
-                setMediaItem(mediaItem)
-                prepare()
+                _homeState.value = _homeState.value.copy(
+                    audioPlayerState = currentState.copy(isPlaying = true)
+                )
             }
 
+            audioPlayer?.play()
+        }
+
+        fun pauseAudio() {
+            audioPlayer?.pause()
             _homeState.value = _homeState.value.copy(
-                audioPlayerState = AudioPlayerState(
-                    isPlaying = true,
-                    currentAudioUrl = audioUrl,
-                    isLoading = true
+                audioPlayerState = _homeState.value.audioPlayerState.copy(
+                    isPlaying = false
                 )
             )
-        } else {
+            stopProgressUpdates()
+        }
 
+        fun stopAudio() {
+            audioPlayer?.stop()
+            stopProgressUpdates()
             _homeState.value = _homeState.value.copy(
-                audioPlayerState = currentState.copy(isPlaying = true)
+                audioPlayerState = AudioPlayerState()
             )
         }
 
-        audioPlayer?.play()
-    }
-
-    fun pauseAudio() {
-        audioPlayer?.pause()
-        _homeState.value = _homeState.value.copy(
-            audioPlayerState = _homeState.value.audioPlayerState.copy(
-                isPlaying = false
-            )
-        )
-        stopProgressUpdates()
-    }
-
-    fun stopAudio() {
-        audioPlayer?.stop()
-        stopProgressUpdates()
-        _homeState.value = _homeState.value.copy(
-            audioPlayerState = AudioPlayerState()
-        )
-    }
-
-    fun updateAudioProgress(position: Long, duration: Long) {
-        val progress = if (duration > 0) position.toFloat() / duration.toFloat() else 0f
-        _homeState.value = _homeState.value.copy(
-            audioPlayerState = _homeState.value.audioPlayerState.copy(
-                currentPosition = position,
-                duration = duration,
-                progress = progress,
-                isLoading = false
-            )
-        )
-    }
-
-    fun seekAudio(position: Long) {
-        audioPlayer?.seekTo(position)
-        _homeState.value = _homeState.value.copy(
-            audioPlayerState = _homeState.value.audioPlayerState.copy(
-                currentPosition = position,
-                progress = if (_homeState.value.audioPlayerState.duration > 0)
-                    position.toFloat() / _homeState.value.audioPlayerState.duration.toFloat() else 0f
-            )
-        )
-    }
-
-    fun likePost(postId: String) {
-        val currentPosts = _homeState.value.posts
-        val updatedPosts = currentPosts.map { post ->
-            if (post.id == postId) {
-                post.copy(
-                    isLiked = !post.isLiked,
-                    likesCount = if (post.isLiked) post.likesCount - 1 else post.likesCount + 1
+        fun updateAudioProgress(position: Long, duration: Long) {
+            val progress = if (duration > 0) position.toFloat() / duration.toFloat() else 0f
+            _homeState.value = _homeState.value.copy(
+                audioPlayerState = _homeState.value.audioPlayerState.copy(
+                    currentPosition = position,
+                    duration = duration,
+                    progress = progress,
+                    isLoading = false
                 )
-            } else post
+            )
         }
-        _homeState.value = _homeState.value.copy(posts = updatedPosts)
-    }
 
-    fun onScroll(visibleItems: List<Int>) {
-        val currentPostIndex = _homeState.value.posts.indexOfFirst {
-            it.uiMediaItems.any { media ->
-                media.type == MediaType.AUDIO && media.url == _homeState.value.audioPlayerState.currentAudioUrl
+        fun seekAudio(position: Long) {
+            audioPlayer?.seekTo(position)
+            _homeState.value = _homeState.value.copy(
+                audioPlayerState = _homeState.value.audioPlayerState.copy(
+                    currentPosition = position,
+                    progress = if (_homeState.value.audioPlayerState.duration > 0)
+                        position.toFloat() / _homeState.value.audioPlayerState.duration.toFloat() else 0f
+                )
+            )
+        }
+
+        fun likePost(postId: String) {
+            val currentPosts = _homeState.value.posts
+            val updatedPosts = currentPosts.map { post ->
+                if (post.id == postId) {
+                    post.copy(
+                        isLiked = !post.isLiked,
+                        likesCount = if (post.isLiked) post.likesCount - 1 else post.likesCount + 1
+                    )
+                } else post
+            }
+            _homeState.value = _homeState.value.copy(posts = updatedPosts)
+        }
+
+        fun onScroll(visibleItems: List<Int>) {
+            val currentPostIndex = _homeState.value.posts.indexOfFirst {
+                it.uiMediaItems.any { media ->
+                    media.type == MediaType.AUDIO && media.url == _homeState.value.audioPlayerState.currentAudioUrl
+                }
+            }
+
+            if (_homeState.value.audioPlayerState.isPlaying &&
+                currentPostIndex != -1 && currentPostIndex !in visibleItems
+            ) {
+                pauseAudio()
             }
         }
 
-        if (_homeState.value.audioPlayerState.isPlaying &&
-            currentPostIndex != -1 && currentPostIndex !in visibleItems
-        ) {
-            pauseAudio()
+        fun formatTime(timeInMillis: Long): String = timeFormater.formatTime(timeInMillis)
+
+        override fun onCleared() {
+            super.onCleared()
+            stopProgressUpdates()
+            audioPlayer?.release()
+            audioPlayer = null
         }
     }
-
-    fun formatTime(timeInMillis: Long): String = timeFormater.formatTime(timeInMillis)
-
-    override fun onCleared() {
-        super.onCleared()
-        stopProgressUpdates()
-        audioPlayer?.release()
-        audioPlayer = null
-    }
-}

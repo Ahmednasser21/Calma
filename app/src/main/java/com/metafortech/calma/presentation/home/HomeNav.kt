@@ -70,6 +70,7 @@ fun NavGraphBuilder.homeNav(
                 },
                 onScroll = homeViewModel::onScroll,
                 formatTime = homeViewModel::formatTime,
+                onShowMoreClicked = homeViewModel::onShowMoreClicked,
                 onCreateNewPostClick = { },
                 onCommentPost = {},
                 onSharePost = {},

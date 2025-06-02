@@ -105,4 +105,6 @@
     <string name="replay_10">Replay 10 seconds</string>
     <string name="video">Video</string>
     <string name="audio">Audio</string>
+    <string name="show_more">Show more</string>
+    <string name="show_less">Show less</string>
 </resources>

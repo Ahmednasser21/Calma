@@ -32,7 +32,8 @@ data class PostModel(
     val likesCount: Int,
     val commentsCount: Int,
     val sharesCount: Int,
-    val isLiked: Boolean
+    val isLiked: Boolean,
+    val isShowMoreClicked: Boolean = false
 )
 @Serializable
 data class UIMediaItem(
