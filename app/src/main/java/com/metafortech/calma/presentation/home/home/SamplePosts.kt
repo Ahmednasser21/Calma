@@ -35,8 +35,7 @@ object SamplePosts {
                     id = "vid1",
                     type = MediaType.VIDEO,
                     url = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-                    thumbnailUrl = "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=600&fit=crop",
-                    duration = "2:15"
+                    duration = "0:00"
                 )
             ),
             hashtags = listOf("#فيديو", "#تحفيز"),
@@ -156,7 +155,7 @@ object SamplePosts {
                     id = "audio1",
                     type = MediaType.AUDIO,
                     url = "https://commondatastorage.googleapis.com/codeskulptor-demos/DDR_assets/Sevish_-__nbsp_.mp3",
-                    duration = "3:42"
+                    duration = "0:00"
                 )
             ),
             hashtags = listOf("#تأمل", "#صحة_نفسية", "#تسجيل_صوتي"),
@@ -197,9 +196,8 @@ object SamplePosts {
                 UIMediaItem(
                     id = "vid2",
                     type = MediaType.VIDEO,
-                    url = "https://sample-videos.com/zip/10/mp4/SampleVideo_640x360_1mb.mp4",
-                    thumbnailUrl = "https://images.unsplash.com/photo-1553877522-43269d4ea984?w=800&h=600&fit=crop",
-                    duration = "1:30"
+                    url = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+                    duration = "0:00"
                 ),
                 UIMediaItem(
                     id = "img13",
@@ -215,14 +213,13 @@ object SamplePosts {
                     id = "vid1",
                     type = MediaType.VIDEO,
                     url = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-                    thumbnailUrl = "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=600&fit=crop",
-                    duration = "2:15"
+                    duration = "0:00"
                 ),
                 UIMediaItem(
                     id = "audio1",
                     type = MediaType.AUDIO,
                     url = "https://commondatastorage.googleapis.com/codeskulptor-demos/DDR_assets/Sevish_-__nbsp_.mp3",
-                    duration = "3:42"
+                    duration = "0:00"
                 )
 
             ),

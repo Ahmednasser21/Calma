@@ -388,18 +388,20 @@ fun BackButton(modifier: Modifier = Modifier, onBackClick: () -> Unit){
 
 @Composable
 fun ImageLoading(
-    imageURL: String,
+    imageURL: String?,
     contentDescription: String?,
-    modifier: Modifier
+    modifier: Modifier,
+    onLoadingAdditionalBoolean: Boolean = false,
+    onImageLoad: @Composable () -> Unit = {}
 ) {
     val painter = rememberAsyncImagePainter(imageURL)
-    val state by painter.state.collectAsState()
+    val state = painter.state.collectAsState().value
 
     Box(
-        modifier = modifier,
+        modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        if (state is AsyncImagePainter.State.Loading) {
+        if (state is AsyncImagePainter.State.Loading || onLoadingAdditionalBoolean ) {
             CircularProgressIndicator(
                 modifier = Modifier
                     .size(24.dp)
@@ -414,6 +416,7 @@ fun ImageLoading(
                 contentScale = ContentScale.FillBounds,
                 alignment = Alignment.Center
             )
+            onImageLoad()
         }
     }
 }

@@ -310,7 +310,7 @@ fun SocialMediaFeedItem(
                 content = post.content,
                 postId = post.id,
                 isShowMoreClicked = post.isShowMoreClicked,
-            ) {postId->
+            ) { postId ->
                 onShowMoreClicked(postId)
             }
 
@@ -397,13 +397,14 @@ private fun PostHeader(
 
     }
 }
+
 @Composable
 private fun PostContent(
     content: String,
-    postId :String,
+    postId: String,
     isShowMoreClicked: Boolean,
-    onShowMoreClicked: (String) -> Unit
-){
+    onShowMoreClicked: (String) -> Unit,
+) {
     if (content.isNotEmpty()) {
         var textLayoutResult by remember { mutableStateOf<TextLayoutResult?>(null) }
         val isTextOverflowing = textLayoutResult?.hasVisualOverflow == true
@@ -525,7 +526,6 @@ private fun SingleMediaItem(
 
         MediaType.VIDEO -> {
             VideoThumbnail(
-                videoUrl = uiMediaItem.url,
                 thumbnailUrl = uiMediaItem.thumbnailUrl,
                 duration = uiMediaItem.duration,
                 onVideoClick = { onMediaClick(listOf(uiMediaItem), 0) },
@@ -746,7 +746,6 @@ private fun MediaItemThumbnail(
 
 @Composable
 private fun VideoThumbnail(
-    videoUrl: String,
     thumbnailUrl: String?,
     duration: String?,
     onVideoClick: () -> Unit,
@@ -755,42 +754,47 @@ private fun VideoThumbnail(
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(12.dp))
-            .clickable { onVideoClick() }) {
+            .clickable { onVideoClick() }
+    ) {
         ImageLoading(
             modifier = Modifier.fillMaxSize(),
-            imageURL = thumbnailUrl ?: videoUrl,
-            contentDescription = stringResource(R.string.video_thumbnail)
-        )
-
-        Icon(
-            painter = painterResource(R.drawable.play_arrow),
-            contentDescription = stringResource(R.string.play_video),
-            tint = Color.White,
-            modifier = Modifier
-                .align(Alignment.Center)
-                .size(48.dp)
-                .background(
-                    Color.Black.copy(alpha = 0.6f),
-                    CircleShape
-                )
-                .padding(12.dp)
-        )
-        duration?.let {
-            Text(
-                text = it,
-                color = Color.White,
-                style = MaterialTheme.typography.bodySmall,
+            imageURL = thumbnailUrl,
+            contentDescription = stringResource(R.string.video_thumbnail),
+            onLoadingAdditionalBoolean = thumbnailUrl.isNullOrEmpty()
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.play_arrow),
+                contentDescription = stringResource(R.string.play_video),
+                tint = Color.White,
                 modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(8.dp)
+                    .align(Alignment.Center)
+                    .size(48.dp)
                     .background(
-                        Color.Black.copy(alpha = 0.6f), RoundedCornerShape(4.dp)
+                        Color.Black.copy(alpha = 0.6f),
+                        CircleShape
                     )
-                    .padding(horizontal = 6.dp, vertical = 2.dp)
+                    .padding(12.dp)
             )
+            duration?.let {
+                Text(
+                    text = it,
+                    color = Color.White,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(8.dp)
+                        .background(
+                            Color.Black.copy(alpha = 0.6f), RoundedCornerShape(4.dp)
+                        )
+                        .padding(horizontal = 6.dp, vertical = 2.dp)
+                )
+            }
+
         }
+
     }
 }
+
 
 @Composable
 private fun AudioPlayer(
