@@ -20,7 +20,99 @@ object SamplePosts {
             likesCount = 32,
             commentsCount = 24,
             sharesCount = 12,
-            isLiked = true
+            isLiked = true,
+            comments = listOf(
+                Comment(
+                    id = "1",
+                    postId = "post_123",
+                    authorName = "John Smith",
+                    authorAvatar = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
+                    content = "This is a great post! Thanks for sharing your insights. I've been looking for something like this for a while.",
+                    timestamp = System.currentTimeMillis() - 300000, // 5 minutes ago
+                    isOwnComment = false
+                ),
+                Comment(
+                    id = "2",
+                    postId = "post_123",
+                    authorName = "Emma Johnson",
+                    authorAvatar = null,
+                    content = "Completely agree with your points here. The implementation looks solid and well thought out.",
+                    timestamp = System.currentTimeMillis() - 900000, // 15 minutes ago
+                    isOwnComment = false
+                ),
+                Comment(
+                    id = "3",
+                    postId = "post_123",
+                    authorName = "You", // Current user
+                    authorAvatar = null,
+                    content = "I'm glad you found it helpful! Let me know if you have any questions about the implementation.",
+                    timestamp = System.currentTimeMillis() - 1800000, // 30 minutes ago
+                    isOwnComment = true // This one shows edit/delete options
+                ),
+                Comment(
+                    id = "4",
+                    postId = "post_123",
+                    authorName = "Mike Chen",
+                    authorAvatar = null,
+                    content = "Love the clean design approach you've taken here. Very intuitive UX.",
+                    timestamp = System.currentTimeMillis() - 3600000, // 1 hour ago
+                    isOwnComment = false
+                ),
+                Comment(
+                    id = "5",
+                    postId = "post_123",
+                    authorName = "Sarah Wilson",
+                    authorAvatar = null,
+                    content = "Quick question - how does this handle edge cases like network timeouts? Have you tested it extensively?",
+                    timestamp = System.currentTimeMillis() - 7200000, // 2 hours ago
+                    isOwnComment = false
+                ),
+                Comment(
+                    id = "6",
+                    postId = "post_123",
+                    authorName = "Alex Rodriguez",
+                    authorAvatar = null,
+                    content = "👍 Bookmarked for later reference!",
+                    timestamp = System.currentTimeMillis() - 10800000, // 3 hours ago
+                    isOwnComment = false
+                ),
+                Comment(
+                    id = "7",
+                    postId = "post_123",
+                    authorName = "You", // Another user comment
+                    authorAvatar = null,
+                    content = "Thanks everyone for the positive feedback! I'll be posting more tutorials like this soon.",
+                    timestamp = System.currentTimeMillis() - 14400000, // 4 hours ago
+                    isOwnComment = true // This one also shows edit/delete options
+                ),
+                Comment(
+                    id = "8",
+                    postId = "post_123",
+                    authorName = "Lisa Park",
+                    authorAvatar = null,
+                    content = "This is exactly what I needed for my current project. The step-by-step explanation is perfect.",
+                    timestamp = System.currentTimeMillis() - 18000000, // 5 hours ago
+                    isOwnComment = false
+                ),
+                Comment(
+                    id = "9",
+                    postId = "post_123",
+                    authorName = "David Kim",
+                    authorAvatar = null,
+                    content = "Great work! One suggestion - maybe add some error handling examples in the next version?",
+                    timestamp = System.currentTimeMillis() - 86400000, // 1 day ago
+                    isOwnComment = false
+                ),
+                Comment(
+                    id = "10",
+                    postId = "post_123",
+                    authorName = "Rachel Green",
+                    authorAvatar = null,
+                    content = "Shared this with my team. We're definitely going to implement something similar. Thanks!",
+                    timestamp = System.currentTimeMillis() - 172800000, // 2 days ago
+                    isOwnComment = false
+                )
+            )
         ),
 
         // Post with video

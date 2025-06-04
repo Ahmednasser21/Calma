@@ -439,7 +439,7 @@ fun UserCircularImage(imageUrl: String,onUserClick: () -> Unit = {}){
 fun LoadingStateIndicator(
     isLoading: Boolean,
     modifier: Modifier = Modifier,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit = {}
 ) {
     Box(modifier = modifier) {
         content()

@@ -72,11 +72,21 @@ fun NavGraphBuilder.homeNav(
                 formatTime = homeViewModel::formatTime,
                 onShowMoreClicked = homeViewModel::onShowMoreClicked,
                 onCreateNewPostClick = { },
-                onCommentPost = {},
+                onCommentClick = {postId->
+                    homeViewModel.onCommentClick(postId)
+                },
+                onDismissComments = {
+                    homeViewModel.onDismissComments()
+                },
                 onSharePost = {},
                 onPostCreatorClick = {},
                 onPostOptionsMenuClick = {},
-                onHashtagClick = {}
+                onHashtagClick = {},
+                onCommentTextChange ={_,_->},
+                onSubmitComment = {},
+                onEditComment = {_,_,_->},
+                onDeleteComment = {_,_->},
+                onDismissCommentError = {}
             )
         }
         composable<SportsFacilitiesScreen> {

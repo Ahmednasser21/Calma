@@ -15,12 +15,14 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -31,17 +33,32 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -60,22 +77,30 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil3.compose.AsyncImage
 import com.metafortech.calma.R
+import com.metafortech.calma.presentation.ErrorStateIndicator
 import com.metafortech.calma.presentation.ImageLoading
+import com.metafortech.calma.presentation.LoadingStateIndicator
 import com.metafortech.calma.presentation.TextButton
 import com.metafortech.calma.presentation.UserCircularImage
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import kotlin.collections.List
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
     state: HomeScreenState,
     onCreateNewPostClick: () -> Unit,
     onLikePost: (String) -> Unit,
-    onCommentPost: (String) -> Unit,
+    onCommentClick: (String) -> Unit,
     onSharePost: (String) -> Unit,
     onMediaClick: (List<UIMediaItem>, index: Int) -> Unit,
     onPostCreatorClick: () -> Unit,
@@ -87,10 +112,18 @@ fun HomeScreen(
     onScroll: (List<Int>) -> Unit,
     formatTime: (Long) -> String,
     onShowMoreClicked: (String) -> Unit,
+    onCommentTextChange: (String, String) -> Unit,
+    onSubmitComment: (String) -> Unit,
+    onEditComment: (String, String, String) -> Unit,
+    onDeleteComment: (String, String) -> Unit,
+    onDismissCommentError: (String) -> Unit,
+    onDismissComments: () -> Unit,
 ) {
     val listState = state.listState
     Column(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .fillMaxSize()
+            .imePadding(),
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.Top
     ) {
@@ -113,8 +146,8 @@ fun HomeScreen(
             onLikePost = { postID ->
                 onLikePost(postID)
             },
-            onCommentPost = { postID ->
-                onCommentPost(postID)
+            onCommentClick = { postID ->
+                onCommentClick(postID)
             },
             onSharePost = { postID ->
                 onSharePost(postID)
@@ -137,8 +170,43 @@ fun HomeScreen(
             formatTime = { timeLong ->
                 formatTime(timeLong)
             },
-            onShowMoreClicked = onShowMoreClicked
+            onShowMoreClicked = onShowMoreClicked,
         )
+        if (state.showComments) {
+            val post = state.posts.find { it.id == state.commentPostId }
+            post?.let {
+                val bottomSheetState = rememberModalBottomSheetState(
+                    skipPartiallyExpanded = true
+                )
+
+                ModalBottomSheet(
+                    onDismissRequest = onDismissComments,
+                    sheetState = bottomSheetState,
+                    modifier = Modifier.fillMaxHeight(),
+                    dragHandle = null
+                ) {
+                    CommentBottomSheetContent(
+                        post = it,
+                        onCommentTextChange = { text ->
+                            onCommentTextChange(it.id, text)
+                        },
+                        onSubmitComment = {
+                            onSubmitComment(it.id)
+                        },
+                        onEditComment = { commentId, newText ->
+                            onEditComment(it.id, commentId, newText)
+                        },
+                        onDeleteComment = { commentId ->
+                            onDeleteComment(it.id, commentId)
+                        },
+                        onDismissError = {
+                            onDismissCommentError(it.id)
+                        },
+                        onDismiss = onDismissComments
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -212,7 +280,7 @@ fun SocialMediaFeed(
     audioPlayerState: AudioPlayerState,
     listState: LazyListState,
     onLikePost: (String) -> Unit,
-    onCommentPost: (String) -> Unit,
+    onCommentClick: (String) -> Unit,
     onSharePost: (String) -> Unit,
     onMediaClick: (List<UIMediaItem>, index: Int) -> Unit,
     onPostCreatorClick: () -> Unit,
@@ -237,7 +305,7 @@ fun SocialMediaFeed(
                     onLikePost(postID)
                 },
                 onCommentClick = { postID ->
-                    onCommentPost(postID)
+                    onCommentClick(postID)
                 },
                 onShareClick = { postID ->
                     onSharePost(postID)
@@ -260,7 +328,7 @@ fun SocialMediaFeed(
                 formatTime = { timeLong ->
                     formatTime(timeLong)
                 },
-                onShowMoreClicked = onShowMoreClicked
+                onShowMoreClicked = onShowMoreClicked,
             )
 
         }
@@ -370,7 +438,7 @@ private fun PostHeader(
     Row(
         modifier = modifier, verticalAlignment = Alignment.CenterVertically
     ) {
-        UserCircularImage(imageUrl = userAvatar, onPostCreatorClick)
+        UserCircularImage(imageUrl = userAvatar){onPostCreatorClick}
         Spacer(modifier = Modifier.width(8.dp))
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
@@ -1009,5 +1077,615 @@ private fun ActionButton(
         Text(
             text = text, color = tint, style = MaterialTheme.typography.bodySmall
         )
+    }
+}
+
+@Composable
+private fun CommentBottomSheetContent(
+    modifier: Modifier = Modifier,
+    post: PostModel,
+    onCommentTextChange: (String) -> Unit,
+    onSubmitComment: () -> Unit,
+    onEditComment: (String, String) -> Unit,
+    onDeleteComment: (String) -> Unit,
+    onDismissError: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(
+                MaterialTheme.colorScheme.background,
+                RoundedCornerShape(2.dp)
+            )
+
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .imePadding()
+                .padding(top = 8.dp)
+        ) {
+            CommentBottomSheetHeader(
+                commentsCount = post.comments.size,
+                onDismiss = onDismiss
+            )
+
+            post.commentError?.let { errorMessage ->
+
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color.Transparent
+                    )
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        ErrorStateIndicator(
+                            error = errorMessage,
+                        )
+                        IconButton(onClick = onDismissError) {
+                            Icon(
+                                Icons.Default.Close,
+                                contentDescription = "Dismiss error",
+                                tint = MaterialTheme.colorScheme.onErrorContainer
+                            )
+                        }
+                    }
+                }
+            }
+            when {
+                post.commentsLoading -> {
+                    LoadingStateIndicator(
+                        isLoading = true, modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 88.dp)
+                    )
+                }
+
+                post.comments.isEmpty() -> {
+                    EmptyCommentsState(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(bottom = 88.dp)
+                    )
+                }
+
+                else -> {
+                    LazyColumn(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
+                        contentPadding = PaddingValues(
+                            start = 16.dp,
+                            top = 8.dp,
+                            bottom = 104.dp,
+                            end = 16.dp
+                        ),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        items(post.comments) { comment ->
+                            CommentItem(
+                                comment = comment,
+                                onEditComment = onEditComment,
+                                onDeleteComment = onDeleteComment
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.background
+            ),
+            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+        ) {
+            CommentInputSection(
+                commentText = post.newCommentText,
+                isSubmitting = post.commentSubmitting,
+                onCommentTextChange = onCommentTextChange,
+                onSubmitComment = onSubmitComment,
+                modifier = Modifier
+                    .padding(16.dp)
+            )
+        }
+    }
+}
+
+@Composable
+private fun CommentBottomSheetHeader(
+    modifier: Modifier = Modifier,
+    commentsCount: Int,
+    onDismiss: () -> Unit,
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(
+                MaterialTheme.colorScheme.background,
+                RoundedCornerShape(2.dp)
+            )
+    ) {
+        Box(
+            modifier = Modifier
+                .width(32.dp)
+                .height(4.dp)
+                .align(Alignment.CenterHorizontally)
+                .padding(top = 16.dp)
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+        ) {
+            IconButton(
+                onClick = onDismiss,
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .size(32.dp)
+            ) {
+                Icon(
+                    Icons.Default.Close,
+                    contentDescription = stringResource(R.string.close_comments),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            Text(
+                text = stringResource(R.string.comments) + " ($commentsCount)",
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
+
+        HorizontalDivider(
+            modifier = Modifier.padding(top = 16.dp),
+            color = MaterialTheme.colorScheme.outline.copy(alpha = 0.12f)
+        )
+    }
+}
+
+@Composable
+private fun CommentInputSection(
+    commentText: String,
+    isSubmitting: Boolean,
+    onCommentTextChange: (String) -> Unit,
+    onSubmitComment: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.Bottom,
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        OutlinedTextField(
+        value = commentText,
+        onValueChange = onCommentTextChange,
+        placeholder = {
+            Text(
+                text = stringResource(R.string.add_comment),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+            )
+        },
+        modifier = Modifier.weight(1f),
+        maxLines = 4,
+        enabled = !isSubmitting,
+        shape = RoundedCornerShape(20.dp),
+        textStyle = MaterialTheme.typography.bodyMedium,
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = MaterialTheme.colorScheme.primary,
+            unfocusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+            cursorColor = MaterialTheme.colorScheme.secondary,
+            focusedContainerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.3f)
+        )
+    )
+        Button(
+            onClick = onSubmitComment,
+            enabled = commentText.trim().isNotEmpty() && !isSubmitting,
+            modifier = Modifier.height(48.dp),
+            shape = RoundedCornerShape(20.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = if (commentText.trim().isNotEmpty() && !isSubmitting) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.surfaceVariant
+                },
+                contentColor = if (commentText.trim().isNotEmpty() && !isSubmitting) {
+                    MaterialTheme.colorScheme.secondary
+                } else {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                }
+            )
+        ) {
+            if (isSubmitting) {
+                LoadingStateIndicator(
+                    isLoading = true
+                )
+            } else {
+                Icon(
+                    Icons.AutoMirrored.Filled.Send,
+                    contentDescription = stringResource(R.string.send_comment),
+                    modifier = Modifier.size(18.dp)
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun CommentItem(
+    comment: Comment,
+    onEditComment: (String, String) -> Unit,
+    onDeleteComment: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var isEditing by remember { mutableStateOf(false) }
+    var editText by remember { mutableStateOf(comment.content) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var showActionSheet by remember { mutableStateOf(false) }
+
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.background
+        ),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(36.dp)
+                        .background(
+                            MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
+                            CircleShape
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (comment.authorAvatar != null) {
+                        AsyncImage(
+                            model = comment.authorAvatar,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(CircleShape)
+                        )
+                    } else {
+                        Text(
+                            text = comment.authorName.firstOrNull()?.uppercase() ?: "?",
+                            style = MaterialTheme.typography.titleSmall,
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.width(10.dp))
+
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = comment.authorName,
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = formatTimestamp(comment.timestamp),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
+                    )
+                }
+
+                if (comment.isOwnComment) {
+                    IconButton(
+                        onClick = { showActionSheet = true },
+                        modifier = Modifier
+                            .size(32.dp)
+                            .background(
+                                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                                CircleShape
+                            )
+                    ) {
+                        Icon(
+                            Icons.Default.MoreVert,
+                            contentDescription = stringResource(R.string.comment_options),
+                            tint = MaterialTheme.colorScheme.secondary,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            if (isEditing) {
+                Column {
+                    OutlinedTextField(
+                        value = editText,
+                        onValueChange = { editText = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        maxLines = 4,
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+                        )
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Row(
+                        horizontalArrangement = Arrangement.End,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        OutlinedButton(
+                            onClick = {
+                                isEditing = false
+                                editText = comment.content
+                            },
+                            shape = RoundedCornerShape(20.dp),
+                            colors = ButtonDefaults.outlinedButtonColors(
+                                contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        ) {
+                            Text(stringResource(R.string.cancel))
+                        }
+
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        Button(
+                            onClick = {
+                                if (editText.trim().isNotEmpty()) {
+                                    onEditComment(comment.id, editText.trim())
+                                    isEditing = false
+                                }
+                            },
+                            enabled = editText.trim()
+                                .isNotEmpty() && editText.trim() != comment.content,
+                            shape = RoundedCornerShape(20.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.secondary
+                            )
+                        ) {
+                            Text(text = stringResource(R.string.save))
+                        }
+                    }
+                }
+            } else {
+                Text(
+                    text = comment.content,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    lineHeight = 22.sp
+                )
+            }
+        }
+    }
+
+    if (showActionSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showActionSheet = false },
+            dragHandle = {
+                Box(
+                    modifier = Modifier
+                        .width(32.dp)
+                        .height(4.dp)
+                        .background(
+                            MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
+                            RoundedCornerShape(2.dp)
+                        )
+                )
+            }
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = stringResource(R.string.comment_options),
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+
+                Surface(
+                    onClick = {
+                        isEditing = true
+                        editText = comment.content
+                        showActionSheet = false
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(12.dp)),
+                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Icon(
+                            Icons.Default.Edit,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text(
+                            text = stringResource(R.string.edit_comment),
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Surface(
+                    onClick = {
+                        showDeleteDialog = true
+                        showActionSheet = false
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(12.dp)),
+                    color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Icon(
+                            Icons.Default.Delete,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text(
+                            text = stringResource(R.string.delete_comment),
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+        }
+    }
+
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = {
+                Text(
+                    stringResource(R.string.delete_comment),
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.SemiBold
+                )
+            },
+            text = {
+                Text(
+                    stringResource(R.string.delete_comment_confirmation),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            },
+            confirmButton = {
+                Button(
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                    onClick = {
+                        onDeleteComment(comment.id)
+                        showDeleteDialog = false
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error
+                    ),
+                    shape = RoundedCornerShape(20.dp)
+                ) {
+                    Text(text = stringResource(R.string.delete))
+                }
+            },
+            dismissButton = {
+                OutlinedButton(
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                    onClick = { showDeleteDialog = false },
+                    shape = RoundedCornerShape(20.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                ) {
+                    Text(text = stringResource(R.string.cancel))
+                }
+            },
+            shape = RoundedCornerShape(20.dp)
+        )
+    }
+}
+
+@Composable
+fun EmptyCommentsState(
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(40.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.comment),
+            contentDescription = null,
+            modifier = Modifier.size(56.dp),
+            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+        )
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Text(
+            text = stringResource(R.string.no_comments),
+            style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            fontWeight = FontWeight.Medium
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = stringResource(R.string.no_comments_description),
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+@Composable
+fun formatTimestamp(timestamp: Long): String {
+    val now = System.currentTimeMillis()
+    val diff = now - timestamp
+
+    return when {
+        diff < 60000 -> stringResource(R.string.just_now)
+        diff < 3600000 -> "${diff / 60000} " + stringResource(R.string.minute)
+        diff < 86400000 -> "${diff / 3600000} " + stringResource(R.string.hour)
+        diff < 604800000 -> "${diff / 86400000} " +stringResource(R.string.day)
+        else -> {
+            val date = SimpleDateFormat("MMM dd", Locale.getDefault())
+            date.format(Date(timestamp))
+        }
     }
 }

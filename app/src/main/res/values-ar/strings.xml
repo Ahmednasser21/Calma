@@ -91,4 +91,20 @@
     <string name="audio">مقطع صوتي</string>
     <string name="show_more">المزيد</string>
     <string name="show_less">أقل</string>
+    <string name="close_comments">أغلق التعليقات</string>
+    <string name="comments">التعليقات</string>
+    <string name="add_comment">أضف تعليقاً جديداً ...</string>
+    <string name="send_comment">ارسل التعليق</string>
+    <string name="comment_options">خيارات التعليق</string>
+    <string name="save">حفظ</string>
+    <string name="edit_comment">تعديل التعليق</string>
+    <string name="delete_comment">إزالة التعليق</string>
+    <string name="delete_comment_confirmation">هل أنت متأكد أنك تريد حذف هذا التعليق؟ لا يمكن التراجع عن هذا الإجراء.</string>
+    <string name="delete">حذف</string>
+    <string name="no_comments">لا يوجد تعليقات بعد</string>
+    <string name="no_comments_description">كن أول من يشارك أفكاره !</string>
+    <string name="just_now">الآن</string>
+    <string name="minute">د</string>
+    <string name="hour">س</string>
+    <string name="day">ي</string>
 </resources>

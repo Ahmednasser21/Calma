@@ -324,7 +324,7 @@ class HomeViewModel @Inject constructor(
                 if (cacheDir.exists()) {
                     val files = cacheDir.listFiles() ?: return@launch
                     val currentTime = System.currentTimeMillis()
-                    val maxAge = 7 * 24 * 60 * 60 * 1000L
+                    val maxAge = 2 * 24 * 60 * 60 * 1000L
 
                     files.forEach { file ->
                         if (currentTime - file.lastModified() > maxAge) {
@@ -524,6 +524,18 @@ class HomeViewModel @Inject constructor(
     }
 
     fun formatTime(timeInMillis: Long): String = timeFormater.formatTime(timeInMillis)
+
+    fun onCommentClick(postId: String) {
+
+        _homeState.update {
+            it.copy(showComments = true, commentPostId = postId)
+        }
+    }
+    fun onDismissComments(){
+        _homeState.update {
+            it.copy(showComments = false)
+        }
+    }
 
     override fun onCleared() {
         super.onCleared()

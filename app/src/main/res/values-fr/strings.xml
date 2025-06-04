@@ -91,4 +91,20 @@
     <string name="audio">Audio</string>
     <string name="show_more">Afficher plus</string>
     <string name="show_less">Afficher moins</string>
+    <string name="close_comments">Fermer les commentaires</string>
+    <string name="comments">Commentaires</string>
+    <string name="add_comment">Ajouter un nouveau commentaire...</string>
+    <string name="send_comment">Envoyer un commentaire</string>
+    <string name="comment_options">Options de commentaires</string>
+    <string name="save">Sauvegarder</string>
+    <string name="edit_comment">Modifier le commentaire</string>
+    <string name="delete_comment">Delete Comment</string>
+    <string name="delete_comment_confirmation">Êtes-vous sûr de vouloir supprimer ce commentaire ? Cette action est irréversible.</string>
+    <string name="delete">Supprimer</string>
+    <string name="no_comments">Aucun commentaire pour le moment</string>
+    <string name="no_comments_description">Soyez le premier à partager vos pensées !</string>
+    <string name="just_now">Tout à l\' heure</string>
+    <string name="minute">m</string>
+    <string name="hour">h</string>
+    <string name="day">d</string>
 </resources>

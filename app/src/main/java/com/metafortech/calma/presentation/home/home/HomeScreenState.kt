@@ -10,7 +10,9 @@ data class HomeScreenState(
     val listState: LazyListState = LazyListState(),
     val posts: List<PostModel> = emptyList(),
     val error: String? = null,
-    val audioPlayerState: AudioPlayerState = AudioPlayerState()
+    val audioPlayerState: AudioPlayerState = AudioPlayerState(),
+    val showComments: Boolean = false,
+    val commentPostId:String = ""
 )
 data class AudioPlayerState(
     val isPlaying: Boolean = false,
@@ -33,7 +35,12 @@ data class PostModel(
     val commentsCount: Int,
     val sharesCount: Int,
     val isLiked: Boolean,
-    val isShowMoreClicked: Boolean = false
+    val isShowMoreClicked: Boolean = false,
+    val comments: List<Comment> = emptyList(),
+    val newCommentText: String = "",
+    val commentsLoading: Boolean = false,
+    val commentSubmitting: Boolean = false,
+    val commentError: String? = null
 )
 @Serializable
 data class UIMediaItem(
@@ -47,3 +54,12 @@ data class UIMediaItem(
 enum class MediaType {
     IMAGE, VIDEO, AUDIO
 }
+data class Comment(
+    val id: String,
+    val postId: String,
+    val authorName: String,
+    val authorAvatar: String? = null,
+    val content: String,
+    val timestamp: Long,
+    val isOwnComment: Boolean = false
+)
