@@ -85,7 +85,6 @@ import coil3.compose.AsyncImage
 import com.metafortech.calma.R
 import com.metafortech.calma.presentation.ErrorStateIndicator
 import com.metafortech.calma.presentation.ImageLoading
-import com.metafortech.calma.presentation.LoadingStateIndicator
 import com.metafortech.calma.presentation.TextButton
 import com.metafortech.calma.presentation.UserCircularImage
 import java.text.SimpleDateFormat
@@ -498,7 +497,7 @@ private fun PostContent(
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.Black,
                     lineHeight = 20.sp,
-                    maxLines = if (isExpanded) Int.MAX_VALUE else 3,
+                    maxLines = if (isExpanded) Int.MAX_VALUE else 5,
                     overflow = TextOverflow.Ellipsis,
                     onTextLayout = { textLayoutResult = it }
                 )
@@ -1131,7 +1130,7 @@ private fun CommentBottomSheetContent(
                         IconButton(onClick = onDismissError) {
                             Icon(
                                 Icons.Default.Close,
-                                contentDescription = "Dismiss error",
+                                contentDescription = stringResource(R.string.dismiss_error),
                                 tint = MaterialTheme.colorScheme.onErrorContainer
                             )
                         }
@@ -1139,14 +1138,6 @@ private fun CommentBottomSheetContent(
                 }
             }
             when {
-                post.commentsLoading -> {
-                    LoadingStateIndicator(
-                        isLoading = true, modifier =
-                            Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 88.dp)
-                    )
-                }
 
                 post.comments.isEmpty() -> {
                     EmptyCommentsState(
@@ -1297,13 +1288,13 @@ private fun CommentInputSection(
         )
     )
         Button(
-            onClick = onSubmitComment,
+            onClick = {onSubmitComment()},
             enabled = commentText.trim().isNotEmpty() && !isSubmitting,
             modifier = Modifier.height(48.dp),
             shape = RoundedCornerShape(20.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = if (commentText.trim().isNotEmpty() && !isSubmitting) {
-                    MaterialTheme.colorScheme.primary
+                    MaterialTheme.colorScheme.background
                 } else {
                     MaterialTheme.colorScheme.surfaceVariant
                 },
@@ -1312,11 +1303,14 @@ private fun CommentInputSection(
                 } else {
                     MaterialTheme.colorScheme.onSurfaceVariant
                 }
-            )
+            ),
+            elevation = ButtonDefaults.buttonElevation(4.dp)
         ) {
             if (isSubmitting) {
-                LoadingStateIndicator(
-                    isLoading = true
+                CircularProgressIndicator(
+                    modifier = Modifier.size(18.dp),
+                    strokeWidth = 2.dp,
+                    color = MaterialTheme.colorScheme.secondary
                 )
             } else {
                 Icon(

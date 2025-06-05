@@ -107,4 +107,5 @@
     <string name="minute">د</string>
     <string name="hour">س</string>
     <string name="day">ي</string>
+    <string name="dismiss_error">إغلاق نافذة الخطأ</string>
 </resources>

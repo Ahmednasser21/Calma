@@ -82,8 +82,12 @@ fun NavGraphBuilder.homeNav(
                 onPostCreatorClick = {},
                 onPostOptionsMenuClick = {},
                 onHashtagClick = {},
-                onCommentTextChange ={_,_->},
-                onSubmitComment = {},
+                onCommentTextChange ={ postId, comment ->
+                    homeViewModel.onCommentTextChange(postId, comment)
+                },
+                onSubmitComment = {
+                    homeViewModel.onSubmitComment(it)
+                },
                 onEditComment = {_,_,_->},
                 onDeleteComment = {_,_->},
                 onDismissCommentError = {}

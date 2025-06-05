@@ -324,7 +324,7 @@ class HomeViewModel @Inject constructor(
                 if (cacheDir.exists()) {
                     val files = cacheDir.listFiles() ?: return@launch
                     val currentTime = System.currentTimeMillis()
-                    val maxAge = 2 * 24 * 60 * 60 * 1000L
+                    val maxAge = 3 * 24 * 60 * 60 * 1000L
 
                     files.forEach { file ->
                         if (currentTime - file.lastModified() > maxAge) {
@@ -531,9 +531,43 @@ class HomeViewModel @Inject constructor(
             it.copy(showComments = true, commentPostId = postId)
         }
     }
-    fun onDismissComments(){
+
+    fun onDismissComments() {
         _homeState.update {
             it.copy(showComments = false)
+        }
+    }
+
+    fun onCommentTextChange(postId: String, text: String) {
+        _homeState.update {
+            it.copy(posts = it.posts.map { post ->
+                if (post.id == postId) {
+                    post.copy(newCommentText = text)
+                } else post
+            })
+        }
+    }
+
+    fun onSubmitComment(postId: String) {
+        _homeState.update {
+            it.copy(posts = it.posts.map { post ->
+                if (post.id == postId) {
+                    post.copy(
+                        comments = post.comments + Comment(
+                            id = "123",
+                            postId = postId,
+                            content = post.newCommentText,
+                            timestamp = System.currentTimeMillis(),
+                            authorAvatar = it.userImageUrl,
+                            authorName = it.userName,
+                            isOwnComment = true
+
+                        ),
+                        newCommentText = ""
+                    )
+                } else post
+            }
+            )
         }
     }
 

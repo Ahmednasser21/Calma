@@ -38,7 +38,6 @@ data class PostModel(
     val isShowMoreClicked: Boolean = false,
     val comments: List<Comment> = emptyList(),
     val newCommentText: String = "",
-    val commentsLoading: Boolean = false,
     val commentSubmitting: Boolean = false,
     val commentError: String? = null
 )
