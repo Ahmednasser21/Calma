@@ -87,9 +87,6 @@ import com.metafortech.calma.presentation.ErrorStateIndicator
 import com.metafortech.calma.presentation.ImageLoading
 import com.metafortech.calma.presentation.TextButton
 import com.metafortech.calma.presentation.UserCircularImage
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 import kotlin.collections.List
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -117,6 +114,7 @@ fun HomeScreen(
     onDeleteComment: (String, String) -> Unit,
     onDismissCommentError: (String) -> Unit,
     onDismissComments: () -> Unit,
+    formatTimeStamp:(Long)-> String
 ) {
     val listState = state.listState
     Column(
@@ -201,7 +199,8 @@ fun HomeScreen(
                         onDismissError = {
                             onDismissCommentError(it.id)
                         },
-                        onDismiss = onDismissComments
+                        onDismiss = onDismissComments,
+                        formatTimestamp = formatTimeStamp
                     )
                 }
             }
@@ -1089,6 +1088,7 @@ private fun CommentBottomSheetContent(
     onDeleteComment: (String) -> Unit,
     onDismissError: () -> Unit,
     onDismiss: () -> Unit,
+    formatTimestamp: (Long) -> String
 ) {
     Box(
         modifier = modifier
@@ -1165,7 +1165,8 @@ private fun CommentBottomSheetContent(
                             CommentItem(
                                 comment = comment,
                                 onEditComment = onEditComment,
-                                onDeleteComment = onDeleteComment
+                                onDeleteComment = onDeleteComment,
+                                formatTimestamp = formatTimestamp
                             )
                         }
                     }
@@ -1330,6 +1331,7 @@ private fun CommentItem(
     onEditComment: (String, String) -> Unit,
     onDeleteComment: (String) -> Unit,
     modifier: Modifier = Modifier,
+    formatTimestamp:(Long)-> String
 ) {
     var isEditing by remember { mutableStateOf(false) }
     var editText by remember { mutableStateOf(comment.content) }
@@ -1664,22 +1666,5 @@ fun EmptyCommentsState(
             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
             textAlign = TextAlign.Center
         )
-    }
-}
-
-@Composable
-fun formatTimestamp(timestamp: Long): String {
-    val now = System.currentTimeMillis()
-    val diff = now - timestamp
-
-    return when {
-        diff < 60000 -> stringResource(R.string.just_now)
-        diff < 3600000 -> "${diff / 60000} " + stringResource(R.string.minute)
-        diff < 86400000 -> "${diff / 3600000} " + stringResource(R.string.hour)
-        diff < 604800000 -> "${diff / 86400000} " +stringResource(R.string.day)
-        else -> {
-            val date = SimpleDateFormat("MMM dd", Locale.getDefault())
-            date.format(Date(timestamp))
-        }
     }
 }

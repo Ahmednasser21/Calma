@@ -524,6 +524,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun formatTime(timeInMillis: Long): String = timeFormater.formatTime(timeInMillis)
+    fun formatTimestamp(timeInMillis: Long): String = timeFormater.formatTimestamp(timeInMillis, context)
 
     fun onCommentClick(postId: String) {
 

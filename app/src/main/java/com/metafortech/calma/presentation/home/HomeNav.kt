@@ -62,7 +62,7 @@ fun NavGraphBuilder.homeNav(
                 onPauseAudio = homeViewModel::pauseAudio,
                 onSeekAudio = homeViewModel::seekAudio,
                 onLikePost = homeViewModel::likePost,
-                onMediaClick = {mediaItems, index->
+                onMediaClick = { mediaItems, index ->
                     val mediaItemsJson = Json.encodeToString(mediaItems)
                     navController.navigate(MediaScreen(mediaItemsJson, index)) {
                         launchSingleTop = true
@@ -72,7 +72,7 @@ fun NavGraphBuilder.homeNav(
                 formatTime = homeViewModel::formatTime,
                 onShowMoreClicked = homeViewModel::onShowMoreClicked,
                 onCreateNewPostClick = { },
-                onCommentClick = {postId->
+                onCommentClick = { postId ->
                     homeViewModel.onCommentClick(postId)
                 },
                 onDismissComments = {
@@ -82,15 +82,18 @@ fun NavGraphBuilder.homeNav(
                 onPostCreatorClick = {},
                 onPostOptionsMenuClick = {},
                 onHashtagClick = {},
-                onCommentTextChange ={ postId, comment ->
+                onCommentTextChange = { postId, comment ->
                     homeViewModel.onCommentTextChange(postId, comment)
                 },
                 onSubmitComment = {
                     homeViewModel.onSubmitComment(it)
                 },
-                onEditComment = {_,_,_->},
-                onDeleteComment = {_,_->},
-                onDismissCommentError = {}
+                onEditComment = { _, _, _ -> },
+                onDeleteComment = { _, _ -> },
+                onDismissCommentError = {},
+                formatTimeStamp = { timeInMillis ->
+                    homeViewModel.formatTimestamp(timeInMillis)
+                }
             )
         }
         composable<SportsFacilitiesScreen> {
@@ -108,7 +111,7 @@ fun NavGraphBuilder.homeNav(
         composable<ChattingScreen> {
             ChatScreen(modifier = Modifier.padding(innerPadding))
         }
-        composable <MediaScreen> {backStackEntry->
+        composable<MediaScreen> { backStackEntry ->
             val mediaViewerViewModel: MediaViewerViewModel = hiltViewModel()
             val state = mediaViewerViewModel.state.collectAsStateWithLifecycle().value
             val args = backStackEntry.toRoute<MediaScreen>()
@@ -162,7 +165,7 @@ fun ConditionalScaffold(
         val userImageViewModel: UserImageViewModel = hiltViewModel()
         val userImageUrl = userImageViewModel.userImageUrl.collectAsState().value
         HomeScaffold(
-            userImageUrl = userImageUrl.toString() ,
+            userImageUrl = userImageUrl.toString(),
             screenTitle = null,
             currentRoute = route,
             onNavigationItemSelected = { targetRoute ->
