@@ -110,11 +110,18 @@ fun HomeScreen(
     onShowMoreClicked: (String) -> Unit,
     onCommentTextChange: (String, String) -> Unit,
     onSubmitComment: (String) -> Unit,
-    onEditComment: (String, String, String) -> Unit,
-    onDeleteComment: (String, String) -> Unit,
     onDismissCommentError: (String) -> Unit,
     onDismissComments: () -> Unit,
-    formatTimeStamp:(Long)-> String
+    formatTimeStamp: (Long) -> String,
+    onOwenCommentClick: (postID: String, commentID: String) -> Unit,
+    onEditCommentSubmitted: (postID: String, commentID: String) -> Unit,
+    onDeleteCommentClick: (postID: String, commentID: String) -> Unit,
+    deleteComment: (postID: String, commentID: String) -> Unit,
+    onDeleteDialogDismiss: (postID: String, commentID: String) -> Unit,
+    onEditCommentClick: (postID: String, commentID: String) -> Unit,
+    onCommentEditText: (postID: String, commentID: String, newValue: String) -> Unit,
+    onCommentEditCanceled: (postID: String, commentID: String) -> Unit,
+    onActionSheetDismissRequest: (postID: String, commentID: String) -> Unit,
 ) {
     val listState = state.listState
     Column(
@@ -190,17 +197,38 @@ fun HomeScreen(
                         onSubmitComment = {
                             onSubmitComment(it.id)
                         },
-                        onEditComment = { commentId, newText ->
-                            onEditComment(it.id, commentId, newText)
-                        },
-                        onDeleteComment = { commentId ->
-                            onDeleteComment(it.id, commentId)
-                        },
                         onDismissError = {
                             onDismissCommentError(it.id)
                         },
                         onDismiss = onDismissComments,
-                        formatTimestamp = formatTimeStamp
+                        formatTimestamp = formatTimeStamp,
+                        onEditCommentSubmitted = { commentID ->
+                            onEditCommentSubmitted(it.id, commentID)
+                        },
+                        deleteComment = { commentId ->
+                            deleteComment(it.id, commentId)
+                        },
+                        onDeleteDialogDismiss = { commentId ->
+                            onDeleteDialogDismiss(it.id, commentId)
+                        },
+                        onEditCommentClick = { commentId ->
+                            onEditCommentClick(it.id, commentId)
+                        },
+                        onCommentEditText = { commentId, newValue ->
+                            onCommentEditText(it.id, commentId, newValue)
+                        },
+                        onCommentEditCanceled = { commentId ->
+                            onCommentEditCanceled(it.id, commentId)
+                        },
+                        onActionSheetDismissRequest = { commentId ->
+                            onActionSheetDismissRequest(it.id, commentId)
+                        },
+                        onOwenCommentClick = { commentId ->
+                            onOwenCommentClick(it.id, commentId)
+                        },
+                        onDeleteCommentClick = { commentId ->
+                            onDeleteCommentClick(it.id, commentId)
+                        }
                     )
                 }
             }
@@ -436,7 +464,7 @@ private fun PostHeader(
     Row(
         modifier = modifier, verticalAlignment = Alignment.CenterVertically
     ) {
-        UserCircularImage(imageUrl = userAvatar){onPostCreatorClick}
+        UserCircularImage(imageUrl = userAvatar) { onPostCreatorClick }
         Spacer(modifier = Modifier.width(8.dp))
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
@@ -1084,12 +1112,20 @@ private fun CommentBottomSheetContent(
     post: PostModel,
     onCommentTextChange: (String) -> Unit,
     onSubmitComment: () -> Unit,
-    onEditComment: (String, String) -> Unit,
-    onDeleteComment: (String) -> Unit,
     onDismissError: () -> Unit,
     onDismiss: () -> Unit,
-    formatTimestamp: (Long) -> String
-) {
+    formatTimestamp: (Long) -> String,
+    onOwenCommentClick: (commentID: String) -> Unit,
+    onEditCommentSubmitted: (commentID: String) -> Unit,
+    onDeleteCommentClick: (commentID: String) -> Unit,
+    deleteComment: (String) -> Unit,
+    onDeleteDialogDismiss: (String) -> Unit,
+    onEditCommentClick: (commentID: String) -> Unit,
+    onCommentEditText: (commentID: String, newValue: String) -> Unit,
+    onCommentEditCanceled: (commentID: String) -> Unit,
+    onActionSheetDismissRequest: (commentID: String) -> Unit,
+
+    ) {
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -1164,10 +1200,38 @@ private fun CommentBottomSheetContent(
                         items(post.comments) { comment ->
                             CommentItem(
                                 comment = comment,
-                                onEditComment = onEditComment,
-                                onDeleteComment = onDeleteComment,
-                                formatTimestamp = formatTimestamp
-                            )
+                                onEditCommentSubmitted = { commentID ->
+                                    onEditCommentSubmitted(commentID)
+                                },
+                                deleteComment = { commentID ->
+                                    deleteComment(commentID)
+                                },
+                                formatTimestamp = { timeLong ->
+                                    formatTimestamp(timeLong)
+                                },
+                                onOwenCommentClick = { commentID ->
+                                    onOwenCommentClick(commentID)
+                                },
+                                onDeleteCommentClick = { commentID ->
+                                    onDeleteCommentClick(commentID)
+                                },
+                                onDeleteDialogDismiss = { commentID ->
+                                    onDeleteDialogDismiss(commentID)
+                                },
+                                onEditCommentClick = { commentID ->
+                                    onEditCommentClick(commentID)
+                                },
+                                onCommentEditText = { commentID, newValue ->
+                                    onCommentEditText(commentID, newValue)
+                                },
+                                onCommentEditCanceled = { commentID ->
+                                    onCommentEditCanceled(commentID)
+                                },
+                                onActionSheetDismissRequest = { commentID ->
+                                    onActionSheetDismissRequest(commentID)
+                                },
+
+                                )
                         }
                     }
                 }
@@ -1267,29 +1331,29 @@ private fun CommentInputSection(
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         OutlinedTextField(
-        value = commentText,
-        onValueChange = onCommentTextChange,
-        placeholder = {
-            Text(
-                text = stringResource(R.string.add_comment),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+            value = commentText,
+            onValueChange = onCommentTextChange,
+            placeholder = {
+                Text(
+                    text = stringResource(R.string.add_comment),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                )
+            },
+            modifier = Modifier.weight(1f),
+            maxLines = 4,
+            enabled = !isSubmitting,
+            shape = RoundedCornerShape(20.dp),
+            textStyle = MaterialTheme.typography.bodyMedium,
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+                cursorColor = MaterialTheme.colorScheme.secondary,
+                focusedContainerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.3f)
             )
-        },
-        modifier = Modifier.weight(1f),
-        maxLines = 4,
-        enabled = !isSubmitting,
-        shape = RoundedCornerShape(20.dp),
-        textStyle = MaterialTheme.typography.bodyMedium,
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = MaterialTheme.colorScheme.primary,
-            unfocusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
-            cursorColor = MaterialTheme.colorScheme.secondary,
-            focusedContainerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.3f)
         )
-    )
         Button(
-            onClick = {onSubmitComment()},
+            onClick = { onSubmitComment() },
             enabled = commentText.trim().isNotEmpty() && !isSubmitting,
             modifier = Modifier.height(48.dp),
             shape = RoundedCornerShape(20.dp),
@@ -1328,16 +1392,18 @@ private fun CommentInputSection(
 @Composable
 private fun CommentItem(
     comment: Comment,
-    onEditComment: (String, String) -> Unit,
-    onDeleteComment: (String) -> Unit,
     modifier: Modifier = Modifier,
-    formatTimestamp:(Long)-> String
+    formatTimestamp: (Long) -> String,
+    onOwenCommentClick: (commentID: String) -> Unit,
+    onEditCommentSubmitted: (commentID: String) -> Unit,
+    onDeleteCommentClick: (commentID: String) -> Unit,
+    deleteComment: (String) -> Unit,
+    onDeleteDialogDismiss: (String) -> Unit,
+    onEditCommentClick: (commentID: String) -> Unit,
+    onCommentEditText: (commentID: String, newValue: String) -> Unit,
+    onCommentEditCanceled: (commentID: String) -> Unit,
+    onActionSheetDismissRequest: (commentID: String) -> Unit,
 ) {
-    var isEditing by remember { mutableStateOf(false) }
-    var editText by remember { mutableStateOf(comment.content) }
-    var showDeleteDialog by remember { mutableStateOf(false) }
-    var showActionSheet by remember { mutableStateOf(false) }
-
     Card(
         modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
@@ -1400,7 +1466,7 @@ private fun CommentItem(
 
                 if (comment.isOwnComment) {
                     IconButton(
-                        onClick = { showActionSheet = true },
+                        onClick = { onOwenCommentClick(comment.id) },
                         modifier = Modifier
                             .size(32.dp)
                             .background(
@@ -1420,11 +1486,13 @@ private fun CommentItem(
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            if (isEditing) {
+            if (comment.isEditing) {
                 Column {
                     OutlinedTextField(
-                        value = editText,
-                        onValueChange = { editText = it },
+                        value = comment.editText,
+                        onValueChange = { newValue ->
+                            onCommentEditText(comment.id, newValue)
+                        },
                         modifier = Modifier.fillMaxWidth(),
                         maxLines = 4,
                         shape = RoundedCornerShape(12.dp),
@@ -1442,8 +1510,7 @@ private fun CommentItem(
                     ) {
                         OutlinedButton(
                             onClick = {
-                                isEditing = false
-                                editText = comment.content
+                                onCommentEditCanceled(comment.id)
                             },
                             shape = RoundedCornerShape(20.dp),
                             colors = ButtonDefaults.outlinedButtonColors(
@@ -1457,13 +1524,12 @@ private fun CommentItem(
 
                         Button(
                             onClick = {
-                                if (editText.trim().isNotEmpty()) {
-                                    onEditComment(comment.id, editText.trim())
-                                    isEditing = false
+                                if (comment.editText.trim().isNotEmpty()) {
+                                    onEditCommentSubmitted(comment.id)
                                 }
                             },
-                            enabled = editText.trim()
-                                .isNotEmpty() && editText.trim() != comment.content,
+                            enabled = comment.editText.trim()
+                                .isNotEmpty() && comment.editText.trim() != comment.content,
                             shape = RoundedCornerShape(20.dp),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.secondary
@@ -1484,9 +1550,9 @@ private fun CommentItem(
         }
     }
 
-    if (showActionSheet) {
+    if (comment.showActionSheet) {
         ModalBottomSheet(
-            onDismissRequest = { showActionSheet = false },
+            onDismissRequest = { onActionSheetDismissRequest(comment.id) },
             dragHandle = {
                 Box(
                     modifier = Modifier
@@ -1513,9 +1579,7 @@ private fun CommentItem(
 
                 Surface(
                     onClick = {
-                        isEditing = true
-                        editText = comment.content
-                        showActionSheet = false
+                        onEditCommentClick(comment.id)
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -1548,8 +1612,7 @@ private fun CommentItem(
 
                 Surface(
                     onClick = {
-                        showDeleteDialog = true
-                        showActionSheet = false
+                        onDeleteCommentClick(comment.id)
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -1583,9 +1646,11 @@ private fun CommentItem(
         }
     }
 
-    if (showDeleteDialog) {
+    if (comment.showDeleteDialog) {
         AlertDialog(
-            onDismissRequest = { showDeleteDialog = false },
+            onDismissRequest = {
+                onDeleteDialogDismiss(comment.id)
+            },
             title = {
                 Text(
                     stringResource(R.string.delete_comment),
@@ -1603,8 +1668,7 @@ private fun CommentItem(
                 Button(
                     modifier = Modifier.padding(horizontal = 8.dp),
                     onClick = {
-                        onDeleteComment(comment.id)
-                        showDeleteDialog = false
+                        deleteComment(comment.id)
                     },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.error
@@ -1617,7 +1681,7 @@ private fun CommentItem(
             dismissButton = {
                 OutlinedButton(
                     modifier = Modifier.padding(horizontal = 8.dp),
-                    onClick = { showDeleteDialog = false },
+                    onClick = { onDeleteDialogDismiss },
                     shape = RoundedCornerShape(20.dp),
                     colors = ButtonDefaults.outlinedButtonColors(
                         contentColor = MaterialTheme.colorScheme.onSurfaceVariant

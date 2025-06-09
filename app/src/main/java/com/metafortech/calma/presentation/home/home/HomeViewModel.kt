@@ -524,7 +524,8 @@ class HomeViewModel @Inject constructor(
     }
 
     fun formatTime(timeInMillis: Long): String = timeFormater.formatTime(timeInMillis)
-    fun formatTimestamp(timeInMillis: Long): String = timeFormater.formatTimestamp(timeInMillis, context)
+    fun formatTimestamp(timeInMillis: Long): String =
+        timeFormater.formatTimestamp(timeInMillis, context)
 
     fun onCommentClick(postId: String) {
 
@@ -549,14 +550,14 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun onSubmitComment(postId: String) {
+    fun onSubmitComment(postID: String) {
         _homeState.update {
             it.copy(posts = it.posts.map { post ->
-                if (post.id == postId) {
+                if (post.id == postID) {
                     post.copy(
                         comments = post.comments + Comment(
                             id = "123",
-                            postId = postId,
+                            postId = postID,
                             content = post.newCommentText,
                             timestamp = System.currentTimeMillis(),
                             authorAvatar = it.userImageUrl,
@@ -565,6 +566,171 @@ class HomeViewModel @Inject constructor(
 
                         ),
                         newCommentText = ""
+                    )
+                } else post
+            }
+            )
+        }
+    }
+
+    fun onOwenCommentClick(postID: String, commentID: String) {
+        _homeState.update {
+            it.copy(posts = it.posts.map { post ->
+                if (post.id == postID) {
+                    post.copy(
+                        comments = post.comments.map { comment ->
+                            if (comment.id == commentID) {
+                                comment.copy(showActionSheet = true)
+                            } else comment
+                        }
+                    )
+                } else post
+            }
+            )
+        }
+    }
+    fun onEditCommentClick(postID: String, commentID: String){
+        _homeState.update {
+            it.copy(posts = it.posts.map { post ->
+                if (post.id == postID) {
+                    post.copy(
+                        comments = post.comments.map { comment ->
+                            if (comment.id == commentID) {
+                                comment.copy(
+                                    isEditing = true,
+                                    editText = comment.content,
+                                    showActionSheet = false
+                                )
+                            }else comment
+                        }
+                    )
+                } else post
+            }
+            )
+        }
+    }
+
+    fun onDeleteCommentClick(postID: String, commentID: String){
+        _homeState.update {
+            it.copy(posts = it.posts.map { post ->
+                if (post.id == postID) {
+                    post.copy(
+                        comments = post.comments.map { comment ->
+                            if (comment.id == commentID) {
+                                comment.copy(
+                                    showActionSheet = false,
+                                    showDeleteDialog = true
+                                )
+                            }else comment
+                        }
+                    )
+                } else post
+            }
+            )
+        }
+    }
+    fun deleteComment(postID: String, commentID: String) {
+        _homeState.update {
+            it.copy(posts = it.posts.map { post ->
+                if (post.id == postID) {
+                    post.copy(
+                        comments = post.comments.filter { comment ->
+                            comment.id != commentID
+                        }
+                    )
+                } else post
+            })
+        }
+    }
+    fun onCommentEditText(postID: String, commentID: String, text: String){
+        _homeState.update {
+            it.copy(posts = it.posts.map { post ->
+                if (post.id == postID) {
+                    post.copy(
+                        comments = post.comments.map { comment ->
+                            if (comment.id == commentID) {
+                                comment.copy(isEditing = true,editText = text.trim())
+                            } else comment
+                        }
+                    )
+                } else post
+            }
+            )
+        }
+    }
+    fun onCommentEditCanceled(postID: String, commentID: String){
+        _homeState.update {
+            it.copy(posts = it.posts.map { post ->
+                if (post.id == postID) {
+                    post.copy(
+                        comments = post.comments.map { comment ->
+                            if (comment.id == commentID) {
+                                comment.copy(
+                                    isEditing = false,
+                                    editText = comment.content,
+                                    showActionSheet = false
+                                )
+                            } else comment
+                        }
+                    )
+                } else post
+            }
+            )
+        }
+    }
+    fun onEditCommentSubmitted(postID: String, commentID: String){
+        _homeState.update {
+            it.copy(posts = it.posts.map { post ->
+                if (post.id == postID) {
+                    post.copy(
+                        comments = post.comments.map { comment ->
+                            if (comment.id == commentID) {
+                                comment.copy(
+                                    isEditing = false,
+                                    content = comment.editText,
+                                    editText = "",
+                                    showActionSheet = false
+                                )
+                            } else comment
+                        }
+                    )
+                } else post
+            }
+            )
+        }
+    }
+    fun onDeleteDialogDismiss(postID: String, commentID: String){
+
+        _homeState.update {
+            it.copy(posts = it.posts.map { post ->
+                if (post.id == postID) {
+                    post.copy(
+                        comments = post.comments.map { comment ->
+                            if (comment.id == commentID) {
+                                comment.copy(
+                                    showActionSheet = false,
+                                    showDeleteDialog = false
+                                )
+                            } else comment
+                        }
+                    )
+                } else post
+            }
+            )
+        }
+    }
+    fun onActionSheetDismissRequest(postID: String, commentID: String){
+        _homeState.update {
+            it.copy(posts = it.posts.map { post ->
+                if (post.id == postID) {
+                    post.copy(
+                        comments = post.comments.map { comment ->
+                            if (comment.id == commentID) {
+                                comment.copy(
+                                    showActionSheet = false
+                                )
+                            } else comment
+                        }
                     )
                 } else post
             }

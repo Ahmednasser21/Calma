@@ -88,11 +88,36 @@ fun NavGraphBuilder.homeNav(
                 onSubmitComment = {
                     homeViewModel.onSubmitComment(it)
                 },
-                onEditComment = { _, _, _ -> },
-                onDeleteComment = { _, _ -> },
                 onDismissCommentError = {},
                 formatTimeStamp = { timeInMillis ->
                     homeViewModel.formatTimestamp(timeInMillis)
+                },
+                onOwenCommentClick = { postID, commentID ->
+                    homeViewModel.onOwenCommentClick(postID, commentID)
+                },
+                onEditCommentSubmitted = { postID, commentID ->
+                    homeViewModel.onEditCommentSubmitted(postID, commentID)
+                },
+                onDeleteCommentClick = { postID, commentID ->
+                    homeViewModel.onDeleteCommentClick(postID, commentID)
+                },
+                onDeleteDialogDismiss = { postID, commentID ->
+                    homeViewModel.onDeleteDialogDismiss(postID, commentID)
+                },
+                onEditCommentClick = { postID, commentID ->
+                    homeViewModel.onEditCommentClick(postID, commentID)
+                },
+                onCommentEditText = { postID, commentID, newValue ->
+                    homeViewModel.onCommentEditText(postID, commentID, newValue)
+                },
+                onCommentEditCanceled = { postID, commentID ->
+                    homeViewModel.onCommentEditCanceled(postID, commentID)
+                },
+                onActionSheetDismissRequest = { postID, commentID ->
+                    homeViewModel.onActionSheetDismissRequest(postID, commentID)
+                },
+                deleteComment = { postID, commentID ->
+                    homeViewModel.deleteComment(postID, commentID)
                 }
             )
         }

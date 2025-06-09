@@ -60,5 +60,9 @@ data class Comment(
     val authorAvatar: String? = null,
     val content: String,
     val timestamp: Long,
-    val isOwnComment: Boolean = false
+    val isOwnComment: Boolean = false,
+    val isEditing: Boolean = false,
+    val editText: String = content,
+    val showDeleteDialog: Boolean = false,
+    val showActionSheet: Boolean = false
 )
