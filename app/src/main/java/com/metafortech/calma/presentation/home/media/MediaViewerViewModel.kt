@@ -9,7 +9,6 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
-import com.metafortech.calma.presentation.home.home.MediaType
 import com.metafortech.calma.presentation.home.home.UIMediaItem
 import com.metafortech.calma.utills.TimeFormater
 import dagger.hilt.android.lifecycle.HiltViewModel

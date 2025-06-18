@@ -1,5 +1,7 @@
 package com.metafortech.calma.presentation.home.home
 
+import com.metafortech.calma.presentation.home.media.MediaType
+
 object SamplePosts {
     val samplePosts = listOf(
         // Post with single image

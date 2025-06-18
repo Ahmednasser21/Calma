@@ -1,6 +1,7 @@
 package com.metafortech.calma.presentation.home.home
 
 import androidx.compose.foundation.lazy.LazyListState
+import com.metafortech.calma.presentation.home.media.MediaType
 import kotlinx.serialization.Serializable
 
 data class HomeScreenState(
@@ -50,9 +51,6 @@ data class UIMediaItem(
     val duration: String? = null
 )
 
-enum class MediaType {
-    IMAGE, VIDEO, AUDIO
-}
 data class Comment(
     val id: String,
     val postId: String,

@@ -108,4 +108,13 @@
     <string name="hour">س</string>
     <string name="day">ي</string>
     <string name="dismiss_error">إغلاق نافذة الخطأ</string>
+    <string name="post">نشر</string>
+    <string name="create_new_post">إنشاء منشور جديد</string>
+    <string name="attached_files">الملفات المرفقة</string>
+    <string name="image">صورة</string>
+    <string name="video_preview">معاينة الفيديو</string>
+    <string name="remove">حذف</string>
+    <string name="add_media">إضافة وسائط</string>
+    <string name="you_cannot_add_more_than_10_files">لا يمكن إضافة أكثر من 10 ملفات</string>
+    <string name="at_least_one_text_or_file_must_be_added">يجب إضافة نص أو ملف واحد على الأقل</string>
 </resources>

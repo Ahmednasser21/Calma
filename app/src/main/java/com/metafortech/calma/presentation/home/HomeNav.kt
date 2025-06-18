@@ -34,9 +34,12 @@ import com.metafortech.calma.presentation.AppRoute.HomeNav
 import com.metafortech.calma.presentation.AppRoute.HomeScreen
 import com.metafortech.calma.presentation.AppRoute.ChattingScreen
 import com.metafortech.calma.presentation.AppRoute.MediaScreen
+import com.metafortech.calma.presentation.AppRoute.NewPostScreen
 import com.metafortech.calma.presentation.AppRoute.ReelsScreen
 import com.metafortech.calma.presentation.AppRoute.SportsFacilitiesScreen
 import com.metafortech.calma.presentation.AppRoute.StoreScreen
+import com.metafortech.calma.presentation.home.creat.NewPostScreen
+import com.metafortech.calma.presentation.home.creat.NewPostViewModel
 import com.metafortech.calma.presentation.home.home.HomeScreen
 import com.metafortech.calma.presentation.home.home.HomeViewModel
 import com.metafortech.calma.presentation.home.media.MediaViewerScreen
@@ -71,7 +74,9 @@ fun NavGraphBuilder.homeNav(
                 onScroll = homeViewModel::onScroll,
                 formatTime = homeViewModel::formatTime,
                 onShowMoreClicked = homeViewModel::onShowMoreClicked,
-                onCreateNewPostClick = { },
+                onCreateNewPostClick = {
+                    navController.navigate(NewPostScreen)
+                },
                 onCommentClick = { postId ->
                     homeViewModel.onCommentClick(postId)
                 },
@@ -166,6 +171,27 @@ fun NavGraphBuilder.homeNav(
                 onSeekAudioBackward = mediaViewerViewModel::seekAudioBackward,
                 getVideoPlayer = mediaViewerViewModel::getVideoPlayer,
                 formatTime = mediaViewerViewModel::formatTime
+            )
+        }
+        composable<NewPostScreen> {
+            val newPostViewModel: NewPostViewModel = hiltViewModel()
+            NewPostScreen(
+                modifier = Modifier.padding(innerPadding),
+                uiState = newPostViewModel.uiState.collectAsState().value,
+                addMediaFile = { mediaFile ->
+                    newPostViewModel.addMediaFile(mediaFile)
+                },
+                addVideoWithThumbnail = { uri ->
+                    newPostViewModel.addVideoWithThumbnail(uri)
+                },
+                createPost = { newPostViewModel.createPost() },
+                updatePostText = { text ->
+                    newPostViewModel.updatePostText(text)
+                },
+                removeMediaFile = { mediaFile ->
+                    newPostViewModel.removeMediaFile(mediaFile)
+                },
+                onNavigateBack = { navController.popBackStack() }
             )
         }
     }

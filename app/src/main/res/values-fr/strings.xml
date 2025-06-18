@@ -108,4 +108,13 @@
     <string name="hour">h</string>
     <string name="day">d</string>
     <string name="dismiss_error">Erreur de rejet</string>
+    <string name="post">Poste</string>
+    <string name="create_new_post">Créer un nouveau message</string>
+    <string name="attached_files">Fichiers joints</string>
+    <string name="image">Image</string>
+    <string name="video_preview">Aperçu vidéo</string>
+    <string name="remove">Retirer</string>
+    <string name="add_media">Ajouter un média</string>
+    <string name="you_cannot_add_more_than_10_files">Vous ne pouvez pas ajouter plus de 10 fichiers.</string>
+    <string name="at_least_one_text_or_file_must_be_added">Au moins un texte ou un fichier doit être ajouté.</string>
 </resources>

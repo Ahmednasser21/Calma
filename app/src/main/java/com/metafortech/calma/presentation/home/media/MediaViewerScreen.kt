@@ -67,7 +67,6 @@ import com.metafortech.calma.presentation.MediaControls
 import com.metafortech.calma.presentation.MediaCounter
 import com.metafortech.calma.presentation.MediaProgressBar
 import com.metafortech.calma.presentation.SwipeDetector
-import com.metafortech.calma.presentation.home.home.MediaType
 import com.metafortech.calma.presentation.home.home.UIMediaItem
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay

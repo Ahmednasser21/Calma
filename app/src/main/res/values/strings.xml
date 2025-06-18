@@ -124,4 +124,13 @@
     <string name="hour">h</string>
     <string name="day">d</string>
     <string name="dismiss_error">Dismiss error</string>
+    <string name="post">Post</string>
+    <string name="create_new_post">Create a new post</string>
+    <string name="attached_files">Attached files</string>
+    <string name="image">Image</string>
+    <string name="video_preview">Video preview</string>
+    <string name="remove">Remove</string>
+    <string name="add_media">Add media</string>
+    <string name="you_cannot_add_more_than_10_files">You cannot add more than 10 files.</string>
+    <string name="at_least_one_text_or_file_must_be_added">At least one text or file must be added.</string>
 </resources>

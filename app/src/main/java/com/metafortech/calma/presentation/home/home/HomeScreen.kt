@@ -87,6 +87,7 @@ import com.metafortech.calma.presentation.ErrorStateIndicator
 import com.metafortech.calma.presentation.ImageLoading
 import com.metafortech.calma.presentation.TextButton
 import com.metafortech.calma.presentation.UserCircularImage
+import com.metafortech.calma.presentation.home.media.MediaType
 import kotlin.collections.List
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -1058,9 +1059,7 @@ private fun ActionButtons(
         modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
     ) {
         ActionButton(
-            icon = if (isLiked) painterResource(R.drawable.like_selected) else painterResource(
-                R.drawable.like_not_selected
-            ),
+            icon = painterResource(R.drawable.like),
             text = stringResource(R.string.like_verb),
             tint = if (isLiked) Color.Red else Color.Gray,
             onClick = onLikeClick
@@ -1085,7 +1084,11 @@ private fun ActionButtons(
 
 @Composable
 private fun ActionButton(
-    icon: Painter, text: String, tint: Color, onClick: () -> Unit, modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier,
+    icon: Painter,
+    text: String,
+    tint: Color,
+    onClick: () -> Unit,
 ) {
     Row(
         modifier = modifier
@@ -1097,7 +1100,10 @@ private fun ActionButton(
             ) { onClick() }
             .padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
         Icon(
-            painter = icon, contentDescription = text, tint = tint, modifier = Modifier.size(20.dp)
+            painter = icon,
+            contentDescription = text,
+            tint = tint,
+            modifier = Modifier.size(20.dp)
         )
         Spacer(modifier = Modifier.width(4.dp))
         Text(

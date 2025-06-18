@@ -54,5 +54,8 @@ sealed class AppRoute {
     @Serializable
     data class MediaScreen(val mediaItems: String, val startIndex: Int) : AppRoute()
 
+    @Serializable
+    object NewPostScreen : AppRoute()
+
 
 }
