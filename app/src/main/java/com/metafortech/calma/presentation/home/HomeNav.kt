@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -45,6 +46,8 @@ import com.metafortech.calma.presentation.home.home.HomeViewModel
 import com.metafortech.calma.presentation.home.media.MediaViewerScreen
 import com.metafortech.calma.presentation.home.media.MediaViewerViewModel
 import com.metafortech.calma.presentation.home.home.UIMediaItem
+import com.metafortech.calma.presentation.home.profile.ProfileScreen
+import com.metafortech.calma.presentation.home.profile.ProfileViewModel
 import kotlinx.serialization.json.Json
 
 @androidx.annotation.OptIn(UnstableApi::class)
@@ -194,6 +197,35 @@ fun NavGraphBuilder.homeNav(
                 onNavigateBack = { navController.popBackStack() }
             )
         }
+        composable< AppRoute.ProfileScreen> {
+            val profileViewModel: ProfileViewModel = hiltViewModel()
+            val homeViewModel:HomeViewModel = hiltViewModel()
+            val state = profileViewModel.uiState.collectAsState().value
+            ProfileScreen(
+                modifier = Modifier.padding(innerPadding),
+                uiState = state,
+                state = homeViewModel.homeState.collectAsState().value,
+                onLikePost = homeViewModel::likePost,
+                onCommentClick = { postId ->
+                    homeViewModel.onCommentClick(postId)
+                },
+                onSharePost = {},
+                onMediaClick = { mediaItems, index ->
+                    val mediaItemsJson = Json.encodeToString(mediaItems)
+                    navController.navigate(MediaScreen(mediaItemsJson, index)) {
+                        launchSingleTop = true
+                    }
+                },
+                onPostCreatorClick = {},
+                onPostOptionsMenuClick = {},
+                onPlayAudio = homeViewModel::playAudio,
+                onPauseAudio = homeViewModel::pauseAudio,
+                onSeekAudio = homeViewModel::seekAudio,
+                onHashtagClick = {},
+                formatTime = homeViewModel::formatTime,
+                onShowMoreClicked = homeViewModel::onShowMoreClicked
+            )
+        }
     }
 
 }
@@ -259,7 +291,8 @@ private fun HomeScaffold(
                 userImageUrl = userImageUrl,
                 screenTitle = screenTitle,
                 notificationCount = 5,
-                scrollBehavior = scrollBehavior
+                scrollBehavior = scrollBehavior,
+                onUserProfileClick = { onNavigationItemSelected(AppRoute.ProfileScreen) }
             )
         },
         bottomBar = {

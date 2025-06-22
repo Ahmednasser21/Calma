@@ -77,7 +77,7 @@
     <string name="live">Live</string>
     <string name="facilities">Sport Facilities</string>
     <string name="reels">Reels</string>
-    <string name="home">Home Page</string>
+    <string name="home">Home</string>
     <string name="store">Store</string>
     <string name="chat">Chat</string>
     <string name="name" translatable="false">Name</string>
@@ -133,4 +133,9 @@
     <string name="add_media">Add media</string>
     <string name="you_cannot_add_more_than_10_files">You cannot add more than 10 files.</string>
     <string name="at_least_one_text_or_file_must_be_added">At least one text or file must be added.</string>
+    <string name="edit_profile">Edit profile</string>
+    <string name="follow">Follow</string>
+    <string name="friend">Friend</string>
+    <string name="lives">Live broadcasts</string>
+    <string name="posts">Posts</string>
 </resources>

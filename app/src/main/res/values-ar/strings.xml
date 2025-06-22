@@ -63,7 +63,7 @@
     <string name="live">بث مباشر</string>
     <string name="facilities">المنشآت الرياضية</string>
     <string name="reels">ريلز</string>
-    <string name="home">الصفحة الرئيسة</string>
+    <string name="home">" الرئيسة"</string>
     <string name="store">المتجر</string>
     <string name="chat">دردشة</string>
     <string name="what_is_new_in_your_sports_Journey">ما الجديد في رحلتك الرياضية؟</string>
@@ -117,4 +117,9 @@
     <string name="add_media">إضافة وسائط</string>
     <string name="you_cannot_add_more_than_10_files">لا يمكن إضافة أكثر من 10 ملفات</string>
     <string name="at_least_one_text_or_file_must_be_added">يجب إضافة نص أو ملف واحد على الأقل</string>
+    <string name="edit_profile">تعديل الملف الشخصي</string>
+    <string name="follow">متابعة</string>
+    <string name="friend">صديق</string>
+    <string name="lives">بثوث مباشرة</string>
+    <string name="posts">المنشورات</string>
 </resources>

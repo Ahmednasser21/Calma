@@ -12,7 +12,6 @@ import com.metafortech.calma.utills.TimeFormater
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.inject.Inject
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -167,27 +166,6 @@ class NewPostViewModel @Inject constructor(
                     isLoading = true,
                     error = null
                 )
-
-                // Here you can access the media files with their metadata:
-                // currentState.mediaFiles.forEach { mediaFile ->
-                //     when (mediaFile.type) {
-                //         MediaType.VIDEO -> {
-                //             // mediaFile.uri = video URI
-                //             // mediaFile.thumbnailUri = thumbnail URI
-                //             // mediaFile.duration = duration in milliseconds
-                //         }
-                //         MediaType.AUDIO -> {
-                //             // mediaFile.uri = audio URI
-                //             // mediaFile.duration = duration in milliseconds
-                //         }
-                //         MediaType.IMAGE -> {
-                //             // mediaFile.uri = image URI
-                //         }
-                //     }
-                // }
-
-                // Simulate successful post creation
-                delay(2000) // Remove this in actual implementation
 
                 _uiState.value = currentState.copy(
                     isLoading = false,

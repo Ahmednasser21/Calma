@@ -63,7 +63,7 @@
     <string name="live">En direct</string>
     <string name="facilities">Installations sportives</string>
     <string name="reels">Bobines</string>
-    <string name="home">Page d\'accueil</string>
+    <string name="home">Maison</string>
     <string name="store">Magasin</string>
     <string name="chat">Chat</string>
     <string name="what_is_new_in_your_sports_Journey">Quoi de neuf dans votre parcours sportif ?</string>
@@ -117,4 +117,9 @@
     <string name="add_media">Ajouter un média</string>
     <string name="you_cannot_add_more_than_10_files">Vous ne pouvez pas ajouter plus de 10 fichiers.</string>
     <string name="at_least_one_text_or_file_must_be_added">Au moins un texte ou un fichier doit être ajouté.</string>
+    <string name="edit_profile">Modifier le profil</string>
+    <string name="follow">Suivre</string>
+    <string name="friend">Ami</string>
+    <string name="lives">Diffusions en direct</string>
+    <string name="posts">Articles</string>
 </resources>

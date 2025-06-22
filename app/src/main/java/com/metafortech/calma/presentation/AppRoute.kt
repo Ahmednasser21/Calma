@@ -57,5 +57,8 @@ sealed class AppRoute {
     @Serializable
     object NewPostScreen : AppRoute()
 
+    @Serializable
+    object ProfileScreen : AppRoute()
+
 
 }

@@ -46,7 +46,7 @@ fun TopBar(
     userImageUrl: String,
     notificationCount: Int,
     onNotificationClick: () -> Unit = {},
-    onUserProfileClick: () -> Unit = {},
+    onUserProfileClick: () -> Unit,
     onLiveClick: () -> Unit = {},
     onEdificesClick: () -> Unit = {},
     onChampionsClick: () -> Unit = {},

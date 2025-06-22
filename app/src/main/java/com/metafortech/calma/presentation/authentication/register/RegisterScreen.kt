@@ -370,10 +370,9 @@ fun PhoneNumberWithCountryPicker(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(bottom = 4.dp),
-                            textAlign = TextAlign.Center
+                            textAlign = TextAlign.Center,
+                            color = MaterialTheme.colorScheme.primary
                         )
-
-                        // Search Field
                         OutlinedTextField(
                             value = searchQuery,
                             textStyle = MaterialTheme.typography.bodyMedium,

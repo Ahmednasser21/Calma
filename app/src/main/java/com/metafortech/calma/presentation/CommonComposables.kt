@@ -376,11 +376,12 @@ fun BackButton(modifier: Modifier = Modifier, onBackClick: () -> Unit){
             modifier = Modifier
                 .size(48.dp)
                 .clip(CircleShape)
-                .background(Color.LightGray.copy(alpha = 0.3f))
+                .background(MaterialTheme.colorScheme.onBackground)
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = stringResource(R.string.back)
+                contentDescription = stringResource(R.string.back),
+                tint = MaterialTheme.colorScheme.primary
             )
         }
     }
