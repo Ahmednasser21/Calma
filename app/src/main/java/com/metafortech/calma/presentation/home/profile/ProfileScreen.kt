@@ -24,8 +24,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -151,7 +149,6 @@ private fun ProfileContent(
             )
         }
 
-        // Profile Image
         item {
             ProfileImage(
                 imageUrl = profileData.profileImageUrl,
@@ -159,7 +156,6 @@ private fun ProfileContent(
             )
         }
 
-        // Profile Info Section
         item {
             Column(
                 modifier = Modifier
@@ -192,14 +188,15 @@ private fun ProfileContent(
 
                 ProfileTabs(
                     selectedTab = selectedTab,
-                    onTabSelected = viewModel::onTabSelected
+                    isOwnProfile = profileData.isOwnProfile,
+                    onTabSelected = viewModel::onTabSelected,
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
             }
         }
         when (selectedTab) {
-            2 -> {
+            0 -> {
                 items(
                     items = state.posts,
                     key = { post -> post.id }
@@ -248,7 +245,7 @@ private fun ProfileHeader(
     ) {
         Image(
             painter = painterResource(id = R.drawable.stadium),
-            contentDescription = "Stadium background",
+            contentDescription = stringResource(R.string.cover_photo),
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
         )
@@ -322,7 +319,7 @@ private fun ProfileImage(
                     .fillMaxSize()
                     .clip(CircleShape),
                 model = countryFlagUrl,
-                contentDescription = "Country Flag"
+                contentDescription = stringResource(R.string.country_flag)
             )
         }
     }
@@ -376,28 +373,29 @@ private fun ProfileActions(
     Row(
         modifier = Modifier
             .fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center,
+        horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Button(
             onClick = {},
             modifier = Modifier
-                .height(48.dp)
-                .padding(horizontal = 8.dp),
+                .height(48.dp),
             elevation = ButtonDefaults.buttonElevation(defaultElevation = 8.dp),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onBackground),
             shape = RoundedCornerShape(10.dp),
         ) {
             Icon(
                 modifier = Modifier
-                    .size(32.dp)
-                    .padding(horizontal = 4.dp),
+                    .size(24.dp)
+                    .padding(end = 4.dp),
                 painter = painterResource(R.drawable.friend),
                 contentDescription = stringResource(R.string.friends),
                 tint = MaterialTheme.colorScheme.primary
             )
             Text(
-                text = "$friendsCount " + stringResource(R.string.friend),
+                text = if (isOwnProfile) "$friendsCount " + stringResource(R.string.friend) else "$friendsCount " + stringResource(
+                    R.string.follower
+                ),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.primary
             )
@@ -405,30 +403,53 @@ private fun ProfileActions(
         Button(
             onClick = onEditProfileClick,
             modifier = Modifier
-                .height(48.dp)
-                .padding(horizontal = 8.dp),
+                .height(48.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = if (isOwnProfile) Color.Black else MaterialTheme.colorScheme.primary
+                containerColor = MaterialTheme.colorScheme.primary
             ),
             shape = RoundedCornerShape(10.dp),
             elevation = ButtonDefaults.buttonElevation(defaultElevation = 8.dp)
         ) {
             Icon(
                 modifier = Modifier
-                    .size(32.dp)
-                    .padding(horizontal = 4.dp),
-                imageVector = if (isOwnProfile) Icons.Default.Edit else Icons.Default.Add,
+                    .size(24.dp)
+                    .padding(end = 4.dp),
+                painter = if (isOwnProfile) painterResource(R.drawable.edit) else painterResource(R.drawable.add_friend),
                 contentDescription = if (isOwnProfile) stringResource(R.string.edit_profile) else stringResource(
                     R.string.follow
                 ),
                 tint = MaterialTheme.colorScheme.background,
             )
             Text(
-                text = if (isOwnProfile) stringResource(R.string.edit_profile) else stringResource(R.string.follow),
+                text = if (isOwnProfile) stringResource(R.string.edit_profile) else stringResource(R.string.add_friend),
                 color = MaterialTheme.colorScheme.background,
                 style = MaterialTheme.typography.bodySmall,
             )
 
+        }
+        if (!isOwnProfile) {
+            Button(
+                onClick = {},
+                modifier = Modifier
+                    .height(48.dp),
+                elevation = ButtonDefaults.buttonElevation(defaultElevation = 8.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onBackground),
+                shape = RoundedCornerShape(10.dp),
+            ) {
+                Icon(
+                    modifier = Modifier
+                        .size(24.dp)
+                        .padding(end = 4.dp),
+                    painter = painterResource(R.drawable.message),
+                    contentDescription = stringResource(R.string.send_message),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Text(
+                    text = stringResource(R.string.send_message),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
         }
     }
 }
@@ -436,13 +457,21 @@ private fun ProfileActions(
 @Composable
 private fun ProfileTabs(
     selectedTab: Int,
+    isOwnProfile: Boolean,
     onTabSelected: (Int) -> Unit,
 ) {
-    val tabs = listOf(
-        Pair(stringResource(R.string.lives), R.drawable.live),
-        Pair(stringResource(R.string.edifices), R.drawable.groups),
-        Pair(stringResource(R.string.posts), R.drawable.gallery)
-    )
+    val tabs = if (isOwnProfile) {
+        listOf(
+            Pair(stringResource(R.string.posts), R.drawable.gallery),
+            Pair(stringResource(R.string.edifices), R.drawable.groups),
+            Pair(stringResource(R.string.lives), R.drawable.live),
+        )
+    } else {
+        listOf(
+            Pair(stringResource(R.string.posts), R.drawable.gallery),
+            Pair(stringResource(R.string.lives), R.drawable.live)
+        )
+    }
 
     Column(
         modifier = Modifier.fillMaxWidth(),

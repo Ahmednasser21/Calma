@@ -138,4 +138,9 @@
     <string name="friend">Friend</string>
     <string name="lives">Live broadcasts</string>
     <string name="posts">Posts</string>
+    <string name="cover_photo">Cover photo</string>
+    <string name="country_flag">Country flag</string>
+    <string name="follower">Follower</string>
+    <string name="add_friend">Add friend</string>
+    <string name="send_message">Send message</string>
 </resources>

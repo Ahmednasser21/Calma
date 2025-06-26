@@ -122,4 +122,9 @@
     <string name="friend">Ami</string>
     <string name="lives">Diffusions en direct</string>
     <string name="posts">Articles</string>
+    <string name="cover_photo">Photo de couverture</string>
+    <string name="country_flag">Drapeau du pays</string>
+    <string name="follower">Disciple</string>
+    <string name="add_friend">Ajouter un ami</string>
+    <string name="send_message">envoyer un message</string>
 </resources>

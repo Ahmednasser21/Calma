@@ -3,7 +3,7 @@ package com.metafortech.calma.presentation.home.profile
 data class ProfileUiState(
     val isLoading: Boolean = true,
     val error: String? = null,
-    val selectedTap: Int = 2,
+    val selectedTap: Int = 0,
     val profileData: ProfileData? = null
 )
 
@@ -14,5 +14,5 @@ data class ProfileData(
     val description: String,
     val sportsType: String,
     val friendsCount: Int,
-    val isOwnProfile: Boolean = true
+    val isOwnProfile: Boolean = false
 )

@@ -122,4 +122,9 @@
     <string name="friend">صديق</string>
     <string name="lives">بثوث مباشرة</string>
     <string name="posts">المنشورات</string>
+    <string name="cover_photo">صورة الغلاف</string>
+    <string name="country_flag">علم الدولة</string>
+    <string name="follower">متابع</string>
+    <string name="add_friend">إضافة صديق</string>
+    <string name="send_message">مراسلة</string>
 </resources>
