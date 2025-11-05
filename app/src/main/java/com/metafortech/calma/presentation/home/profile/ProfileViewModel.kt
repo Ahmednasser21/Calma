@@ -2,7 +2,6 @@ package com.metafortech.calma.presentation.home.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.metafortech.calma.R
 import jakarta.inject.Inject
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,7 +21,6 @@ class ProfileViewModel @Inject constructor(): ViewModel() {
         viewModelScope.launch {
             try {
                 _uiState.value = _uiState.value.copy(isLoading = true, error = null)
-                // Simulate API call
                 delay(1000)
                 val profileData = ProfileData(
                     name = "يوسف القاضي",
@@ -46,15 +44,12 @@ class ProfileViewModel @Inject constructor(): ViewModel() {
     }
 
     fun onEditProfileClick() {
-        // Handle edit profile
     }
 
     fun onShareClick() {
-        // Handle share
     }
 
     fun onBackClick() {
-        // Handle back navigation
     }
     fun onTabSelected(index: Int){
         _uiState.value = _uiState.value.copy(selectedTap = index)

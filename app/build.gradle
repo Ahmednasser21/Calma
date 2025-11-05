@@ -11,12 +11,12 @@ plugins {
 
 android {
     namespace 'com.metafortech.calma'
-    compileSdk 35
+    compileSdk 36
 
     defaultConfig {
         applicationId "com.metafortech.calma"
         minSdk 29
-        targetSdk 35
+        targetSdk 36
         versionCode 1
         versionName "1.0"
 
@@ -25,16 +25,16 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+    kotlin {
+        jvmToolchain(17)
     }
     kotlinOptions {
-        jvmTarget = '11'
+
+        kotlin.compilerOptions.freeCompilerArgs.add('-XXLanguage:+PropertyParamAnnotationDefaultTargetMode')
     }
     buildFeatures {
         buildConfig true
@@ -46,6 +46,7 @@ android {
     }
     packagingOptions {
         exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/INDEX.LIST'
     }
 }
 
